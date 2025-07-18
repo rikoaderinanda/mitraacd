@@ -1,0 +1,59 @@
+## Build results
+bin/
+obj/
+out/
+Generated\ Files/
+
+## User-specific files
+*.rsuser
+*.suoad
+*.user
+*.userosscache
+*.sln.docstates
+
+## ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+## .NET Core
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Templated Projects
+**/wwwroot/lib/
+**/node_modules/
+**/dist/
+**/bundle/
+
+## Visual Studio files
+.vs/
+*.dbmdl
+*.jfm
+*.pdb
+
+## Rider IDE
+.idea/
+
+## Logs
+*.log
+
+## Dependency directories
+packages/
+.nuget/
+
+# Optional: exclude secrets config
+appsettings.Development.json
+secrets.json
+
+# OS-specific
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+
+# Git
+*.orig
+
+# Others
+*.sln.cache
+*.dotCover

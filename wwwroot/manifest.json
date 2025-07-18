@@ -1,0 +1,21 @@
+{
+  "name": "AppACD",
+  "short_name": "ACD",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1976d2",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icons/logo_ACD.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icons/logo_ACD.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

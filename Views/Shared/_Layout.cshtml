@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - mitra.acd</title>
+    <link rel="manifest" href="/manifest.json">
+    <!-- Stylesheets -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap"
+        rel="stylesheet">
+    <link href="~/css/style.css" rel="stylesheet" asp-append-version="true">
+
+    <!-- Vendor Stylesheets -->
+    <link rel="stylesheet" type="text/css" href="~/vendor/bootstrap/css/bootstrap.min.css" asp-append-version="true">
+    <link rel="stylesheet" type="text/css" href="~/vendor/bootstrap-select/css/bootstrap-select.min.css"
+        asp-append-version="true">
+    <link rel="stylesheet" type="text/css" href="~/vendor/bootstrap-icons-1.9.1/font/bootstrap-icons.css"
+        asp-append-version="true">
+    @* <link rel="stylesheet" type="text/css" href="~/vendor/OwlCarousel/assets/owl.carousel.css"
+        asp-append-version="true"> *@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.carousel.min.css"
+        asp-append-version="true" />
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/assets/owl.theme.default.min.css"
+        asp-append-version="true" />
+    <link rel="stylesheet" type="text/css" href="~/vendor/OwlCarousel/assets/owl.theme.default.min.css"
+        asp-append-version="true">
+    <!-- JavaScripts -->
+    <script src="~/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
+    @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
+        asp-append-version="true"></script>
+    <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" asp-append-version="true"></script>
+    <script src="~/js/custom.js" asp-append-version="true"></script>
+    <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
+</head>
+
+<body class="fixed-bottom-bar">
+    <div class="app-page">
+        @await Html.PartialAsync("_Header")
+        @RenderBody()
+        @await Html.PartialAsync("_Footer")
+    </div>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('/sw.js')
+                .then(() =>
+                    console.log("Service Worker registered")
+                )
+                .catch(err => console.error("Service Worker registration failed", err));
+        }
+    </script>
+
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+
+</html>

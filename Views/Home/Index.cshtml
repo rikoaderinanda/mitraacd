@@ -1,0 +1,106 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+}
+
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <div class="position-relative mb-4">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="LoadListCart()" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
+        </div>
+        <div id="ListBid"></div>
+    </div>
+</div>
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        LoadListBid();
+    });
+    function LoadListBid() {
+        callApi({
+            url: '/api/Biding/GetBid',
+            method: 'GET',
+            success: function (data) {
+                var html = "";
+
+                if (!data || data.length === 0) {
+                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
+                    $('#ListBid').html(html);
+                }
+                else {
+                    html = $.map(data, function (item) {
+                        var scr = "";
+                        scr = `
+                        <div class="card mb-3 position-relative shadow-sm border-0">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start position-relative">
+                                    <div>
+                                        <h5 class="card-title mb-1 fw-bold">
+                                            ID Pesanan: 
+                                            <span class="text-primary">
+                                                ACD
+                                            </span>
+                                        </h5>
+                                        <p class="card-text mb-2">
+                                            Total Pesanan: 
+                                            <span class="fw-semibold text-success">
+                                                Rp 
+                                            </span>
+                                        </p>
+
+                                        <div class="mt-3">
+                                            <strong>Detail Order:</strong>
+                                            <ul class="mb-0 ps-0" style="list-style-type:disc;font-size:small;">
+                                                
+                                            </ul>
+                                        </div>
+                                    </div>
+
+                                    <!-- Tombol Delete -->
+                                    <button 
+                                        onclick="DeletePesanan(${item.id});"
+                                        class="btn btn-outline-danger btn-sm"
+                                        title="Hapus Pesanan"
+                                        style="position: absolute; top: 10px; right: 54px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-trash" style="font-size: 1.0rem;"></i>
+                                    </button>
+
+                                    <!-- Tombol Detail -->
+                                    <button 
+                                        onclick="DetailPesanan(${item.id});"
+                                        class="btn btn-outline-primary btn-sm"
+                                        title="Lihat Detail Status"
+                                        style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                        return scr;
+                    }).join('');
+
+                    $('#ListBid').html(html);
+                }
+            },
+            error: function (err) {
+                $('#ListBid').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+                @* alert('Error: ' + err); *@
+            },
+            onBeforeSend: function () {
+                $('#ListBid').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+        });
+    }
+</script>
