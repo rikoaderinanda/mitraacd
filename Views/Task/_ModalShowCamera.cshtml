@@ -48,7 +48,10 @@
         <!-- Tombol Ambil -->
         <div class="text-center mb-3">
             <button class="btn btn-outline-danger rounded-pill px-4 py-2" onclick="capturePhoto()">
-            <i class="bi bi-camera me-1"></i> Ambil Foto
+                <i class="bi bi-camera me-1"></i> Ambil Foto
+            </button>
+            <button class="btn btn-outline-primary rounded-pill px-4 py-1" onclick="switchCamera()">
+                🔄 Ganti Kamera
             </button>
         </div>
 
@@ -90,6 +93,7 @@
 </div>
 
 <script>
+let currentFacingMode = 'environment';
 let cameraStream = null;
 let video = document.getElementById('videoPreview');
 let canvas = document.getElementById('canvasPhoto');
@@ -125,7 +129,9 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 
 function startCamera() {
-  navigator.mediaDevices.getUserMedia({ video: true })
+  navigator.mediaDevices.getUserMedia({
+    video: { facingMode: currentFacingMode }
+  })
     .then(function (stream) {
       cameraStream = stream;
       video.srcObject = stream;
@@ -192,9 +198,9 @@ function redoPhoto(index) {
 }
 
 function resetPhotos() {
-  currentPhotoIndex = 0;
+  currentPhotoIndex = 1;
   photoTaken = [false, false, false, false, false];
-  for (let i = 0; i <= maxPhotos; i++) {
+  for (let i = 1; i <= maxPhotos; i++) {
     $(`#photo${i}`).attr('src', '').hide();
     $(`#photo${i}`).next('button').hide();
   }
