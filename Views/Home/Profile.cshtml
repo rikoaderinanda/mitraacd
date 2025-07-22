@@ -1,0 +1,117 @@
+@{
+    ViewData["Title"] = "Status";
+    ViewData["Header"] = "2";
+    ViewData["Footer"] = "3";
+    ViewData["HeaderName"] = "Profil Pengguna";
+}
+@await Html.PartialAsync("_formProfile")
+<div class="app-body pb-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="profile-dt position-relative d-flex align-items-center mt-3">
+                    <div class="profile-img me-1">
+                        <img alt="" id="photoUser">
+                    </div>
+                    <div class="profile-user-dt ms-3" id="UserInfo">
+                    </div>
+                    <a href="#editProfileModal" data-bs-toggle="modal" class="edit-btn text-white"><i
+                            class="bi bi-pencil"></i></a>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="profile-link-list light-bg br-10 mt-3">
+                    <a href="@Url.Action("Index", "Cart")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3">
+                        <i class="bi bi-cart fs-5 me-3"></i>
+                        Keranjang Saya
+                    </a>
+                    <a href="@Url.Action("Index", "Tracking")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-bag-check fs-5 me-3"></i>Pesanan Saya</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-geo-alt fs-5 me-3"></i>Kelola Alamat</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-bell fs-5 me-3"></i>Notifikasi</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-percent fs-5 me-3"></i>Penawaran</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-chat-dots fs-5 me-3"></i>Dukungan Langsung</a>
+                </div>
+                <div class="profile-link-list light-bg br-10 mt-3">
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-info-circle fs-6 me-3"></i>Tentang Aplikasi</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-life-preserver fs-6 me-3"></i>Pusat Bantuan</a>
+                    <a href="@Url.Action("Index", "Home")"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 border_bottom p-3"><i
+                            class="bi bi-lock fs-6 me-3"></i>Privasi Akun</a>
+                    <a href="javascript:void(0)" onclick="Logout();"
+                        class="fs-7 fw-5 b-color d-flex align-items-center w-100 p-3">
+                        <i class="bi bi-box-arrow-right fs-6 me-3"></i>
+                        Keluar
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            loadUserInfo(user);
+        }
+
+    });
+
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+
+    function loadUserInfo(user) {
+        var scr = `
+            <h4 class="text-white fw-6">${user.nama_lengkap}</h4>
+            <p class="text-white fs-7 fw-4 mb-1">${user.no_hp}</p>
+            <p class="text-white fs-7 fw-4 mb-0">${user.email}</p>
+        `;
+        $("#UserInfo").html(scr);
+        $("#photoUser").attr("src", user.photo);
+    }
+
+    function Logout() {
+        Swal.fire({
+            //title: 'Apakah anda yakin untuk logout?',
+            text: "Apakah anda yakin untuk logout?",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, Logout!',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Storage.remove('username');
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+    }
+
+</script>
