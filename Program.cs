@@ -4,6 +4,8 @@ using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
 using Microsoft.OpenApi.Models;
 using mitraacd.Models;
 using mitraacd.Services;
+using mitraacd.Hubs;
+
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,6 +35,9 @@ builder.Services.AddScoped<IDbConnection>(sp =>
     return new Npgsql.NpgsqlConnection(connectionString);
 });
 builder.Services.AddScoped<IBidRepository, BidRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+
+builder.Services.AddSignalR();
 
 var app = builder.Build();
 // Configure the HTTP request pipeline.
@@ -64,7 +69,7 @@ app.UseStaticFiles(new StaticFileOptions
 
 app.UseRouting();
 app.UseAuthorization();
-
+app.MapHub<NotifikasiHub>("/notifikasiHub");
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");

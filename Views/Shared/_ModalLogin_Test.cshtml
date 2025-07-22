@@ -1,0 +1,110 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+</style>
+
+<div class="modal fade" id="ModalLogin" tabindex="-1" 
+    aria-labelledby="LoginModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
+    <div class="modal-dialog modal-dialog-centered modal-md"> <!-- Centered dan medium -->
+        <div class="modal-content overflow-hidden shadow rounded-4 border-0">
+            <!-- Header -->
+            <div class="bg-danger py-4 px-4 position-relative rounded-top">
+                <div class="d-flex flex-column">
+                    <h5 class="fs-4 fw-semibold text-white mb-1 text-center" id="TitleModalLogin">Silakan Login</h5>
+                </div>
+                <a id="btnClsModalLogin" href="javascript:void(0);" onclick="CloseModalLogin()"
+                    class="position-absolute top-0 end-0 mt-3 me-3 text-white fs-4">
+                    <i class="bi bi-x-lg"></i>
+                </a>
+            </div>
+
+            <!-- Body -->
+            <div class="p-4 bg-light">
+                <p class="text-dark fs-6 mb-3 text-center">Pilih akun untuk penggunaan testing</p>
+                <!-- Reusable user button -->
+                <div class="d-grid gap-3" id="userList">
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        loadLoginUserTest();
+    });
+
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+    
+    function loadLoginUserTest() {
+        var datauser = [
+            {
+                username: 'aceng',
+                id: 1,
+                nama_lengkap: 'Aceng Komaruddin',
+                email: 'aceng@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=udin'
+            },
+            {
+                username: 'Tasbih',
+                id: 2,
+                nama_lengkap: 'Tasbih Santoso',
+                email: 'tasbih@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=tono'
+            },
+            {
+                username: 'Darmawis',
+                id: 3,
+                nama_lengkap: 'Darmawis',
+                email: 'darmawis@gmail.com',
+                no_hp: '081617233847',
+                photo: 'https://i.pravatar.cc/40?u=budi'
+            },
+        ];
+
+        var html = datauser.map(function (item) {
+            var json = encodeURIComponent(JSON.stringify(item)); // safe encode
+            return `
+            <button class="btn btn-white border rounded-pill d-flex align-items-center justify-content-start px-3 py-2 shadow-sm mb-2"
+                onclick="LoginFromJson('${json}')">
+                <img src="${item.photo}" class="rounded-circle me-3" alt="${item.username}" width="40" height="40">
+                <span class="fw-semibold text-primary">Login sebagai ${item.username}</span>
+            </button>
+        `;
+        }).join('');
+
+        $("#userList").html(html);
+    }
+
+    function LoginFromJson(jsonStr) {
+        var user = JSON.parse(decodeURIComponent(jsonStr));
+        Storage.set('username', user.username);
+        Storage.set('userId', user.id);
+        Storage.set('nama_lengkap', user.nama_lengkap);
+        Storage.set('email', user.email);
+        Storage.set('no_hp', user.no_hp);
+        Storage.set('photo', user.photo);
+        window.location.reload();
+    }
+</script>

@@ -19,28 +19,28 @@
         var scr = "";
         if (page == "") {
             scr = `
-            <div class="col">
+            <div class="col" id="mnuHome">
                 <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-lightning-charge"></i></p>
                     Bid
                 </a>
             </div>
-            <div class="col">
-                <a href="@Url.Action("Index", "Cart")" class="small text-decoration-none position-relative">
+            <div class="col" id="mnuTask">
+                <a href="@Url.Action("Index", "Task")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-list-task"></i></p>
                     My Task
                 </a>
             </div>
-            <div class="col">
+            <div class="col" id="mnuTracking">
                 <a href="@Url.Action("Index", "Tracking")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-megaphone"></i></p>
                     Quotation
                 </a>
             </div>
-            <div class="col">
+            <div class="col" id="mnuProfile">
                 <a href="@Url.Action("Profile", "Home")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-people"></i></p>
-                    TIM
+                    Profile
                 </a>
             </div>
         `;
@@ -57,92 +57,19 @@
 
     }
 </script>
-
-@if (ViewData["Footer"] == "1")
-{
-    string cartSelected = "";
-    string HomeSelected = "";
-    string TrackingSelected = "";
-    string ProfileSelected = "";
-    if (ViewData["SelectedFooter"] == "Home")
-    {
-        HomeSelected = "selected";
-        cartSelected = "";
-        TrackingSelected = "";
-        ProfileSelected = "";
-    }
-    else if (ViewData["SelectedFooter"] == "Cart")
-    {
-        HomeSelected = "";
-        cartSelected = "selected";
-        TrackingSelected = "";
-        ProfileSelected = "";
-    }
-    else if (ViewData["SelectedFooter"] == "Tracking")
-    {
-        HomeSelected = "";
-        cartSelected = "";
-        TrackingSelected = "selected";
-        ProfileSelected = "";
-    }
-    else if (ViewData["SelectedFooter"] == "Profile")
-    {
-        HomeSelected = "";
-        cartSelected = "";
-        TrackingSelected = "";
-        ProfileSelected = "selected";
-    }
-
-    <!-- Footer -->
-    <div class="gobo-menu-footer gobo-shadow fixed-bottom px-2 py-3 text-center">
-        <div class="container p-0">
-            <div class="row">
-                <div class="col @HomeSelected">
-                    <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
-                        <p class="h4 m-0"><i class="bi bi-house"></i></p>
-                        Home
-                    </a>
-                </div>
-                <div class="col @cartSelected">
-                    <a href="@Url.Action("Index", "Cart")" class="small text-decoration-none position-relative">
-                        <p class="h4 m-0"><i class="bi bi-cart2"></i></p>
-                        Keranjang
-                    </a>
-                </div>
-                <div class="col @TrackingSelected">
-                    <a href="@Url.Action("Index", "Tracking")" class="small text-decoration-none position-relative">
-                        <p class="h4 m-0"><i class="bi bi-bag-heart"></i></p>
-                        Pesanan
-                    </a>
-                </div>
-                <div class="col @ProfileSelected">
-                    <a href="@Url.Action("Profile", "Home")" class="small text-decoration-none position-relative">
-                        <p class="h4 m-0"><i class="bi bi-person"></i></p>
-                        Profile
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-    <!-- Footer End -->
-}
-else if (ViewData["Footer"] == "2")
-{
-    <!-- Footer -->
-    <div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
+    
+    @*<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
         <div class="container p-0">
             <div class="row">
                 <div class="col">
-                    <a href="@Url.Action("Index", "Home")" class="save-btn w-100 fw-4 h_40 br-8">
+                    <a href="@url.action("index", "home")" class="save-btn w-100 fw-4 h_40 br-8">
                         <i class="bi bi-heart me-2"></i>
-                        Simpan Dulu</a>
+                        simpan dulu</a>
                 </div>
                 <div class="col">
                     <a href="app-cart.html" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
-                            class="bi bi-credit-card me-2"></i>Bayar</a>
+                            class="bi bi-credit-card me-2"></i>bayar</a>
                 </div>
             </div>
         </div>
-    </div>
-    <!-- Footer End -->
-}
+    </div>*@

@@ -1,0 +1,419 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        transition: box-shadow 0.3s ease-in-out;
+    }
+
+    .card-footer .overflow-auto::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .card-footer .overflow-auto::-webkit-scrollbar-thumb {
+        background-color: rgba(0, 0, 0, 0.2);
+        border-radius: 4px;
+    }
+
+    .btn:hover {
+        opacity: 0.9;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+</style>
+
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <strong>MY TASK</strong>
+        <div class="position-relative mb-4 mt-2">
+            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
+                id="searchInput">
+            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
+            <button type="button"
+                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
+                onclick="LoadListTask(0)" title="Segarkan">
+                <i class="bi bi-arrow-clockwise text-primary"></i>
+            </button>
+        </div>
+
+        <div class="col-12">
+            <div class="home-categories mt-3">
+                <div class="category-group">
+                    <div class="owl-carousel category-slider" id="jadwalCarousel">
+                        <!-- Hari Ini -->
+                        <div class="item px-1">
+                            <button id="btnHariIni" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm "
+                                onclick="LoadListTask(0);"
+                                style="background: linear-gradient(135deg, #007bff, #00c6ff); transition: 0.3s;">
+                                <i class="bi bi-calendar-day me-1"></i> Hari Ini
+                            </button>
+                        </div>
+                        <!-- Besok -->
+                        <div class="item px-1">
+                            <button id="btnHariBesok" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm"
+                                onclick="LoadListTask(1);"
+                                style="background: linear-gradient(135deg, #ffc107, #ff7b00); transition: 0.3s;">
+                                <i class="bi bi-calendar-check me-1"></i> Besok
+                            </button>
+                        </div>
+                        <!-- Jauh Hari -->
+                        <div class="item px-1">
+                            <button id="btnHariJauh" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm"
+                                onclick="LoadListTask(2);"
+                                style="background: linear-gradient(135deg, #28a745, #43e97b); transition: 0.3s;">
+                                <i class="bi bi-calendar-range me-1"></i> Jauh Hari
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <p>Perkerjaan <span id="txtFiltered"></span></p>
+        <div id="ListBid"></div>
+    </div>
+</div>
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            LoadListTask(0);
+            initFilter();
+        }
+    });
+
+    function initFilter() {
+        $('#jadwalCarousel').owlCarousel({
+            loop: false,
+            margin: 7,
+            nav: false,
+            responsive: {
+                0: { items: 2.2 },
+                600: { items: 3 },
+                1000: { items: 3 }
+            }
+        });
+    }
+
+    function LoadListTask(filterHari) {
+        var selectedHari = "";
+        if (filterHari == 0) { selectedHari = "Hari ini" }
+        else if (filterHari == 1) { selectedHari = "Besok" }
+        else if (filterHari == 2) { selectedHari = "Jauh Hari" }
+        $("#txtFiltered").text(selectedHari);
+        var user = getUserInfo();
+        callApi({
+            url: '/api/Task/GetTask?Id=' + user.id + '&Hari=' + filterHari,
+            method: 'GET',
+            success: function (data) {
+                var html = "";
+
+                if (!data || data.length === 0) {
+                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
+                    $('#ListBid').html(html);
+                }
+                else {
+
+                    console.log(data);
+                    html = $.map(data, function (item) {
+                        var scr = "";
+                        var dtPesanan = '';
+                        item.Pesanan.forEach(p => {
+                            dtPesanan = dtPesanan +
+                                `
+                                    <li>
+                                        ${p.nama} &times; ${p.jumlah}
+                                        <span class="text-muted">(${formatRupiah(p.total)})</span>
+                                    </li>
+                                `
+                                ;
+                        });
+
+                        var btnAction = "";
+                        if (item.status_order == 4) {
+                            btnAction = `
+                                <button 
+                                id="btnBerangkat${item.id}"
+                                class="btn btn-sm btn-danger w-100" onclick="BerangkatKeLokasi(${item.id})">
+                                <i class="bi bi-check-circle me-1"></i> Berangkat Ke Lokasi
+                                </button>
+                            `;
+                        }
+                        else if (item.status_order == 5) {
+                            btnAction = `
+                            <button class="btn btn-sm btn-success w-100" onclick="SampaiDiLokasi(${item.id})">
+                                <i class="bi bi-check-circle me-1"></i> Sudah Sampai Lokasi
+                            </button>
+                            `;
+                        }
+                        else if (item.status_order == 6) {
+                            btnAction = `
+                            <button class="btn btn-sm btn-outline-danger w-100" onclick="TerimaOrder(${item.id})">
+                            <i class="bi bi-check-circle me-1"></i> Mulai Pengerjaan
+                            </button>
+                            `;
+                        }
+                        else if (item.status_order == 7) {
+                            btnAction = `
+                            <button class="btn btn-sm btn-success w-100" onclick="TerimaOrder(${item.id})">
+                            <i class="bi bi-check-circle me-1"></i> Selesai
+                            </button>
+                            `;
+                        }
+
+
+
+                        scr = `
+                        <div class="card mb-3 position-relative shadow-sm border-0 hover-shadow">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start position-relative">
+                                    <div>
+                                        <h5 class="card-title mb-1 fw-bold">
+                                            ID: 
+                                            <span class="text-primary">
+                                            ACD - ${formatToSixDigits(item.id)}
+                                            </span>
+                                        </h5>
+                                        
+
+                                        <div class="mt-3">
+                                            <h6 class="fw-bold mb-2">Layanan:</h6>
+                                            <ul class="mb-0 ps-0" style="list-style-type:disc;font-size:small;">
+                                                ${dtPesanan}
+                                            </ul>
+                                        </div>
+                                        <div class="mt-4">
+                                            <h6 class="fw-bold mb-2">Customer:</h6>
+                                            <ul class="list-unstyled small text-body-secondary">
+                                                <li class="mb-1">
+                                                <i class="bi bi-person-fill me-1 text-dark"></i>
+                                                <strong>${item.nama}</strong> 
+                                                <span class="text-muted">(${item.whatsapp})</span>
+                                                </li>
+                                                <li class="mb-1">
+                                                <i class="bi bi-geo-alt-fill me-1 text-dark"></i>
+                                                ${item.alamat}
+                                                </li>
+                                                <li>
+                                                <i class="bi bi-calendar-event me-1 text-dark"></i>
+                                                ${item.tanggal_kunjungan} 
+                                                <span class="ms-1">
+                                                    <i class="bi bi-clock me-1"></i>${item.jam_kunjungan}
+                                                </span>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <p class="card-text mb-0 mt-3">
+                                            Total Pesanan: 
+                                            <span class="fw-semibold text-success">
+                                                ${formatRupiah(item.total)}
+                                            </span>
+                                        </p>
+                                    </div>
+                                    <!-- Tombol WhatsApp dan Maps dalam satu baris -->
+                                    <div class="d-flex flex-column align-items-end gap-2 ms-3">
+                                        <button 
+                                            id="btnWhatsapp${item.id}"
+                                            onclick="CallWhatapp(${item.id});"
+                                            class="btn btn-success btn-sm"
+                                            title="Hubungi via WhatsApp"
+                                            style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-whatsapp"></i>
+                                        </button>
+                                        <button 
+                                            id="btnMaps${item.id}"
+                                            onclick="ShowMaps(${item.id});"
+                                            class="btn btn-danger btn-sm"
+                                            title="Lihat Maps"
+                                            style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-geo-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card-footer bg-light border-top-0">
+                                <div class="d-flex flex-nowrap overflow-auto py-1" style="gap: 0.5rem;">
+                                ${btnAction}
+                                </div>
+                            </div>
+                        </div>
+                        `;
+                        return scr;
+                    }).join('');
+                    $('#ListBid').html(html);
+
+                }
+            },
+            error: function (err) {
+                $('#ListBid').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+
+            },
+            onBeforeSend: function () {
+                $('#ListBid').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+        });
+    }
+
+    function BerangkatKeLokasi(id) {
+        Swal.fire({
+            title: '🎯 Yakin ingin berangkat sekarang?',
+            text: "Tindakan ini tidak bisa dibatalkan.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '🚗 Ya, berangkat!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-4 shadow-lg',
+                title: 'fw-bold text-warning',
+                confirmButton: 'btn btn-success rounded-pill px-4 py-2',
+                cancelButton: 'btn btn-secondary rounded-pill px-4 py-2 ms-2'
+            },
+            buttonsStyling: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var user = getUserInfo();
+                var Data = {
+                    Id: id,
+                    MitraId: user.id
+                };
+
+                callApi({
+                    url: '/api/Task/BerangkatKeLokasi',
+                    method: 'POST',
+                    data: Data,
+                    success: function (res) {
+                        Swal.fire({
+                            title: '✅ Task diperbarui!',
+                            text: 'Kamu berhasil berangkat ke lokasi.',
+                            icon: 'success',
+                            confirmButtonText: 'Oke, lanjutkan',
+                            customClass: {
+                                popup: 'rounded-4 shadow-lg',
+                                title: 'fw-bold text-success',
+                                confirmButton: 'btn btn-primary px-4 py-2 rounded-pill'
+                            },
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        }).then(() => {
+                            LoadListTask();
+                        });
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oops...',
+                            text: 'Gagal memperbarui task: ' + err
+                        });
+                    },
+                    onBeforeSend: function () {
+                        $("#btnBerangkat" + id).prop("disabled", true).html('<i class="bi bi-hourglass-split me-1"></i>Memproses...');
+                    },
+                    onComplete: function () {
+                        $("#btnBerangkat" + id).prop("disabled", false).html('Berangkat');
+                    }
+                });
+            }
+        });
+    }
+
+    function SampaiDiLokasi(id) {
+        Swal.fire({
+            title: '📍 Sudah sampai di lokasi?',
+            text: "Pastikan kamu benar-benar sudah tiba sebelum melanjutkan.",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '✅ Ya, saya sudah sampai!',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-4 shadow-lg',
+                title: 'fw-bold text-primary',
+                confirmButton: 'btn btn-success rounded-pill px-4 py-2 ms-2',
+                cancelButton: 'btn btn-outline-secondary rounded-pill px-4 py-2 ms-2 mt-2'
+            },
+            buttonsStyling: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                var user = getUserInfo();
+                var Data = {
+                    Id: id,
+                    MitraId: user.id
+                };
+                callApi({
+                    url: '/api/Task/SampaiDiLokasi',
+                    method: 'POST',
+                    data: Data,
+                    success: function (res) {
+                        Swal.fire({
+                            title: '✅ Lokasi dikonfirmasi!',
+                            text: 'Status task berhasil diperbarui.',
+                            icon: 'success',
+                            showConfirmButton: true,
+                            confirmButtonText: 'Lanjutkan',
+                            customClass: {
+                                popup: 'rounded-4 shadow-lg',
+                                title: 'fw-bold text-success',
+                                confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                            },
+                            showClass: {
+                                popup: 'animate__animated animate__fadeInDown'
+                            },
+                            hideClass: {
+                                popup: 'animate__animated animate__fadeOutUp'
+                            }
+                        }).then(() => {
+                            LoadListTask();
+                        });
+                    },
+                    error: function (err) {
+                        Swal.fire({
+                            title: '❌ Gagal memperbarui status',
+                            text: err,
+                            icon: 'error',
+                            confirmButtonText: 'Tutup',
+                            customClass: {
+                                confirmButton: 'btn btn-danger rounded-pill px-4 py-2'
+                            },
+                            buttonsStyling: false
+                        });
+                    },
+                    onBeforeSend: function () {
+                        $("#btnBerangkat" + id).prop("disabled", true).html('<i class="bi bi-hourglass-split me-1"></i>Memproses...');
+                    },
+                    onComplete: function () {
+                        $("#btnBerangkat" + id).prop("disabled", false).html('Sudah Sampai');
+                    }
+                });
+            }
+        });
+    }
+
+</script>

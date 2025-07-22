@@ -30,13 +30,37 @@
     <link rel="stylesheet" type="text/css" href="~/vendor/OwlCarousel/assets/owl.theme.default.min.css"
         asp-append-version="true">
     <!-- JavaScripts -->
+
     <script src="~/vendor/jquery/jquery.min.js" asp-append-version="true"></script>
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.0/dist/browser/signalr.min.js"></script>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
         asp-append-version="true"></script>
     <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" asp-append-version="true"></script>
+    <script>
+        const connection = new signalR.HubConnectionBuilder()
+            .withUrl("/notifikasiHub")
+            .build();
+
+        connection.on("TerimaNotifikasi", function (pesan) {
+            Swal.fire({
+                icon: 'info',
+                title: 'Notifikasi Baru',
+                text: pesan,
+                toast: true,
+                position: 'top-end',
+                timer: 4000,
+                showConfirmButton: false
+            });
+        });
+
+        connection.start().catch(function (err) {
+            console.error(err.toString());
+        });
+    </script>
     <script src="~/js/custom.js" asp-append-version="true"></script>
     <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
 </head>
@@ -44,6 +68,10 @@
 <body class="fixed-bottom-bar">
     <div class="app-page">
         @await Html.PartialAsync("_Header")
+        <div id="notifikasiArea"
+            style="display:none; background-color: #fce703; padding: 15px; font-weight: bold; border-radius: 8px; position: fixed; top: 10px; right: 10px; z-index: 1000;">
+        </div>
+        @await Html.PartialAsync("_ModalLogin_Test")
         @RenderBody()
         @await Html.PartialAsync("_Footer")
     </div>

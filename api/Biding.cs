@@ -23,5 +23,21 @@ namespace mitraacd.api
             var res = await _bidRepository.GetBidAsync();
             return Ok(res);
         }
+
+        [HttpPost("Takeit")]
+        public async Task<IActionResult> Takeit([FromBody] TakeBidingModel dto)
+        {
+            if (dto == null || dto.Id == null)
+                return BadRequest(new { message = "Pemesanan sudah tidak tersedia" });
+            try
+            {
+                var res = await _bidRepository.TakeitAsync(dto);
+                return Ok(new { message = "Biding berhasil disimpan", id = res });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan Biding"});
+            }
+        }
     }
 }

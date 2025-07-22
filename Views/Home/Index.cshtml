@@ -2,6 +2,13 @@
     ViewData["Title"] = "Home Page";
 }
 
+<style>
+    .hover-shadow:hover {
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
+        transition: box-shadow 0.3s ease-in-out;
+    }
+</style>
+
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
         <div class="position-relative mb-4">
@@ -10,7 +17,7 @@
             <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
             <button type="button"
                 class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                onclick="LoadListCart()" title="Segarkan">
+                onclick="LoadListBid()" title="Segarkan">
                 <i class="bi bi-arrow-clockwise text-primary"></i>
             </button>
         </div>
@@ -25,7 +32,17 @@
             return;
         }
         $ = window.jQuery;
-        LoadListBid();
+        //LoadListBid();
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            console.log(user);
+            LoadListBid();
+        }
     });
     function LoadListBid() {
         callApi({
@@ -39,46 +56,73 @@
                     $('#ListBid').html(html);
                 }
                 else {
+
+                    console.log(data);
                     html = $.map(data, function (item) {
                         var scr = "";
+                        var dtPesanan = '';
+                        item.Pesanan.forEach(p => {
+                            dtPesanan = dtPesanan +
+                                `
+                                    <li>
+                                        ${p.nama} &times; ${p.jumlah}
+                                        <span class="text-muted">(${formatRupiah(p.total)})</span>
+                                    </li>
+                                `
+                                ;
+                        });
+
                         scr = `
-                        <div class="card mb-3 position-relative shadow-sm border-0">
+                        <div class="card mb-3 position-relative shadow-sm border-0 hover-shadow">
                             <div class="card-body">
                                 <div class="d-flex justify-content-between align-items-start position-relative">
                                     <div>
                                         <h5 class="card-title mb-1 fw-bold">
                                             ID Pesanan: 
                                             <span class="text-primary">
-                                                ACD
+                                            ACD - ${formatToSixDigits(item.id)}
                                             </span>
                                         </h5>
                                         <p class="card-text mb-2">
                                             Total Pesanan: 
                                             <span class="fw-semibold text-success">
-                                                Rp 
+                                                ${formatRupiah(item.total)}
                                             </span>
                                         </p>
 
                                         <div class="mt-3">
-                                            <strong>Detail Order:</strong>
+                                            <h6 class="fw-bold mb-2">Layanan:</h6>
                                             <ul class="mb-0 ps-0" style="list-style-type:disc;font-size:small;">
-                                                
+                                                ${dtPesanan}
+                                            </ul>
+                                        </div>
+                                        <div class="mt-4">
+                                            <h6 class="fw-bold mb-2">Customer:</h6>
+                                            <ul class="list-unstyled small text-body-secondary">
+                                                <li class="mb-1">
+                                                <i class="bi bi-person-fill me-1 text-dark"></i>
+                                                <strong>${item.nama}</strong> 
+                                                <span class="text-muted">(${item.whatsapp})</span>
+                                                </li>
+                                                <li class="mb-1">
+                                                <i class="bi bi-geo-alt-fill me-1 text-dark"></i>
+                                                ${item.alamat}
+                                                </li>
+                                                <li>
+                                                <i class="bi bi-calendar-event me-1 text-dark"></i>
+                                                ${item.tanggal_kunjungan} 
+                                                <span class="ms-1">
+                                                    <i class="bi bi-clock me-1"></i>${item.jam_kunjungan}
+                                                </span>
+                                                </li>
                                             </ul>
                                         </div>
                                     </div>
 
-                                    <!-- Tombol Delete -->
-                                    <button 
-                                        onclick="DeletePesanan(${item.id});"
-                                        class="btn btn-outline-danger btn-sm"
-                                        title="Hapus Pesanan"
-                                        style="position: absolute; top: 10px; right: 54px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-trash" style="font-size: 1.0rem;"></i>
-                                    </button>
-
                                     <!-- Tombol Detail -->
                                     <button 
-                                        onclick="DetailPesanan(${item.id});"
+                                        id="btnBid${item.id}"
+                                        onclick="BidOrder(${item.id});"
                                         class="btn btn-outline-primary btn-sm"
                                         title="Lihat Detail Status"
                                         style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
@@ -87,20 +131,63 @@
                                 </div>
                             </div>
                         </div>
-                    `;
+                        `;
                         return scr;
                     }).join('');
-
                     $('#ListBid').html(html);
                 }
             },
             error: function (err) {
                 $('#ListBid').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
-                @* alert('Error: ' + err); *@
+                
             },
             onBeforeSend: function () {
                 $('#ListBid').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
             },
         });
+    }
+
+    function BidOrder(id){
+        var user = getUserInfo();
+        var Data = {
+            Id : id,
+            MitraId : user.id
+        }
+        callApi({
+                url: '/api/Biding/Takeit',
+                method: 'POST',
+                data: Data,
+                success: function (res) {
+                    Swal.fire({
+                        title: '<strong>🎉 Berhasil Disimpan!</strong>',
+                        html: 'Hasil Bid-mu telah ditambahkan ke Task list.<br><small>Halaman ini akan direload.</small>',
+                        icon: 'success',
+                        showConfirmButton: true,
+                        confirmButtonText: 'Siap',
+                        customClass: {
+                            popup: 'rounded-4 shadow-lg',
+                            title: 'fw-bold text-success',
+                            confirmButton: 'btn btn-primary px-4 py-2 rounded-pill',
+                        },
+                        showClass: {
+                            popup: 'animate__animated animate__fadeInDown'
+                        },
+                        hideClass: {
+                            popup: 'animate__animated animate__fadeOutUp'
+                        }
+                    }).then(() => {
+                        LoadListBid();
+                    });
+                },
+                error: function (err) {
+                    alert("Gagal: " + err);
+                },
+                onBeforeSend: function () {
+                    $("#btnBid"+id).prop("disabled", true).text("Memproses...");
+                },
+                onComplete: function () {
+                    $("#btnBid"+id).prop("disabled", false).text("Memproses...");
+                }
+            });
     }
 </script>

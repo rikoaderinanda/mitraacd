@@ -7,26 +7,27 @@ using Newtonsoft.Json;
 
 namespace mitraacd.Services
 {
-    public interface IBidRepository
+    public interface ITaskRepository
     {
-        Task<IEnumerable<dynamic>> GetBidAsync();
-        Task<int> TakeitAsync(TakeBidingModel Id);
+        Task<IEnumerable<dynamic>> GetTaskAsync(int Id, int hari);
+        Task<int> BerangkatKelokasiAsync(BerangkatKelokasiModel Id);
+        Task<int> SampaiDiLokasiAsync(SampaiDiLokasiModel Id);
 
     }
 
-    public class BidRepository : IBidRepository
+    public class TaskRepository : ITaskRepository
     {
         private readonly IDbConnection _db;
 
-        public BidRepository(IDbConnection db)
+        public TaskRepository(IDbConnection db)
         {
             _db = db;
         }
 
-        public async Task<IEnumerable<dynamic>> GetBidAsync()
+        public async Task<IEnumerable<dynamic>> GetTaskAsync(int Id, int hari)
         {
             var finalResult = new List<dynamic>();
-            string sql = "select order_json::text from get_bid_full()";
+            string sql = "select order_json::text from get_task(" + Id + "," + hari + ")";
             var result = await _db.QueryAsync<string>(sql);
             // Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
@@ -48,11 +49,28 @@ namespace mitraacd.Services
             return finalResult;
         }
 
-        public async Task<int> TakeitAsync(TakeBidingModel dto)
+        public async Task<int> BerangkatKelokasiAsync(BerangkatKelokasiModel dto)
         {
-            
+
             var query = @"
-                            select sp_bid_pemesanan(@Id,@MitraId);
+                            select sp_BerangkatKelokasi(@Id,@MitraId);
+                        ";
+
+            var param = new
+            {
+                Id = dto.Id,
+                MitraId = dto.MitraId
+            };
+
+            int res = await _db.ExecuteScalarAsync<int>(query, param);
+            return res;
+        }
+
+        public async Task<int> SampaiDiLokasiAsync(SampaiDiLokasiModel dto)
+        {
+
+            var query = @"
+                            select sp_sampaidilokasi(@Id,@MitraId);
                         ";
 
             var param = new
