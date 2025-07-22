@@ -18,6 +18,24 @@
         transform: scale(1.05);
         cursor: pointer;
     }
+
+    .camera-actions {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        z-index: 10;
+    }
+
+    .camera-actions button {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
 </style>
 <div class="modal fade" id="ShowCamera" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-sm-down">
@@ -33,61 +51,62 @@
 
       <!-- Modal Body -->
         <div class="modal-body p-4 bg-light">
-        <div class="text-center mb-3">
-            <p class="fs-6 fw-semibold text-dark">
-            📷 Silakan ambil 3 foto unit yang akan dikerjakan untuk reparasi
-            </p>
-        </div>
+            <div class="text-center mb-3">
+                <p class="fs-6 fw-semibold text-dark">
+                📷 Silakan ambil 3 foto unit yang akan dikerjakan untuk reparasi
+                </p>
+            </div>
 
-        <!-- Area Kamera -->
-        <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;">
-            <video id="videoPreview" autoplay playsinline width="100%" height="auto"></video>
-            <canvas id="canvasPhoto" style="display: none;"></canvas>
-        </div>
-
-        <!-- Tombol Ambil -->
-        <div class="text-center mb-3">
-            <button class="btn btn-outline-danger rounded-pill px-4 py-2" onclick="capturePhoto()">
-                <i class="bi bi-camera me-1"></i> Ambil Foto
-            </button>
-            <button class="btn btn-outline-primary rounded-pill px-4 py-1" onclick="switchCamera()">
-                🔄 Ganti Kamera
-            </button>
-        </div>
-
-        <!-- Preview Foto -->
-            <div class="row g-3 mt-4" id="previewContainer">
-                <!-- Foto 1 -->
-                <div class="col-4 text-center" id="can1">
-                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
-                    <img id="photo1" class="img-fluid rounded mb-2 preview-photo" data-index="1" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo1" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(1)">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+            <!-- Area Kamera -->
+            <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;">
+                <video id="videoPreview" autoplay playsinline width="100%" height="auto"></video>
+                <canvas id="canvasPhoto" style="display: none;"></canvas>
+                <div class="camera-actions">
+                    <button class="btn btn-primary rounded-circle shadow" onclick="switchCamera()" title="Ganti Kamera">
+                        <i class="bi bi-arrow-repeat fs-5"></i>
                     </button>
-                    </div>
-                </div>
-
-                <!-- Foto 2 -->
-                <div class="col-4 text-center" id="can2">
-                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
-                    <img id="photo2" class="img-fluid rounded mb-2 preview-photo" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(2)">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                    <button class="btn btn-danger rounded-circle shadow" onclick="capturePhoto()" title="Ambil Foto">
+                        <i class="bi bi-camera fs-4"></i>
                     </button>
-                    </div>
-                </div>
-
-                <!-- Foto 3 -->
-                <div class="col-4 text-center" id="can3">
-                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
-                    <img id="photo3" class="img-fluid rounded mb-2 preview-photo" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(3)">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
-                    </button>
-                    </div>
                 </div>
             </div>
+
+            
+
+            <!-- Preview Foto -->
+                <div class="row g-3 mt-4" id="previewContainer">
+                    <!-- Foto 1 -->
+                    <div class="col-4 text-center" id="can1">
+                        <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                        <img id="photo1" class="img-fluid rounded mb-2 preview-photo" data-index="1" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo1" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(1)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        </div>
+                    </div>
+
+                    <!-- Foto 2 -->
+                    <div class="col-4 text-center" id="can2">
+                        <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                        <img id="photo2" class="img-fluid rounded mb-2 preview-photo" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(2)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        </div>
+                    </div>
+
+                    <!-- Foto 3 -->
+                    <div class="col-4 text-center" id="can3">
+                        <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                        <img id="photo3" class="img-fluid rounded mb-2 preview-photo" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(3)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        </div>
+                    </div>
+                </div>
         </div>
+    
     </div>
   </div>
 </div>
@@ -127,6 +146,12 @@ document.addEventListener('DOMContentLoaded', function () {
         e.stopPropagation();
     });
 });
+
+function switchCamera() {
+  stopCamera(); // Hentikan kamera aktif
+  currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // toggle
+  startCamera(); // Mulai kamera lagi
+}
 
 function startCamera() {
   navigator.mediaDevices.getUserMedia({
