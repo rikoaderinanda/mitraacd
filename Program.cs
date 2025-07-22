@@ -54,7 +54,7 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = "swagger"; // akses Swagger di /swagger
 });
 
-app.UseHttpsRedirection();
+//app.UseHttpsRedirection();
 
 app.UseStaticFiles(new StaticFileOptions
 {
