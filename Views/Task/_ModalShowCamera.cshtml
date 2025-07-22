@@ -48,7 +48,7 @@
         <!-- Tombol Ambil -->
         <div class="text-center mb-3">
             <button class="btn btn-outline-danger rounded-pill px-4 py-2" onclick="capturePhoto()">
-            <i class="bi bi-camera me-1"></i> Ambil Foto (<span id="fotoCount">0</span>/3)
+            <i class="bi bi-camera me-1"></i> Ambil Foto
             </button>
         </div>
 
@@ -153,7 +153,7 @@ function capturePhoto() {
     });
     return;
   }
-
+  
   let context = canvas.getContext('2d');
   canvas.width = video.videoWidth;
   canvas.height = video.videoHeight;
@@ -163,7 +163,7 @@ function capturePhoto() {
   $(`#photo${currentPhotoIndex}`).attr('src', imageData).show();
   $(`#photo${currentPhotoIndex}`).next('button').hide();
   photoTaken[currentPhotoIndex - 1] = true;
-  $("#fotoCount").text(currentPhotoIndex); 
+  
   for (let i = 1; i <= maxPhotos; i++) {
     if (!photoTaken[i - 1]) {
       currentPhotoIndex = i;
@@ -179,17 +179,25 @@ function capturePhoto() {
 function redoPhoto(index) {
   photoTaken[index - 1] = false;
   currentPhotoIndex = index;
-  $("#fotoCount").text(currentPhotoIndex); 
   $(`#photo${index}`).attr('src', '').hide();
   $(`#photo${index}`).next('button').hide();
+
+  for (let i = 1; i <= maxPhotos; i++) {
+    if (!photoTaken[i - 1]) {
+      currentPhotoIndex = i;
+      return;
+    }
+  }
+  
 }
 
 function resetPhotos() {
-  currentPhotoIndex = 1;
+  currentPhotoIndex = 0;
   photoTaken = [false, false, false, false, false];
-  for (let i = 1; i <= maxPhotos; i++) {
+  for (let i = 0; i <= maxPhotos; i++) {
     $(`#photo${i}`).attr('src', '').hide();
     $(`#photo${i}`).next('button').hide();
   }
+  
 }
 </script>
