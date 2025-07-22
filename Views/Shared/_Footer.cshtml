@@ -1,3 +1,46 @@
+<style>
+.gobo-menu-footer {
+    background-color: #e63946;
+    padding: 0.5rem 0;
+    border-top: 2px solid #d62828;
+    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.gobo-menu-footer .col {
+    text-align: center;
+    color: #fff;
+    padding: 0.3rem 0;
+}
+
+.gobo-menu-footer .col a {
+    color: #fff;
+    text-decoration: none;
+    font-size: 0.75rem;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.gobo-menu-footer .col a i {
+    font-size: 1.2rem;
+    margin-bottom: 4px;
+    transition: color 0.3s;
+}
+
+.gobo-menu-footer .col.selected {
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 10px 10px 0 0;
+}
+
+.gobo-menu-footer .col.selected a {
+    font-weight: 600;
+    color: #fff;
+}
+
+.gobo-menu-footer .col.selected i {
+    color: #fff;
+}
+</style>
 <div class="gobo-menu-footer gobo-shadow fixed-bottom px-2 py-3 text-center">
     <div class="container p-0">
         <div class="row" id="MenuBottom">
@@ -19,26 +62,27 @@
         var scr = "";
         if (page == "") {
             scr = `
-            <div class="col" id="mnuHome">
+            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "selected" : "")" id="mnuHome">
                 <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-lightning-charge"></i></p>
                     Bid
                 </a>
             </div>
-            <div class="col" id="mnuTask">
+            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Task" ? "selected" : "")" id="mnuTask">
                 <a href="@Url.Action("Index", "Task")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-list-task"></i></p>
                     My Task
                 </a>
             </div>
-            <div class="col" id="mnuTracking">
-                <a href="@Url.Action("Index", "Tracking")" class="small text-decoration-none position-relative">
+            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quotation" ? "selected" : "")" id="mnuQuotation">
+                <a href="@Url.Action("Index", "Quotation")" class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-megaphone"></i></p>
                     Quotation
                 </a>
             </div>
-            <div class="col" id="mnuProfile">
-                <a href="@Url.Action("Profile", "Home")" class="small text-decoration-none position-relative">
+            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "selected" : "")" id="mnuProfile">
+                <a href="@Url.Action("Index", "Profile")" 
+                    class="small text-decoration-none position-relative">
                     <p class="h4 m-0"><i class="bi bi-people"></i></p>
                     Profile
                 </a>

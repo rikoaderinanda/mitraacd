@@ -68,9 +68,7 @@
 <body class="fixed-bottom-bar">
     <div class="app-page">
         @await Html.PartialAsync("_Header")
-        <div id="notifikasiArea"
-            style="display:none; background-color: #fce703; padding: 15px; font-weight: bold; border-radius: 8px; position: fixed; top: 10px; right: 10px; z-index: 1000;">
-        </div>
+        @await Html.PartialAsync("_Notifikasi")
         @await Html.PartialAsync("_ModalLogin_Test")
         @RenderBody()
         @await Html.PartialAsync("_Footer")

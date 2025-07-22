@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "Profil Pengguna";
+}
+@await Html.PartialAsync("_formProfile")
+<div class="app-body pb-30">
+    <div class="container">
+        <div class="row">
+            <div class="col-12">
+                <div class="profile-dt position-relative d-flex align-items-center mt-3 p-3 rounded shadow-sm text-white" 
+                    style="background: linear-gradient(135deg, #f43f5e, #f97316);">
+                    <div class="profile-img me-3">
+                        <img alt="" id="photoUser" class="rounded-circle shadow-sm" style="object-fit: cover;">
+                    </div>
+                    <div class="profile-user-dt flex-grow-1" id="UserInfo">
+                        <!-- Isi informasi pengguna -->
+                    </div>
+                    <a href="#editProfileModal" data-bs-toggle="modal" class="edit-btn text-white fs-5">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                </div>
+            </div>
+
+            <div class="col-12">
+                <!-- Menu 1 -->
+                <div class="profile-link-list bg-white rounded shadow-sm mt-3 overflow-hidden">
+                    <a href="@Url.Action("Index", "Cart")"
+                    class="d-flex align-items-center w-100 p-3 border-bottom text-dark text-decoration-none profile-link-item">
+                        <i class="bi bi-cart fs-5 text-primary me-3"></i>
+                        <span class="fw-semibold small">Pendapatan</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Tracking")"
+                    class="d-flex align-items-center w-100 p-3 border-bottom text-dark text-decoration-none profile-link-item">
+                        <i class="bi bi-bag-check fs-5 text-success me-3"></i>
+                        <span class="fw-semibold small">Kelola TIM</span>
+                    </a>
+                </div>
+
+                <!-- Menu 2 -->
+                <div class="profile-link-list bg-white rounded shadow-sm mt-3 overflow-hidden">
+                    <a href="@Url.Action("Index", "Home")"
+                    class="d-flex align-items-center w-100 p-3 border-bottom text-dark text-decoration-none profile-link-item">
+                        <i class="bi bi-info-circle fs-5 text-info me-3"></i>
+                        <span class="fw-semibold small">Tentang Aplikasi</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Home")"
+                    class="d-flex align-items-center w-100 p-3 border-bottom text-dark text-decoration-none profile-link-item">
+                        <i class="bi bi-life-preserver fs-5 text-warning me-3"></i>
+                        <span class="fw-semibold small">Pusat Bantuan</span>
+                    </a>
+                    <a href="@Url.Action("Index", "Home")"
+                    class="d-flex align-items-center w-100 p-3 border-bottom text-dark text-decoration-none profile-link-item">
+                        <i class="bi bi-lock fs-5 text-secondary me-3"></i>
+                        <span class="fw-semibold small">Privasi Akun</span>
+                    </a>
+                    <a href="javascript:void(0)" onclick="Logout();"
+                    class="d-flex align-items-center w-100 p-3 text-danger text-decoration-none profile-link-item">
+                        <i class="bi bi-box-arrow-right fs-5 me-3"></i>
+                        <span class="fw-semibold small">Keluar</span>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            loadUserInfo(user);
+        }
+
+    });
+
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+
+    function loadUserInfo(user) {
+        var scr = `
+            <h4 class="text-white fw-6">${user.nama_lengkap}</h4>
+            <p class="text-white fs-7 fw-4 mb-1">${user.no_hp}</p>
+            <p class="text-white fs-7 fw-4 mb-0">${user.email}</p>
+        `;
+        $("#UserInfo").html(scr);
+        $("#photoUser").attr("src", user.photo);
+    }
+
+    function Logout() {
+        Swal.fire({
+            title: '🚪 Logout dari Aplikasi?',
+            text: "Anda akan keluar dan perlu login kembali untuk mengakses fitur.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: '🔒 Ya, Logout',
+            cancelButtonText: 'Batal',
+            customClass: {
+                popup: 'rounded-4 shadow-lg',
+                title: 'fw-bold text-danger',
+                htmlContainer: 'text-muted',
+                confirmButton: 'btn btn-danger rounded-pill px-4 py-2 me-2',
+                cancelButton: 'btn btn-outline-secondary rounded-pill px-4 py-2'
+            },
+            buttonsStyling: false,
+            showClass: {
+                popup: 'animate__animated animate__fadeInDown'
+            },
+            hideClass: {
+                popup: 'animate__animated animate__fadeOutUp'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                Storage.remove('username');
+                window.location.href = '@Url.Action("Index", "Home")';
+            }
+        });
+
+    }
+
+</script>

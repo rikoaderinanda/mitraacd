@@ -267,7 +267,9 @@ function getUserInfo() {
         id: Storage.get('userId') || '',
         username: Storage.get('username') || '',
         nama_lengkap: Storage.get('nama_lengkap') || '',
-        email: Storage.get('email') || ''
+        email: Storage.get('email') || '',
+        no_hp: Storage.get('no_hp') || '',
+        photo: Storage.get('photo') || ''
     };
     return data;
 }

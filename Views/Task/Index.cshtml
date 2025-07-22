@@ -23,7 +23,7 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 </style>
-
+@await Html.PartialAsync("_ModalShowCamera")
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
         <strong>MY TASK</strong>
@@ -160,7 +160,7 @@
                         }
                         else if (item.status_order == 6) {
                             btnAction = `
-                            <button class="btn btn-sm btn-outline-danger w-100" onclick="TerimaOrder(${item.id})">
+                            <button class="btn btn-sm btn-outline-danger w-100" onclick="MulaiPengerjaan(${item.id})">
                             <i class="bi bi-check-circle me-1"></i> Mulai Pengerjaan
                             </button>
                             `;
@@ -416,4 +416,7 @@
         });
     }
 
+    function MulaiPengerjaan(id){
+        startCamera();
+    }
 </script>

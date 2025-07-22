@@ -1,0 +1,179 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    #previewContainer img {
+        transition: all 0.3s ease-in-out;
+        max-height: 120px;
+        object-fit: cover;
+    }
+
+    #previewContainer img:hover {
+        transform: scale(1.05);
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+    }
+</style>
+<div class="modal fade" id="ShowCamera" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      
+      <!-- Header Gradient Merah -->
+      <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #d63031, #c0392b);">
+        <h5 class="modal-title" id="addAddressModalLabel">
+          <i class="bi bi-camera-video me-2"></i>  Foto Unit sebelum Pengerjaan
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+        <div class="modal-body p-4 bg-light">
+        <div class="text-center mb-3">
+            <p class="fs-6 fw-semibold text-dark">
+            📷 Silakan ambil 3 foto unit yang akan dikerjakan untuk reparasi
+            </p>
+        </div>
+
+        <!-- Area Kamera -->
+        <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;">
+            <video id="videoPreview" autoplay playsinline width="100%" height="auto"></video>
+            <canvas id="canvasPhoto" style="display: none;"></canvas>
+        </div>
+
+        <!-- Tombol Ambil -->
+        <div class="text-center mb-3">
+            <button class="btn btn-outline-danger rounded-pill px-4 py-2" onclick="capturePhoto()">
+            <i class="bi bi-camera me-1"></i> Ambil Foto (<span id="fotoCount">1</span>/6)
+            </button>
+        </div>
+
+        <!-- Preview Foto -->
+            <div class="row g-3 mt-4" id="previewContainer">
+                <!-- Foto 1 -->
+                <div class="col-4 text-center">
+                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                    <img id="photo1" class="img-fluid rounded mb-2" style="display: none;" />
+                    <button class="btn btn-sm btn-outline-danger rounded-pill w-100" style="display: none;" onclick="redoPhoto(1)">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                    </button>
+                    </div>
+                </div>
+
+                <!-- Foto 2 -->
+                <div class="col-4 text-center">
+                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                    <img id="photo2" class="img-fluid rounded mb-2" style="display: none;" />
+                    <button class="btn btn-sm btn-outline-danger rounded-pill w-100" style="display: none;" onclick="redoPhoto(2)">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                    </button>
+                    </div>
+                </div>
+
+                <!-- Foto 3 -->
+                <div class="col-4 text-center">
+                    <div class="border rounded-3 p-2 shadow-sm position-relative bg-white">
+                    <img id="photo3" class="img-fluid rounded mb-2" style="display: none;" />
+                    <button class="btn btn-sm btn-outline-danger rounded-pill w-100" style="display: none;" onclick="redoPhoto(3)">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                    </button>
+                    </div>
+                </div>
+                </div>
+
+
+        </div>
+    </div>
+  </div>
+</div>
+
+<script>
+let cameraStream = null;
+let video = document.getElementById('videoPreview');
+let canvas = document.getElementById('canvasPhoto');
+let currentPhotoIndex = 1;
+const maxPhotos = 3;
+let photoTaken = [false, false, false];
+
+document.addEventListener('DOMContentLoaded', function () {
+  $ = window.jQuery;
+
+  $('#ShowCamera').on('hidden.bs.modal', function () {
+    stopCamera();
+    resetPhotos();
+  });
+});
+
+function startCamera() {
+  navigator.mediaDevices.getUserMedia({ video: true })
+    .then(function (stream) {
+      cameraStream = stream;
+      video.srcObject = stream;
+      $('#ShowCamera').modal('show');
+    })
+    .catch(function (err) {
+      console.error("Gagal mengakses kamera:", err);
+    });
+}
+
+function stopCamera() {
+  if (cameraStream) {
+    cameraStream.getTracks().forEach(track => track.stop());
+    cameraStream = null;
+  }
+}
+
+function capturePhoto() {
+  if (currentPhotoIndex > maxPhotos) {
+    Swal.fire({
+      icon: 'info',
+      title: '📸 Semua Foto Sudah Diambil',
+      text: 'Gunakan tombol "Ulangi" jika ingin mengganti salah satu foto.',
+      confirmButtonText: 'Oke',
+    });
+    return;
+  }
+
+  let context = canvas.getContext('2d');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  context.drawImage(video, 0, 0, canvas.width, canvas.height);
+  let imageData = canvas.toDataURL('image/png');
+
+  $(`#photo${currentPhotoIndex}`).attr('src', imageData).show();
+  $(`#photo${currentPhotoIndex}`).next('button').show();
+  photoTaken[currentPhotoIndex - 1] = true;
+
+  for (let i = 1; i <= maxPhotos; i++) {
+    if (!photoTaken[i - 1]) {
+      currentPhotoIndex = i;
+      return;
+    }
+  }
+
+  currentPhotoIndex = maxPhotos + 1;
+}
+
+function redoPhoto(index) {
+  photoTaken[index - 1] = false;
+  currentPhotoIndex = index;
+  $(`#photo${index}`).attr('src', '').hide();
+  $(`#photo${index}`).next('button').hide();
+}
+
+function resetPhotos() {
+  currentPhotoIndex = 1;
+  photoTaken = [false, false, false, false, false];
+  for (let i = 1; i <= maxPhotos; i++) {
+    $(`#photo${i}`).attr('src', '').hide();
+    $(`#photo${i}`).next('button').hide();
+  }
+}
+
+</script>

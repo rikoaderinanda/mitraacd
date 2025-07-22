@@ -1,0 +1,38 @@
+@{
+    ViewData["Title"] = "Quotation Pengguna";
+}
+
+<div class="app-body pb-30">
+    <div class="container">
+        <div class="row">
+            
+            
+        </div>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            
+        }
+
+    });
+
+    function CloseModalLogin() {
+        window.location.href = '@Url.Action("Index", "Home")';
+        //$('#ModalLogin').modal('hide');
+    }
+</script>
