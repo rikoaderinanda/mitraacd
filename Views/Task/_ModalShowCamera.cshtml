@@ -252,8 +252,8 @@ function lanjutLayanan(){
         method: 'POST',
         data: formData,
         success: function (res) {
-            console.log(res);
-            Swal.fire('Success', 'Upload gambar berhasil', 'success');
+          $("#ShowDeskripsiUnit").modal('show');
+          $('#ShowCamera').modal('hide');
         },
         error: function (err) {
             Swal.fire({
@@ -264,11 +264,22 @@ function lanjutLayanan(){
         },
         onBeforeSend: function () {
             Swal.fire({
-              title: 'Memproses...',
-              text: 'Silakan tunggu',
+              title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Foto Unit</div>',
+              html: `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                  <div class="spinner" style="margin-bottom: 15px;">
+                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3085d6;"></i>
+                  </div>
+                  <p style="font-size: 14px; color: #555;">Mohon tunggu sebentar, sistem sedang memproses foto Anda...</p>
+                </div>
+              `,
               allowOutsideClick: false,
               allowEscapeKey: false,
               showConfirmButton: false,
+              background: '#fff',
+              customClass: {
+                popup: 'swal2-border-radius',
+              },
               didOpen: () => {
                 Swal.showLoading();
               }

@@ -15,6 +15,7 @@ namespace mitraacd.Services
         Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto);
         Task<IEnumerable<dynamic>> CheckPhotoSebelumTask(string IdTask);
         Task<bool> DeletePhotoSebelumTaskAsync(string publicId);
+        Task<bool> UpdateStatusTaskAsync(string idtask);
 
     }
 
@@ -132,6 +133,18 @@ namespace mitraacd.Services
             var sql = @"
                 DELETE FROM photo_before_task
                 WHERE id_task = @id
+            ";
+
+            var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});
+            return result > 0; // true jika ada baris yang dihapus
+        }
+
+        public async Task<bool> UpdateStatusTaskAsync(string idtask)
+        {
+            var sql = @"
+                update pemesanan 
+                    set status_order = 7
+                where id = @id
             ";
 
             var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});

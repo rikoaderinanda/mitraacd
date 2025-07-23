@@ -70,6 +70,7 @@ namespace mitraacd.api
                     }
                 }
 
+                await _TaskService.UpdateStatusTaskAsync(IdTask);
                 return Ok(new { message = "Upload berhasil", data = imageResults });
             }
             catch (Exception ex)

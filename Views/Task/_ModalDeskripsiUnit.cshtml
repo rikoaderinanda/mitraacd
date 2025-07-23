@@ -4,12 +4,30 @@
       <!-- Header Gradient Merah -->
       <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #d63031, #c0392b);">
         <h5 class="modal-title" id="ShowDeskripsiUnitLabel">
-          <i class="bi bi-camera-video me-2"></i>  Foto Unit sebelum Pengerjaan
+          <i class="bi bi-camera-video me-2"></i> Foto Unit sebelum Pengerjaan
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
+
       <div class="modal-body p-4 bg-light">
-      <p>Test</p>
+        <form id="formDeskripsiUnit">
+          <div class="mb-3">
+            <label for="brand" class="form-label fw-semibold">Brand</label>
+            <input type="text" class="form-control" id="brand" name="brand" placeholder="Contoh: Toyota">
+          </div>
+          <div class="mb-3">
+            <label for="model" class="form-label fw-semibold">Model</label>
+            <input type="text" class="form-control" id="model" name="model" placeholder="Contoh: Avanza">
+          </div>
+          <div class="mb-3">
+            <label for="seri" class="form-label fw-semibold">Seri</label>
+            <input type="text" class="form-control" id="seri" name="seri" placeholder="Contoh: G 1.3 MT 2020">
+          </div>
+          <div class="mb-3">
+            <label for="catatan" class="form-label fw-semibold">Catatan Tambahan</label>
+            <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Contoh: Ada baret di sisi kiri bumper..."></textarea>
+          </div>
+        </form>
       </div>
     </div>
   </div>

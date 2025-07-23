@@ -1,7 +1,7 @@
 @{
     ViewData["Title"] = "Home Page";
 }
-
+<script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 <style>
     .hover-shadow:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
@@ -24,6 +24,8 @@
     }
 </style>
 @await Html.PartialAsync("_ModalShowCamera")
+@await Html.PartialAsync("_ModalDeskripsiUnit")
+@await Html.PartialAsync("_ModalBarcodeUnitBaru")
 <div class="app-body pb-30">
     <div class="container mt-30 mb-30">
         <strong>MY TASK</strong>
@@ -169,8 +171,8 @@
                         }
                         else if (item.status_order == 7) {
                             btnAction = `
-                            <button class="btn btn-sm btn-success w-100" onclick="TerimaOrder(${item.id})">
-                            <i class="bi bi-check-circle me-1"></i> Selesai
+                            <button class="btn btn-sm btn-success w-100" onclick="InspeksiUnit(${item.id})">
+                            <i class="bi bi-check-circle me-1"></i> Inspeksi Unit
                             </button>
                             `;
                         }
@@ -420,5 +422,40 @@
 
     function MulaiPengerjaan(id){
         startCamera(id);
+    }
+
+    function InspeksiUnit(id){
+        Swal.fire({
+            title: '<strong class="text-dark">Sudah Tempel QR Code ACD?</strong>',
+            html: `
+                <div class="mb-3">
+                <img src="https://cdn-icons-png.flaticon.com/512/3022/3022254.png" alt="QR Code" width="80" height="80" class="mb-2"/>
+                <p class="text-muted mb-1">
+                    Pastikan QR Code ACD sudah ditempel di unit sebelum mengambil foto.
+                </p>
+                <small class="text-secondary">Dokumentasi tanpa QR bisa dianggap tidak valid.</small>
+                </div>
+            `,
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-check-circle me-2"></i>Sudah Ditempel',
+            cancelButtonText: '<i class="bi bi-x-circle me-2"></i>Belum',
+            reverseButtons: true,
+            customClass: {
+                popup: 'rounded-4 shadow-lg p-4',
+                title: 'fs-5',
+                confirmButton: 'btn btn-success px-4 me-2 w-100',
+                cancelButton: 'btn btn-outline-danger px-4 mb-3 w-100',
+            },
+            buttonsStyling: false
+            }).then((result) => {
+            if (result.isConfirmed) {
+                // Lanjut proses upload foto
+                lanjutLayanan();
+            } else {
+                $("#ShowBarcodeUnitBaru").modal("show");
+            }
+        });
+
     }
 </script>

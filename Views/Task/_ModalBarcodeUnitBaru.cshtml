@@ -1,0 +1,133 @@
+<style>
+  .scan-line {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: red;
+    animation: scan-animation 2s linear infinite;
+    z-index: 10;
+  }
+
+  @@keyframes scan-animation {
+    0% {
+      top: 0%;
+    }
+    100% {
+      top: 100%;
+    }
+  }
+</style>
+
+
+<div class="modal fade" id="ShowBarcodeUnitBaru" tabindex="-1" aria-labelledby="ShowBarcodeUnitBaruLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      <!-- Header Gradient Merah -->
+      <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #d63031, #c0392b);">
+        <h5 class="modal-title" id="ShowBarcodeUnitBaruLabel">
+        <i class="bi bi-camera-video me-2"></i> Scan QR-Code ACD
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body p-4 bg-light text-center">
+        <p class="mb-3">Arahkan kamera ke QR Code ACD untuk scan otomatis.</p>
+        <div id="reader" style="width: 100%; position: relative; overflow: hidden;">
+            <div class="scan-line"></div>
+        </div>
+    </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+    let html5QrCode;
+    let scannerRunning = false;
+
+    document.addEventListener('DOMContentLoaded', function () {
+        // Cek apakah jQuery tersedia
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+
+        // Referensi jQuery global
+        const $ = window.jQuery;
+
+        const barcodeModal = document.getElementById('ShowBarcodeUnitBaru');
+
+        // Event: saat modal dibuka
+        barcodeModal.addEventListener('shown.bs.modal', () => {
+            startScanner();
+        });
+
+        // Event: saat modal ditutup
+        barcodeModal.addEventListener('hidden.bs.modal', () => {
+            stopScanner();
+        });
+    });
+
+    const startScanner = () => {
+        if (scannerRunning) return; // Jangan mulai ulang jika sudah running
+
+        const qrRegion = document.getElementById("reader");
+        html5QrCode = new Html5Qrcode("reader");
+
+        const qrConfig = {
+            fps: 10,
+            qrbox: {
+                width: 250,
+                height: 250
+            }
+        };
+
+        html5QrCode.start(
+            { facingMode: "environment" },
+            qrConfig,
+            (decodedText, decodedResult) => {
+                if (!scannerRunning) return;
+                scannerRunning = false;
+
+                console.log("QR Code berhasil:", decodedText);
+
+                Swal.fire({
+                    icon: 'success',
+                    title: 'QR Code Terbaca',
+                    text: decodedText,
+                    confirmButtonText: 'OK',
+                    customClass: {
+                        confirmButton: 'btn btn-success px-4'
+                    },
+                    buttonsStyling: false
+                });
+
+                html5QrCode.stop().then(() => {
+                    html5QrCode.clear();
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('ShowBarcodeUnitBaru'));
+                    modal.hide();
+                });
+            },
+            (errorMessage) => {
+                // Bisa log error ringan jika perlu: console.log("QR Error", errorMessage);
+            }
+        ).then(() => {
+            scannerRunning = true;
+        }).catch((err) => {
+            console.error("Gagal memulai scanner:", err);
+        });
+    };
+
+    const stopScanner = () => {
+        if (html5QrCode && scannerRunning) {
+            html5QrCode.stop().then(() => {
+                html5QrCode.clear();
+                scannerRunning = false;
+            }).catch((err) => {
+                console.warn("Scanner sudah berhenti atau gagal stop:", err);
+            });
+        }
+    };
+</script>
+
