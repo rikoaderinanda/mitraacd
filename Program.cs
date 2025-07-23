@@ -36,7 +36,7 @@ builder.Services.AddScoped<IDbConnection>(sp =>
 });
 builder.Services.AddScoped<IBidRepository, BidRepository>();
 builder.Services.AddScoped<ITaskRepository, TaskRepository>();
-
+builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddSignalR();
 
 var app = builder.Build();

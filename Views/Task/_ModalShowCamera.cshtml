@@ -72,7 +72,7 @@
                 <div class="col-4 text-center" id="can2">
                     <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
                     <img id="photo2" class="img-fluid rounded mb-0 preview-photo" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(2)">
+                    <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(2)">
                         <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
                     </button>
                     </div>
@@ -82,7 +82,7 @@
                 <div class="col-4 text-center" id="can3">
                     <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
                     <img id="photo3" class="img-fluid rounded mb-0 preview-photo" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small" style="display: none;" onclick="redoPhoto(3)">
+                    <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(3)">
                         <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
                     </button>
                     </div>
@@ -100,11 +100,7 @@
                         <i class="bi bi-camera fs-4"></i>
                     </button>
                 </div>
-            </div>
-
-            
-
-                
+            </div>                
         </div>
     
     </div>
@@ -122,7 +118,6 @@ let photoTaken = [false, false, false];
 
 document.addEventListener('DOMContentLoaded', function () {
   $ = window.jQuery;
-
     $('#ShowCamera').on('hidden.bs.modal', function () {
         stopCamera();
         resetPhotos();
@@ -176,13 +171,7 @@ function stopCamera() {
 
 function capturePhoto() {
   if (currentPhotoIndex > maxPhotos) {
-    Swal.fire({
-      icon: 'info',
-      title: '📸 Semua Foto Sudah Diambil',
-      text: 'Gunakan tombol "Ulangi" jika ingin mengganti salah satu foto.',
-      confirmButtonText: 'Oke',
-    });
-    return;
+    ProsesLanjutan();
   }
   
   let context = canvas.getContext('2d');
@@ -204,8 +193,41 @@ function capturePhoto() {
 
   currentPhotoIndex = maxPhotos + 1;
   
-  
+  if (currentPhotoIndex > maxPhotos) {
+    ProsesLanjutan();
+  }
 }
+
+function ProsesLanjutan(){
+    Swal.fire({
+            title: '<strong>📸 Foto Selesai!</strong>',
+            html: `
+                <div style="font-size: 15px; color: #555;">
+                    Semua <b>3 foto</b> telah diambil.<br>
+                    Apakah kamu ingin melanjutkan ke <b>Deskripsi Unit</b>?
+                </div>
+            `,
+            icon: 'info',
+            showCancelButton: true,
+            confirmButtonText: '<i class="bi bi-check-circle-fill"></i> Iya, lanjut',
+            cancelButtonText: '<i class="bi bi-arrow-clockwise"></i> Ulangi Foto',
+            reverseButtons: true,
+            background: '#f9f9f9',
+            
+            customClass: {
+                popup: 'shadow rounded-4',
+                confirmButton: 'btn btn-success rounded-pill px-4 py-2 mx-2',
+                cancelButton: 'btn btn-outline-danger rounded-pill px-4 py-2 mx-2'
+            },
+            buttonsStyling: false
+        }).then((result) => {
+            if (result.isConfirmed) {
+                lanjutLayanan(); // Panggil fungsi sesuai logikamu
+            } 
+        });
+}
+
+
 
 function redoPhoto(index) {
   photoTaken[index - 1] = false;

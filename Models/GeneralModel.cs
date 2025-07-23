@@ -25,4 +25,10 @@ namespace mitraacd.Models
         public int Id { get; set; }
         public int MitraId { get; set; }
     }
+
+    public class ImageUploadResultDto
+    {
+        public string Url { get; set; }
+        public string PublicId { get; set; }
+    }
 }
