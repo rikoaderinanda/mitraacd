@@ -57,5 +57,6 @@ namespace mitraacd.Services
             var result = await _cloudinary.DestroyAsync(deletionParams);
             return result.Result == "ok";
         }
+
     }
 }

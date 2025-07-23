@@ -108,6 +108,7 @@
 </div>
 
 <script>
+let IdTask;
 let currentFacingMode = 'environment';
 let cameraStream = null;
 let video = document.getElementById('videoPreview');
@@ -145,10 +146,10 @@ document.addEventListener('DOMContentLoaded', function () {
 function switchCamera() {
   stopCamera(); // Hentikan kamera aktif
   currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // toggle
-  startCamera(); // Mulai kamera lagi
+  startCamera(IdTask); // Mulai kamera lagi
 }
 
-function startCamera() {
+function startCamera(Id) {
   navigator.mediaDevices.getUserMedia({
     video: { facingMode: currentFacingMode }
   })
@@ -156,6 +157,7 @@ function startCamera() {
       cameraStream = stream;
       video.srcObject = stream;
       $('#ShowCamera').modal('show');
+      IdTask = Id;
     })
     .catch(function (err) {
       console.error("Gagal mengakses kamera:", err);
@@ -227,6 +229,56 @@ function ProsesLanjutan(){
         });
 }
 
+function lanjutLayanan(){
+    console.log(IdTask);
+    const formData = new FormData();
+    for (let i = 1; i <= 3; i++) {
+        const img = document.getElementById(`photo${i}`);
+        if (img && img.style.display !== 'none' && img.src.startsWith('data:image')) {
+            const blob = dataURLToBlob(img.src);
+            formData.append('imageFiles', blob, `photo${i}.jpg`);
+        }
+    }
+
+    if (!formData.has('imageFiles')) {
+        Swal.fire('Gagal', 'Tidak ada gambar yang dipilih.', 'warning');
+        return;
+    }
+
+    formData.append('IdTask', IdTask);
+    console.log(formData);
+    callApi({
+        url: '/api/Cloudinary/PhotoBeforeUpload',
+        method: 'POST',
+        data: formData,
+        success: function (res) {
+            console.log(res);
+            Swal.fire('Success', 'Upload gambar berhasil', 'success');
+        },
+        error: function (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Gagal memperbarui task: ' + err
+            });
+        },
+        onBeforeSend: function () {
+            Swal.fire({
+              title: 'Memproses...',
+              text: 'Silakan tunggu',
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+        },
+        onComplete: function () {
+            Swal.close();
+        }
+    });
+}
 
 
 function redoPhoto(index) {

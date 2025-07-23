@@ -11,14 +11,18 @@ namespace mitraacd.api
     public class CloudinaryController : ControllerBase
     {
         private readonly ICloudinaryRepository _cloudinaryService;
+        private readonly ITaskRepository _TaskService;
 
-        public CloudinaryController(ICloudinaryRepository cloudinaryService)
+        public CloudinaryController(ICloudinaryRepository cloudinaryService,ITaskRepository taskService)
         {
             _cloudinaryService = cloudinaryService;
+            _TaskService = taskService;
         }
 
         [HttpPost("PhotoBeforeUpload")]
-        public async Task<IActionResult> PhotoBeforeUpload(List<IFormFile> imageFiles)
+        public async Task<IActionResult> PhotoBeforeUpload(
+            [FromForm] List<IFormFile> imageFiles,
+            [FromForm] string IdTask)
         {
             try
             {
@@ -26,6 +30,15 @@ namespace mitraacd.api
                     return BadRequest(new { message = "Tidak ada file" });
                 if (imageFiles.Count > 3)
                     return BadRequest(new { message = "Maksimal 3 gambar" });
+                
+                dynamic data = await _TaskService.CheckPhotoSebelumTask(IdTask);
+                if(data != null){
+                    foreach (var item in data)
+                    {
+                        var success = await _cloudinaryService.DeleteImageAsync(item.public_id.ToString());
+                    }
+                    await _TaskService.DeletePhotoSebelumTaskAsync(IdTask);
+                }
 
                 var imageResults = new List<ImageUploadResultDto>();
 
@@ -39,11 +52,17 @@ namespace mitraacd.api
                     var (url, publicId) = await _cloudinaryService.UploadImageAsync(file,"UnitBeforeCheck");
                     if (!string.IsNullOrEmpty(url))
                     {
-                        imageResults.Add(new ImageUploadResultDto
-                        {
+                        var dto = new ImageUploadResultDto{
+                            IdTask = IdTask,
                             Url = url,
                             PublicId = publicId
-                        });
+                        };
+                        var res = await _TaskService.SimpanUrlFotoSebelumTask(dto);
+                        if(!res){
+                            var del = await _cloudinaryService.DeleteImageAsync(dto.PublicId);
+                            return StatusCode(500, new { message = "Cloudinary upload failed" });    
+                        }
+                        imageResults.Add(dto);
                     }
                     else
                     {
@@ -53,9 +72,9 @@ namespace mitraacd.api
 
                 return Ok(new { message = "Upload berhasil", data = imageResults });
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan gambar" });
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan gambar, error:"+ex.Message});
             }
         }
 
@@ -72,5 +91,7 @@ namespace mitraacd.api
 
             return Ok(new { message = "Gambar berhasil dihapus" });
         }
+
+        
     }
 }

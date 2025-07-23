@@ -75,6 +75,7 @@
     </div>
 </div>
 <script>
+    let hari = 0;
     var $;
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
@@ -113,6 +114,7 @@
         else if (filterHari == 1) { selectedHari = "Besok" }
         else if (filterHari == 2) { selectedHari = "Jauh Hari" }
         $("#txtFiltered").text(selectedHari);
+        hari = filterHari;
         var user = getUserInfo();
         callApi({
             url: '/api/Task/GetTask?Id=' + user.id + '&Hari=' + filterHari,
@@ -318,7 +320,7 @@
                                 popup: 'animate__animated animate__fadeOutUp'
                             }
                         }).then(() => {
-                            LoadListTask();
+                            LoadListTask(hari);
                         });
                     },
                     error: function (err) {
@@ -390,7 +392,7 @@
                                 popup: 'animate__animated animate__fadeOutUp'
                             }
                         }).then(() => {
-                            LoadListTask();
+                            LoadListTask(hari);
                         });
                     },
                     error: function (err) {
@@ -417,6 +419,6 @@
     }
 
     function MulaiPengerjaan(id){
-        startCamera();
+        startCamera(id);
     }
 </script>

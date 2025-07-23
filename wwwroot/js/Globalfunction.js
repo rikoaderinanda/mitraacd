@@ -220,15 +220,22 @@ function callApi(options) {
         onComplete = function () {}
     } = options;
 
+    const isFormData = data instanceof FormData;
+
     $.ajax({
         url: url,
         method: method,
-        contentType: contentType,
-        data:
-            contentType === 'application/json' && data
-                ? JSON.stringify(data)
-                : data,
+        data: isFormData
+            ? data
+            : contentType === 'application/json' && data
+            ? JSON.stringify(data)
+            : data,
+        contentType: isFormData ? false : contentType,
+        processData: isFormData ? false : true,
         headers: token ? { Authorization: `Bearer ${token}` } : {},
+        beforeSend: function () {
+            onBeforeSend();
+        },
         success: function (response) {
             success(response);
         },
@@ -237,10 +244,6 @@ function callApi(options) {
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
             console.error('API Error:', errMsg);
             error(errMsg);
-        },
-        beforeSend: function () {
-            // console.log('Mengirim request ke:', url);
-            onBeforeSend();
         },
         complete: function () {
             onComplete();
@@ -298,4 +301,15 @@ function getMitraInfo() {
         photo: Storage.get('photo') || ''
     };
     return data;
+}
+
+function dataURLToBlob(dataURL) {
+    const [meta, content] = dataURL.split(',');
+    const mime = meta.match(/:(.*?);/)[1];
+    const binary = atob(content);
+    const array = new Uint8Array(binary.length);
+    for (let i = 0; i < binary.length; i++) {
+        array[i] = binary.charCodeAt(i);
+    }
+    return new Blob([array], { type: mime });
 }

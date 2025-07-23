@@ -56,5 +56,12 @@ namespace mitraacd.api
             }
         }
 
+        [HttpGet("CheckPhotoSebelumTask")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> CheckPhotoSebelumTask(string Id)
+        {
+            var res = await _taskRepository.CheckPhotoSebelumTask(Id);
+            return Ok(res);
+        }
+
     }
 }
