@@ -63,5 +63,12 @@ namespace mitraacd.api
             return Ok(res);
         }
 
+        [HttpGet("CheckQrCodeUnit")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> CheckQrCodeUnit(string decodedText)
+        {
+            var res = await _taskRepository.CheckQrCodeUnit(decodedText);
+            return Ok(res);
+        }
+
     }
 }

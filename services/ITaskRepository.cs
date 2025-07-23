@@ -16,6 +16,7 @@ namespace mitraacd.Services
         Task<IEnumerable<dynamic>> CheckPhotoSebelumTask(string IdTask);
         Task<bool> DeletePhotoSebelumTaskAsync(string publicId);
         Task<bool> UpdateStatusTaskAsync(string idtask);
+        Task<dynamic> CheckQrCodeUnit(string decodedText);
 
     }
 
@@ -149,6 +150,23 @@ namespace mitraacd.Services
 
             var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});
             return result > 0; // true jika ada baris yang dihapus
+        }
+
+        public async Task<dynamic?> CheckQrCodeUnit(string decodedText)
+        {
+            string sql = @"
+                SELECT to_jsonb(oi)
+                FROM perangkat_pelanggan oi
+                WHERE oi.qr_code = @code;
+            ";
+
+            var result = await _db.QueryFirstOrDefaultAsync<string>(sql, new { code = decodedText });
+
+            if (string.IsNullOrWhiteSpace(result))
+                return null;
+
+            dynamic obj = JsonConvert.DeserializeObject<dynamic>(result);
+            return obj;
         }
 
     }
