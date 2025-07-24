@@ -41,12 +41,7 @@
     color: #fff;
 }
 </style>
-<div class="gobo-menu-footer gobo-shadow fixed-bottom px-2 py-3 text-center">
-    <div class="container p-0">
-        <div class="row" id="MenuBottom">
-        </div>
-    </div>
-</div>
+<div id="MenuBottom"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function () {
@@ -55,65 +50,53 @@
             return;
         }
         var $ = window.jQuery;
-        loadMenuBottom("");
+        loadMenuBottom();
     });
 
-    function loadMenuBottom(page) {
+    function loadMenuBottom() {
+        var ipage = Storage.get("CurrentPage");
         var scr = "";
-        if (page == "") {
-            scr = `
-            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "selected" : "")" id="mnuHome">
-                <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
-                    <p class="h4 m-0"><i class="bi bi-lightning-charge"></i></p>
-                    Bid
-                </a>
-            </div>
-            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Task" ? "selected" : "")" id="mnuTask">
-                <a href="@Url.Action("Index", "Task")" class="small text-decoration-none position-relative">
-                    <p class="h4 m-0"><i class="bi bi-list-task"></i></p>
-                    My Task
-                </a>
-            </div>
-            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quotation" ? "selected" : "")" id="mnuQuotation">
-                <a href="@Url.Action("Index", "Quotation")" class="small text-decoration-none position-relative">
-                    <p class="h4 m-0"><i class="bi bi-megaphone"></i></p>
-                    Quotation
-                </a>
-            </div>
-            <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "selected" : "")" id="mnuProfile">
-                <a href="@Url.Action("Index", "Profile")" 
-                    class="small text-decoration-none position-relative">
-                    <p class="h4 m-0"><i class="bi bi-people"></i></p>
-                    Profile
-                </a>
-            </div>
-        `;
-        }
-        else {
-            scr = `
-                <div class="col">
-                    <a href="app-cart.html" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
-                            class="bi bi-credit-card me-2"></i>Submit</a>
+        if (ipage == "") {
+            var item = `
+                <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Home" ? "selected" : "")" id="mnuHome">
+                    <a href="@Url.Action("Index", "Home")" class="small text-decoration-none position-relative">
+                        <p class="h4 m-0"><i class="bi bi-lightning-charge"></i></p>
+                        Bid
+                    </a>
+                </div>
+                <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Task" ? "selected" : "")" id="mnuTask">
+                    <a href="@Url.Action("Index", "Task")" class="small text-decoration-none position-relative">
+                        <p class="h4 m-0"><i class="bi bi-list-task"></i></p>
+                        My Task
+                    </a>
+                </div>
+                <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Quotation" ? "selected" : "")" id="mnuQuotation">
+                    <a href="@Url.Action("Index", "Quotation")" class="small text-decoration-none position-relative">
+                        <p class="h4 m-0"><i class="bi bi-megaphone"></i></p>
+                        Quotation
+                    </a>
+                </div>
+                <div class="col @(ViewContext.RouteData.Values["controller"]?.ToString() == "Profile" ? "selected" : "")" id="mnuProfile">
+                    <a href="@Url.Action("Index", "Profile")" 
+                        class="small text-decoration-none position-relative">
+                        <p class="h4 m-0"><i class="bi bi-people"></i></p>
+                        Profile
+                    </a>
                 </div>
             `;
+            
+            scr = `
+            <div class="gobo-menu-footer gobo-shadow fixed-bottom px-2 py-3 text-center">
+                <div class="container p-0">
+                    <div class="row">
+                        ${item}
+                    </div>
+                </div>
+            </div>`;
         }
+        
         $("#MenuBottom").html(scr);
 
     }
 </script>
     
-    @*<div class="gobo-custom-footer gobo-shadow fixed-bottom m-0 px-2 py-2 text-center">
-        <div class="container p-0">
-            <div class="row">
-                <div class="col">
-                    <a href="@url.action("index", "home")" class="save-btn w-100 fw-4 h_40 br-8">
-                        <i class="bi bi-heart me-2"></i>
-                        simpan dulu</a>
-                </div>
-                <div class="col">
-                    <a href="app-cart.html" class="main-btn btn-hover w-100 fw-4 h_40 br-8"><i
-                            class="bi bi-credit-card me-2"></i>bayar</a>
-                </div>
-            </div>
-        </div>
-    </div>*@

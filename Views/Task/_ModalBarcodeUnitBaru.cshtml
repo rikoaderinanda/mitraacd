@@ -96,20 +96,7 @@
             (decodedText, decodedResult) => {
                 if (!scannerRunning) return;
                 scannerRunning = false;
-
                 console.log("QR Code berhasil:", decodedText);
-
-                /*(Swal.fire({
-                    icon: 'success',
-                    title: 'QR Code Terbaca',
-                    text: decodedText,
-                    confirmButtonText: 'OK',
-                    customClass: {
-                        confirmButton: 'btn btn-success px-4'
-                    },
-                    buttonsStyling: false
-                });*/
-
                 CheckQrCodeUnit(decodedText);
             },
             (errorMessage) => {
@@ -167,7 +154,8 @@
                 }
                 else
                 {
-                    
+                    setDeskripsiPerangkat(data);
+                    window.location.href = '@Url.Action("DeskripsiPerangkat","Task")'; // redirect biasa
                 }
             },
             error: function (err) {
@@ -182,5 +170,11 @@
             }
         });
     }
+
+    function setDeskripsiPerangkat(data)
+    {
+        Storage.set("DeskripsiPerangkat",data);
+    }
+
 </script>
 

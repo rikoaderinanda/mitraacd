@@ -32,7 +32,8 @@
             return;
         }
         $ = window.jQuery;
-        //LoadListBid();
+        Storage.set("CurrentPage","");
+        loadHeader();
         var user = getUserInfo();
         if (!isValidUser(user)) {
             $("#TitleModalLogin").text("Silahkan login terlebih dahulu");

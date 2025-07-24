@@ -1,0 +1,200 @@
+<div class="col-12">
+    <div class="mt-4">
+        <!-- Carousel Foto -->
+        <div class="items-group mb-3">
+            <div class="owl-carousel offer-slider owl-theme rounded-4 overflow-hidden shadow-sm" id="ListPhotoPerangkat">
+                <!-- Isi carousel foto dinamis -->
+            </div>
+        </div>
+
+        <div class="accordion rounded-4 shadow-sm border border-light" id="accordionPerangkat">
+            <!-- Detail Perangkat -->
+            <div class="accordion-item border-0">
+                <h2 class="accordion-header" id="headingDetail">
+                <button class="accordion-button fw-bold text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseDetail" aria-expanded="true" aria-controls="collapseDetail">
+                    <i class="bi bi-info-circle me-2"></i> Detail Perangkat
+                </button>
+                </h2>
+                <div id="collapseDetail" class="accordion-collapse collapse show" aria-labelledby="headingDetail" data-bs-parent="#accordionPerangkat">
+                <div class="accordion-body">
+                    <div class="row row-cols-2 g-3 small text-dark" id="DetaiPerangkat">
+                    <!-- Data akan dimuat di sini -->
+                    </div>
+                </div>
+                </div>
+            </div>
+
+            <!-- History Maintenance -->
+            <div class="accordion-item border-top">
+                <h2 class="accordion-header" id="headingHistory">
+                <button class="accordion-button collapsed fw-bold text-primary" type="button" data-bs-toggle="collapse" data-bs-target="#collapseHistory" aria-expanded="false" aria-controls="collapseHistory">
+                    <i class="bi bi-clock-history me-2"></i> History Maintenance
+                </button>
+                </h2>
+                <div id="collapseHistory" class="accordion-collapse collapse" aria-labelledby="headingHistory" data-bs-parent="#accordionPerangkat">
+                <div class="accordion-body">
+
+                    <div class="timeline" id="listHistoryMaintenance">
+                    </div>
+
+                </div>
+                </div>
+            </div>
+
+
+        </div>
+        
+        <button type="button" class="btn btn-primary rounded-pill shadow mt-4 fw-semibold w-100">
+            <i class="bi bi-calendar-check me-2"></i> Lanjut Pengerjaan
+        </button>
+    </div>
+</div>
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        Storage.set("CurrentPage","DeskripsiPerangkat");
+        loadHeader();
+        var data = Storage.get("DeskripsiPerangkat");
+        $("#titleHeader").text(data.qr_code);
+        loadPhotoPerangkat(data.id);
+        LoadHistoryMaintenance(data.id);
+        LoadDetaiPerangkat(data);
+        
+    });
+
+    function loadPhotoPerangkat(id){
+        callApi({
+            url: '/api/PerangkatPelanggan/GetPhoto?Id='+id,
+            method: 'GET',
+            success: function (data) {
+                var html = $.map(data, function (item) {
+                    var scr = 
+                    `
+                        <div class="item">
+                            <a href="#" class="offer-banner-item">
+                                <img class="w-100 br-10" src="${item.url_secret}" alt="${item.public_id}">
+                            </a>
+                        </div>
+                    `;
+                    return scr;
+                }).join('');
+                $("#ListPhotoPerangkat").html(html);
+                initListPhotoPerangkat();
+            },
+            error: function (err) {
+                $('#ListPhotoPerangkat').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+                
+            },
+            onBeforeSend: function () {
+                $('#ListPhotoPerangkat').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+        });
+    }
+
+    function initListPhotoPerangkat(){
+        $('.offer-slider').owlCarousel({
+            loop: true,
+            margin: 10,
+            //nav: true,
+            autoplay: true,
+            autoplayTimeout: 3000,
+            autoplayHoverPause: true,
+            responsive: {
+                0: { items: 1 },
+                600: { items: 2 },
+                1000: { items: 3 }
+            }
+        });
+    }
+
+    function LoadDetaiPerangkat(data){
+        console.log(data);
+        var scr = `
+            <div class="col">
+                    <div class="d-flex">
+                    <span class="me-2">📂</span>
+                    <div><strong>Kategori:</strong> ${data.category}</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                    <span class="me-2">⚙️</span>
+                    <div><strong>Jenis:</strong> ${data.jenis}</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                    <span class="me-2">🏷️</span>
+                    <div><strong>Brand:</strong> ${data.brand}</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                    <span class="me-2">🛠️</span>
+                    <div><strong>Model:</strong> ${data.model}</div>
+                    </div>
+                </div>
+                <div class="col">
+                    <div class="d-flex">
+                    <span class="me-2">🔢</span>
+                    <div><strong>Serial:</strong> ${data.serial}</div>
+                </div>
+            </div>
+        `;
+        
+        $("#DetaiPerangkat").html(scr);
+    }
+
+    function LoadHistoryMaintenance(id){
+        callApi({
+            url: '/api/PerangkatPelanggan/GetHistoryMaintenance?Id='+id,
+            method: 'GET',
+            success: function (data) {
+                var html = $.map(data, function (item) {
+                    var scr = 
+                    `
+                        <!-- Item 1 -->
+                        <div class="mb-4">
+                            <div class="d-flex align-items-start">
+                            <div class="me-3"><i class="${item.icon_category}"></i></div>
+                            <div>
+                                <h6 class="fw-bold mb-1">${item.category_maintenance}</h6>
+                                <ul class="list-unstyled small text-muted mb-1">
+                                <li><strong>Tanggal:</strong> ${item.maintenance_date}</li>
+                                <li><strong>Teknisi:</strong> ${item.teknisi}</li>
+                                <li><strong>Durasi:</strong> 1 jam 30 menit</li>
+                                <li><strong>Lokasi:</strong> ${item.lokasi_maintenance}</li>
+                                <li><strong>Metode:</strong> ${item.metode}</li>
+                                </ul>
+                                <div class="text-secondary small fst-italic">
+                                ${item.penanganan}
+                                </div>
+                            </div>
+                            </div>
+                        </div>
+                    `;
+                    return scr;
+                }).join('');
+                $("#listHistoryMaintenance").html(html);
+            },
+            error: function (err) {
+                $('#listHistoryMaintenance').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+                
+            },
+            onBeforeSend: function () {
+                $('#listHistoryMaintenance').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
+            },
+        });
+    }
+
+    function backHeader(){
+        window.location.href = '@Url.Action("Index","Task")';
+    }
+
+</script>

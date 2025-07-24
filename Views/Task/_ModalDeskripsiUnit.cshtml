@@ -12,23 +12,87 @@
       <div class="modal-body p-4 bg-light">
         <form id="formDeskripsiUnit">
           <div class="mb-3">
+            <label for="kategori" class="form-label fw-semibold">Kategori</label>
+            <select class="form-select" id="kategori" name="kategori">
+              <option value="">-- Pilih Kategori --</option>
+              <option value="AC">AC</option>
+              <option value="Kulkas">Kulkas</option>
+              <option value="Mesin Cuci">Mesin Cuci</option>
+              <option value="HP">HP</option>
+              <option value="TV">TV</option>
+            </select>
+          </div>
+
+          <div class="mb-3 d-none" id="jenisContainer">
+            <label for="jenis" class="form-label fw-semibold">Jenis</label>
+            <select class="form-select" id="jenis" name="jenis">
+              <option value="">-- Pilih Jenis --</option>
+              <option value="Manual">Manual</option>
+              <option value="Inverter">Inverter</option>
+            </select>
+          </div>
+
+          <div class="mb-3">
             <label for="brand" class="form-label fw-semibold">Brand</label>
             <input type="text" class="form-control" id="brand" name="brand" placeholder="Contoh: Toyota">
           </div>
+
           <div class="mb-3">
             <label for="model" class="form-label fw-semibold">Model</label>
             <input type="text" class="form-control" id="model" name="model" placeholder="Contoh: Avanza">
           </div>
+
           <div class="mb-3">
             <label for="seri" class="form-label fw-semibold">Seri</label>
             <input type="text" class="form-control" id="seri" name="seri" placeholder="Contoh: G 1.3 MT 2020">
           </div>
+
           <div class="mb-3">
             <label for="catatan" class="form-label fw-semibold">Catatan Tambahan</label>
             <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Contoh: Ada baret di sisi kiri bumper..."></textarea>
+          </div>
+
+          <!-- Tombol Submit -->
+          <div class="text-end mt-4">
+            <button type="submit" class="btn btn-danger px-4 rounded-pill">
+              <i class="bi bi-save me-2"></i> Simpan Deskripsi
+            </button>
           </div>
         </form>
       </div>
     </div>
   </div>
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const kategoriSelect = document.getElementById('kategori');
+    const jenisContainer = document.getElementById('jenisContainer');
+
+    kategoriSelect.addEventListener('change', function () {
+      const selected = this.value;
+      if (selected === 'AC') {
+        jenisContainer.classList.remove('d-none');
+      } else {
+        jenisContainer.classList.add('d-none');
+        document.getElementById('jenis').value = '';
+      }
+    });
+
+    // Event handler untuk submit form (bisa diubah sesuai kebutuhan backend)
+    document.getElementById('formDeskripsiUnit').addEventListener('submit', function (e) {
+      e.preventDefault();
+      // TODO: Tambahkan aksi kirim ke server
+      Swal.fire({
+        icon: 'success',
+        title: 'Data Disimpan',
+        text: 'Deskripsi unit berhasil disimpan.',
+        confirmButtonText: 'OK',
+        customClass: {
+          confirmButton: 'btn btn-danger px-4 rounded-pill'
+        },
+        buttonsStyling: false
+      });
+    });
+  });
+</script>

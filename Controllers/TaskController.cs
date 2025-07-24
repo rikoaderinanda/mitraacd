@@ -17,6 +17,10 @@ public class TaskController : Controller
     {
         return View();
     }
+    public IActionResult DeskripsiPerangkat()
+    {
+        return View();
+    }
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

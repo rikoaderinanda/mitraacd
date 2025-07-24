@@ -85,6 +85,8 @@
             return;
         }
         $ = window.jQuery;
+        Storage.set("CurrentPage","");
+        loadHeader();
         var user = getUserInfo();
         if (!isValidUser(user)) {
             $("#TitleModalLogin").text("Silahkan login terlebih dahulu");

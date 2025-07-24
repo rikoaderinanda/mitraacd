@@ -12,12 +12,14 @@
             return;
         }
         var $ = window.jQuery;
-        loadHeader("home");
+        
     });
 
     function loadHeader(page) {
+        var page = Storage.get("CurrentPage");
+        console.log(page);
         var scr = "";
-        if (page == "home") {
+        if (page == "") {
             scr = `
             <div class="main-logo">
                 <a href="@Url.Action("Index", "Home")">
@@ -43,11 +45,11 @@
         }
         else {
             scr = `
-                <a href="javascript:void(0);" class="header-action" x-data @@click="window.history.back()">
+                <a href="javascript:void(0);" class="header-action" onclick="backHeader();">
                     <i class="bi bi-arrow-left-circle"></i>
                 </a>
                 <h6 class="header-title ms-3">
-                    <span class="b-color local-area fw-5 fs-6">@ViewData["HeaderName"]</span>
+                    <span class="b-color local-area fw-5 fs-6" id="titleHeader"></span>
                 </h6>
             `;
         }
@@ -55,58 +57,3 @@
         $("#HeaderContent").html(scr);
     }
 </script>
-
-@* 
-
-@if (ViewData["Header"] == "1")
-{
-    <!-- Header Start -->
-    <div class="gobo-shadow p-3 homepage-gobo-header">
-        <div class="container p-0">
-            <div class="d-flex align-items-center w-100">
-                <div class="main-logo">
-                    <a href="@Url.Action("Index", "Home")"><img src="~/img/logo_ACD.png" alt="logo"></a>
-                    <strong style="color:black;font-size:small;">.ACD</strong>
-                </div>
-                <a class="header-location" href="#addAddressModal" data-bs-toggle="modal">
-                    <span class="b-color local-area fw-4 fs-7">
-                        <i class="bi bi-geo-alt ms-1 me-2 ls-f header-action"></i>
-                        Ciomas, Bogor
-                    </span>
-                </a>
-                <ul class="ms-auto header-right">
-                    <li>
-                        <a href="app-offers.html" class="header-action">
-                            <i class="bi bi-percent"></i>
-                        </a>
-                    </li>
-                    <li>
-                        <a href="app-notifications.html" class="header-action position-relative">
-                            <i class="bi bi-bell"></i>
-                            <span class="notify-count"></span>
-                        </a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <!-- Header End -->
-}
-else if (ViewData["Header"] == "2")
-{
-    <!-- Header Start -->
-    <div class="gobo-shadow p-3 homepage-gobo-header">
-        <div class="container p-0">
-            <div class="d-flex align-items-center w-100">
-                <a href="javascript:void(0);" class="header-action" x-data @@click="window.history.back()">
-                    <i class="bi bi-arrow-left-circle"></i>
-                </a>
-                <h6 class="header-title ms-3">
-                    <span class="b-color local-area fw-5 fs-6">@ViewData["HeaderName"]</span>
-                </h6>
-            </div>
-        </div>
-    </div>
-    <!-- Header End -->
-    <!-- Header End -->
-} *@
