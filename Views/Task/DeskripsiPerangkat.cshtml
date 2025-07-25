@@ -40,11 +40,9 @@
                 </div>
                 </div>
             </div>
-
-
         </div>
         
-        <button type="button" class="btn btn-primary rounded-pill shadow mt-4 fw-semibold w-100">
+        <button type="button" class="btn btn-primary rounded-pill shadow mt-4 fw-semibold w-100" onclick="LanjutPengerjaan();">
             <i class="bi bi-calendar-check me-2"></i> Lanjut Pengerjaan
         </button>
     </div>
@@ -196,5 +194,13 @@
     function backHeader(){
         window.location.href = '@Url.Action("Index","Task")';
     }
+    
+    function LanjutPengerjaan(){
+        ClearStorageStep();
+        window.location.href = '@Url.Action("ProsesPengerjaan","Task")';
+    }
 
+    function ClearStorageStep(){
+        Storage.remove("Step1")
+    }
 </script>

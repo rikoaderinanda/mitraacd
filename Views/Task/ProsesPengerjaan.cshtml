@@ -1,0 +1,310 @@
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <div class="card border-0 rounded-4 shadow-sm p-4 mb-4">
+        <h5 class="fw-bold text-primary mb-3">
+            <i class="bi bi-list-check me-2"></i> Step Pekerjaan Cuci AC
+        </h5>
+
+        <!-- Progress bar -->
+        <div class="progress mb-4" style="height: 8px;">
+            <div id="wizardProgress" class="progress-bar bg-primary" style="width: 11%;"></div>
+        </div>
+
+        <!-- Steps -->
+        <div class="step-content mb-3">
+            <div class="step-item d-none" id="step-1">
+                <h6 class="fw-bold text-dark mb-3">1. Pemeriksaan Awal</h6>
+                <p class="small text-muted">
+                    Cek suhu, tekanan freon, dan kondisi unit indoor & outdoor.
+                </p>
+                <p class="small text-muted mb-3">
+                    Silakan isi hasil pemeriksaan awal sebelum pengerjaan dimulai.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Suhu Udara Keluar (°C)</label>
+                    <input id="Suhu_Step1" type="number" step="0.1" class="form-control form-control-sm" placeholder="Contoh: 19.5" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Tekanan Freon (psi)</label>
+                    <input id="TekananFreon_Step1" type="number" step="0.1" class="form-control form-control-sm" placeholder="Contoh: 110.0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Kondisi Unit Indoor</label>
+                    <textarea id="KondisiIndoor_Step1" class="form-control form-control-sm" rows="2" placeholder="Contoh: Banyak debu pada kisi evaporator, kondisi fisik baik." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Kondisi Unit Outdoor</label>
+                    <textarea id="KondisiOutdoor_Step1" class="form-control form-control-sm" rows="2" placeholder="Contoh: Kotoran menempel pada kipas dan sirip kondensor." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Foto Unit Indoor</label>
+                    <input type="file" accept="image/*" capture="environment" class="form-control form-control-sm" >
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Foto Unit Outdoor</label>
+                    <input type="file" accept="image/*" capture="environment" class="form-control form-control-sm" >
+                </div>
+            </div>
+            <div class="step-item d-none" id="step-2">
+                 <h6 class="fw-bold text-dark mb-3">2. Pembongkaran Komponen</h6>
+                <p class="small text-muted mb-4">Melepas filter dan cover unit untuk akses pembersihan.</p>
+
+                <div class="form-check mb-2 ps-4">
+                    <input class="form-check-input me-2" type="checkbox" id="check-filter">
+                    <label class="form-check-label" for="check-filter">
+                        ✅ Filter telah dilepas
+                    </label>
+                </div>
+
+                <div class="form-check mb-3 ps-4">
+                    <input class="form-check-input me-2" type="checkbox" id="check-cover">
+                    <label class="form-check-label" for="check-cover">
+                        ✅ Cover unit telah dilepas
+                    </label>
+                </div>
+            </div>
+
+            <div class="step-item d-none" id="step-3">
+                <h6 class="fw-bold text-dark mb-2">3. Perlindungan Area</h6>
+                <p class="small text-muted">Menutup bagian kelistrikan dan lantai sekitar.</p>
+            </div>
+            <div class="step-item d-none" id="step-4">
+                <h6 class="fw-bold text-dark mb-2">4. Pencucian Unit Indoor</h6>
+                <p class="small text-muted">Semprot evaporator, bersihkan kisi dan blower.</p>
+            </div>
+            <div class="step-item d-none" id="step-5">
+                <h6 class="fw-bold text-dark mb-2">5. Pencucian Unit Outdoor</h6>
+                <p class="small text-muted">Bersihkan kipas dan kondensor dari debu/kotoran.</p>
+            </div>
+            <div class="step-item d-none" id="step-6">
+                <h6 class="fw-bold text-dark mb-2">6. Pembersihan Drainase</h6>
+                <p class="small text-muted">Pastikan saluran pembuangan tidak tersumbat.</p>
+            </div>
+            <div class="step-item d-none" id="step-7">
+                <h6 class="fw-bold text-dark mb-2">7. Perakitan Ulang</h6>
+                <p class="small text-muted">Pasang kembali filter, cover, dan sambungan listrik.</p>
+            </div>
+            <div class="step-item d-none" id="step-8">
+                <h6 class="fw-bold text-dark mb-2">8. Uji Fungsi</h6>
+                <p class="small text-muted">Nyalakan AC dan cek performa, suhu, serta kebocoran.</p>
+                <p class="small text-muted mb-3">
+                    Nyalakan unit dan pastikan AC berfungsi dengan baik. Catat hasil pengujian.
+                </p>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Kondisi Akhir Unit</label>
+                    <textarea class="form-control form-control-sm" rows="2" placeholder="Contoh: Tidak ada suara abnormal, aliran udara kuat." required></textarea>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Performa Pendinginan</label>
+                    <select class="form-select form-select-sm" required>
+                        <option value="">-- Pilih --</option>
+                        <option>Baik - Suhu turun cepat</option>
+                        <option>Cukup - Suhu turun lambat</option>
+                        <option>Kurang - Tidak terasa dingin</option>
+                    </select>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Suhu Udara Keluar Setelah Uji (°C)</label>
+                    <input type="number" step="0.1" class="form-control form-control-sm" placeholder="Contoh: 18.2" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label small fw-semibold">Cek Kebocoran Freon</label>
+                    <select class="form-select form-select-sm" required>
+                        <option value="">-- Pilih --</option>
+                        <option>Tidak ada kebocoran</option>
+                        <option>Ada indikasi kebocoran</option>
+                    </select>
+                </div>
+            </div>
+            <div class="step-item d-none" id="step-9">
+                <h6 class="fw-bold text-dark mb-2">9. Finishing & Dokumentasi</h6>
+                <p class="small text-muted">Bersihkan area kerja dan dokumentasikan hasil kerja.</p>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="d-flex justify-content-between">
+            <button class="btn btn-outline-secondary px-4" id="btnPrev" disabled><i class="bi bi-arrow-left"></i> Sebelumnya</button>
+            <button class="btn btn-primary px-4 ms-2" id="btnNext">Selanjutnya <i class="bi bi-arrow-right"></i></button>
+        </div>
+        </div>
+
+    </div>
+</div>
+<script>
+    var $;
+    
+    let currentStep = 1;
+    const totalSteps = 9;
+    let isStepInProgress = false; // Set sesuai kondisi real di aplikasi
+
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        Storage.set("CurrentPage","ProsesPengerjaan");
+        loadHeader();
+        var data = Storage.get("DeskripsiPerangkat");
+        $("#titleHeader").text(data.qr_code);
+        var user = getUserInfo();
+        if (!isValidUser(user)) {
+            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
+            $("#btnClsModalLogin").show();
+            $('#ModalLogin').modal('show');
+        }
+        else {
+            getStep1();
+            showStep(currentStep);
+        }
+    });
+    function backHeader(){
+        window.location.href = '@Url.Action("DeskripsiPerangkat","Task")';
+    }
+
+     const showStep = (step) => {
+        document.querySelectorAll(".step-item").forEach(el => el.classList.add("d-none"));
+        document.getElementById(`step-${step}`).classList.remove("d-none");
+
+        const progress = (step / totalSteps) * 100;
+        document.getElementById("wizardProgress").style.width = progress + "%";
+
+        document.getElementById("btnPrev").disabled = step === 1;
+        document.getElementById("btnNext").textContent = step === totalSteps ? "Selesai" : "Selanjutnya";
+    };
+
+    document.getElementById("btnPrev").addEventListener("click", () => {
+        if (currentStep > 1) {
+        currentStep--;
+        showStep(currentStep);
+        }
+    });
+
+    document.getElementById("btnNext").addEventListener("click", () => {
+        if (!validateStep(currentStep)) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Lengkapi Data',
+                text: 'Mohon lengkapi semua isian yang diperlukan sebelum melanjutkan.',
+                confirmButtonText: 'Oke',
+                customClass: {
+                    popup: 'rounded-4 shadow',
+                    confirmButton: 'btn btn-danger px-4'
+                },
+                buttonsStyling: false
+            });
+            return;
+        }
+        if (currentStep < totalSteps) {
+            setStep1();
+            currentStep++;
+            showStep(currentStep);
+        } else {
+            SimpanCheckListPekerjaan();
+        }
+    });
+
+    window.addEventListener("beforeunload", function (e) {
+        if (isStepInProgress) {
+            // Tampilkan Swal manual agar lebih elegan
+            Swal.fire({
+                icon: 'warning',
+                title: 'Sedang Dalam Proses',
+                html: 'Jika Anda me-refresh atau meninggalkan halaman, data yang sedang Anda isi bisa hilang.',
+                showCancelButton: true,
+                confirmButtonText: 'Tetap Tinggalkan',
+                cancelButtonText: 'Batal',
+                reverseButtons: true,
+                customClass: {
+                    popup: 'rounded-4 shadow',
+                    confirmButton: 'btn btn-danger px-4',
+                    cancelButton: 'btn btn-outline-secondary px-4 ms-3',
+                },
+                buttonsStyling: false,
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    // Paksa reload jika dikonfirmasi
+                    isStepInProgress = false;
+                    window.location.reload();
+                }
+            });
+
+            // Blok default reload
+            e.preventDefault();
+            return (e.returnValue = '');
+        }
+    });
+
+    function SimpanCheckListPekerjaan()
+    {
+        var data = [
+            {
+
+
+            }
+        ];
+        Swal.fire({
+            icon: "success",
+            title: "Pekerjaan Selesai!",
+            text: "Seluruh langkah pencucian AC telah selesai.",
+            confirmButtonText: "Oke",
+            customClass: {
+            popup: 'rounded-4 shadow',
+            confirmButton: 'btn btn-primary px-4'
+            },
+            buttonsStyling: false
+        });
+    }
+
+    function validateStep(step) {
+        let valid = true;
+
+        // Ambil elemen-elemen input di langkah saat ini
+        const stepEl = document.getElementById(`step-${step}`);
+        const requiredInputs = stepEl.querySelectorAll('input[required], select[required], textarea[required]');
+
+        requiredInputs.forEach(input => {
+            if (!input.value) {
+                input.classList.add("is-invalid");
+                valid = false;
+            } else {
+                input.classList.remove("is-invalid");
+            }
+        });
+
+        return valid;
+    }
+
+    function setStep1(){
+        var step1 = {
+            suhu : $("#Suhu_Step1").val(),
+            tekanan : $("#TekananFreon_Step1").val(),
+            kondisi_indoor : $("#KondisiIndoor_Step1").val(),
+            kondisi_outdoor : $("#KondisiOutdoor_Step1").val()
+        }
+        Storage.set("Step1",step1);
+        return step1;
+    }
+
+    function getStep1(){
+        var step1 = Storage.get("Step1");
+        if(step1 != null){
+            $("#Suhu_Step1").val(step1.suhu);
+            $("#TekananFreon_Step1").val(step1.tekanan);
+            $("#KondisiIndoor_Step1").val(step1.kondisi_indoor);
+            $("#KondisiOutdoor_Step1").val(step1.kondisi_outdoor);
+        }
+    }
+    
+</script>

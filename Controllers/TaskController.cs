@@ -21,7 +21,10 @@ public class TaskController : Controller
     {
         return View();
     }
-
+    public IActionResult ProsesPengerjaan()
+    {
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
