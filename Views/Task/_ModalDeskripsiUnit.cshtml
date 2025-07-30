@@ -4,7 +4,7 @@
       <!-- Header Gradient Merah -->
       <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #d63031, #c0392b);">
         <h5 class="modal-title" id="ShowDeskripsiUnitLabel">
-          <i class="bi bi-camera-video me-2"></i> Foto Unit sebelum Pengerjaan
+          <i class="bi bi-camera-video me-2"></i> <span id="QRCodeText"></span>
         </h5>
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
@@ -13,7 +13,7 @@
         <form id="formDeskripsiUnit">
           <div class="mb-3">
             <label for="kategori" class="form-label fw-semibold">Kategori</label>
-            <select class="form-select" id="kategori" name="kategori">
+            <select class="form-select" id="kategori" name="kategori" required>
               <option value="">-- Pilih Kategori --</option>
               <option value="AC">AC</option>
               <option value="Kulkas">Kulkas</option>
@@ -25,7 +25,7 @@
 
           <div class="mb-3 d-none" id="jenisContainer">
             <label for="jenis" class="form-label fw-semibold">Jenis</label>
-            <select class="form-select" id="jenis" name="jenis">
+            <select class="form-select" id="jenis" name="jenis" required>
               <option value="">-- Pilih Jenis --</option>
               <option value="Manual">Manual</option>
               <option value="Inverter">Inverter</option>
@@ -34,22 +34,22 @@
 
           <div class="mb-3">
             <label for="brand" class="form-label fw-semibold">Brand</label>
-            <input type="text" class="form-control" id="brand" name="brand" placeholder="Contoh: Toyota">
+            <input type="text" class="form-control" id="brand" name="brand" placeholder="Contoh: Toyota" required>
           </div>
 
           <div class="mb-3">
             <label for="model" class="form-label fw-semibold">Model</label>
-            <input type="text" class="form-control" id="model" name="model" placeholder="Contoh: Avanza">
+            <input type="text" class="form-control" id="model" name="model" placeholder="Contoh: Avanza" required>
           </div>
 
           <div class="mb-3">
             <label for="seri" class="form-label fw-semibold">Seri</label>
-            <input type="text" class="form-control" id="seri" name="seri" placeholder="Contoh: G 1.3 MT 2020">
+            <input type="text" class="form-control" id="seri" name="seri" placeholder="Contoh: G 1.3 MT 2020" required>
           </div>
 
           <div class="mb-3">
             <label for="catatan" class="form-label fw-semibold">Catatan Tambahan</label>
-            <textarea class="form-control" id="catatan" name="catatan" rows="3" placeholder="Contoh: Ada baret di sisi kiri bumper..."></textarea>
+            <textarea class="form-control" id="catatan" name="catatan" rows="3" required placeholder="Contoh: Ada baret di sisi kiri bumper..."></textarea>
           </div>
 
           <!-- Tombol Submit -->
@@ -83,6 +83,16 @@
     document.getElementById('formDeskripsiUnit').addEventListener('submit', function (e) {
       e.preventDefault();
       // TODO: Tambahkan aksi kirim ke server
+      var data = {
+        kategori : $("#kategori"),
+        jenis : $("#jenis"),
+        brand : $("#brand"),
+        model : $("#model"),
+        seri : $("#seri"),
+        catatan : $("#catatan")
+      }
+
+      Storage.set(data);
       Swal.fire({
         icon: 'success',
         title: 'Data Disimpan',
@@ -93,6 +103,9 @@
         },
         buttonsStyling: false
       });
+
+      $("#_ModalShowCamera").modal('show');
+
     });
   });
 </script>

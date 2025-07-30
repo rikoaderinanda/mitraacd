@@ -43,6 +43,7 @@
         <div id="reader" style="width: 100%; position: relative; overflow: hidden;">
             <div class="scan-line"></div>
         </div>
+        <button class="btn btn-primary" onclick="CheckQrCodeUnit('ACD-Y7YYYY')">Daftar</button>
     </div>
 
     </div>
@@ -148,7 +149,10 @@
                         buttonsStyling: false
                         }).then((result) => {
                         if (result.isConfirmed) {
+                            $("#QRCodeText").text(decodedText);
                             $("#ShowDeskripsiUnit").modal('show');
+                            $("#ShowBarcodeUnitBaru").modal('hide');
+                            
                         }
                     });
                 }
