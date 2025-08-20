@@ -62,79 +62,109 @@
                     html = $.map(data, function (item) {
                         var scr = "";
                         var dtPesanan = '';
-                        item.Pesanan.forEach(p => {
+                        let TotalReg = 0;
+                        item.cart_items.forEach(p => {
                             dtPesanan = dtPesanan +
-                                `
-                                    <li>
-                                        ${p.nama} &times; ${p.jumlah}
-                                        <span class="text-muted">(${formatRupiah(p.total)})</span>
-                                    </li>
+                                `<li class="d-flex justify-content-between border-bottom">
+                                    <span>${p.nama} &times; ${p.qty}</span>
+                                    <span class="text-muted">${formatRupiah(p.sub_total)}</span>
+                                </li>
                                 `
                                 ;
+                            TotalReg = TotalReg+p.sub_total;
                         });
 
-                        scr = `
-                        <div class="card mb-3 position-relative shadow-sm border-0 hover-shadow">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start position-relative">
-                                    <div>
-                                        <h5 class="card-title mb-1 fw-bold">
-                                            ID Pesanan: 
-                                            <span class="text-primary">
-                                            ACD - ${formatToSixDigits(item.id)}
-                                            </span>
-                                        </h5>
-                                        <p class="card-text mb-2">
-                                            Total Pesanan: 
-                                            <span class="fw-semibold text-success">
-                                                ${formatRupiah(item.total)}
-                                            </span>
-                                        </p>
+                        var paket = '';
+                        if(Object.keys(item.paket).length > 0){
+                            paket = `
 
-                                        <div class="mt-3">
-                                            <h6 class="fw-bold mb-2">Layanan:</h6>
-                                            <ul class="mb-0 ps-0" style="list-style-type:disc;font-size:small;">
-                                                ${dtPesanan}
-                                            </ul>
-                                        </div>
-                                        <div class="mt-4">
-                                            <h6 class="fw-bold mb-2">Customer:</h6>
-                                            <ul class="list-unstyled small text-body-secondary">
-                                                <li class="mb-1">
-                                                <i class="bi bi-person-fill me-1 text-dark"></i>
-                                                <strong>${item.nama}</strong> 
-                                                <span class="text-muted">(${item.whatsapp})</span>
-                                                </li>
-                                                <li class="mb-1">
-                                                <i class="bi bi-geo-alt-fill me-1 text-dark"></i>
-                                                ${item.alamat}
-                                                </li>
-                                                <li>
-                                                <i class="bi bi-calendar-event me-1 text-dark"></i>
-                                                ${item.tanggal_kunjungan} 
-                                                <span class="ms-1">
-                                                    <i class="bi bi-clock me-1"></i>${item.jam_kunjungan}
-                                                </span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                    </div>
+                                <p class="d-flex justify-content-between">
+                                    <span>${item.paket.deskripsi}</span>
+                                    <span>${formatRupiah(TotalReg*item.paket.qty)}</span>
+                                </p>
+                                <p class="d-flex justify-content-between">
+                                    <span>Diskon berlangganan</span>
+                                    <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
+                                </p>
+                                <strong class="d-flex justify-content-between">
+                                    <span>Sub Total </span>
+                                    <span class="">${formatRupiah(item.paket.total)}</span>
+                                </strong>
 
-                                    <!-- Tombol Detail -->
-                                    <button 
-                                        id="btnBid${item.id}"
-                                        onclick="BidOrder(${item.id});"
-                                        class="btn btn-outline-primary btn-sm"
-                                        title="Lihat Detail Status"
-                                        style="position: absolute; top: 10px; right: 10px; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-arrow-right" style="font-size: 1.0rem;"></i>
-                                    </button>
+                            `;
+                        }
+                        
+                        let regmember ="";
+                        if(item.jenis_layanan == "MEMBER")
+                        {
+                            regmember = `<span class="text-danger">Berlangganan</span>`;
+                        }
+                        else{
+                            regmember = `<span class="text-dark">Reguler</span>`;
+                        }
+                        
+                        paket = paket +
+                        `
+                            <p class="d-flex justify-content-between">
+                                <span>Biaya Properti ${item.properti.nama_jenis}</span>
+                                <span>${formatRupiah(item.properti.harga)}</span>
+                            </p>
+                            
+                            <strong class="d-flex justify-content-between pt-20">
+                                <span>Total Transaksi</span>
+                                <span class="">${formatRupiah(item.total_transaksi)}</span>
+                            </strong>
+                        `
+                        ;
+                        var scr = "";
+                        scr =`
+                            <div class="card mb-3 position-relative shadow-sm border-1 p-3">
+                                <!-- Header Pesanan -->
+                                <div>
+                                    <h5 class="card-title mb-1 fw-bold">
+                                        <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
+                                    </h5>
+                                    
+                                    <p class="card-text mb-0">
+                                        <span class="text-dark">Layanan ${item.kategori_layanan}</span> - ${regmember}<br>
+                                        Total Pesanan:
+                                        <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
+                                    </p>
                                 </div>
+
+                                <!-- Accordion Detail Order -->
+                                <div class="mt-1 w-100">
+                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                        aria-expanded="true" aria-controls="collapseOrder">
+                                        <span class="me-2 accordion-icon">▶</span>
+                                        <strong class="text-muted">Detail Order</strong>
+                                    </button>
+
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
+                                        <ul class="list-unstyled mb-0" style="font-size: small;">
+                                            ${dtPesanan}
+                                        </ul>
+                                        ${paket}
+                                    </div>
+                                </div>
+
+                                <!-- Tombol Detail (pojok kanan bawah) -->
+                                <button onclick="DetailPesanan(${item.id},'btnDetail${item.id}');" 
+                                    class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2"
+                                    id="BidOrder${item.id}"
+                                    style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
+                                    <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
+                                </button>
                             </div>
-                        </div>
+
+
+
                         `;
+                        
                         return scr;
                     }).join('');
+                        
                     $('#ListBid').html(html);
                 }
             },

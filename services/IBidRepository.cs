@@ -25,8 +25,29 @@ namespace mitraacd.Services
 
         public async Task<IEnumerable<dynamic>> GetBidAsync()
         {
+            var sql = @"
+                SELECT
+                    lt.id,
+                    lt.kategori_layanan,
+                    lt.jenis_layanan,
+                    lt.total_transaksi,
+                    (cart_item::jsonb)->'Reguler' AS cart_items,
+                    lt.jenis_properti::jsonb AS properti,
+                    paket_member::jsonb AS paket
+                FROM log_transaction lt 
+                WHERE 
+                status = 3
+                ORDER BY id DESC;
+            ";
+            var result = await _db.QueryAsync<dynamic>(sql);
+
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+
+        public async Task<IEnumerable<dynamic>> GetBidAsync1()
+        {
             var finalResult = new List<dynamic>();
-            string sql = "select order_json::text from get_bid_full()";
+            string sql = "select*from lo";
             var result = await _db.QueryAsync<string>(sql);
             // Console.WriteLine(result.First().GetType().Name);
             foreach (var jsonString in result)
