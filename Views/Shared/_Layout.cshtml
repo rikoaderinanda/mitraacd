@@ -35,42 +35,35 @@
     <script src="~/vendor/bootstrap/js/bootstrap.bundle.min.js" asp-append-version="true"></script>
     @* <script src="~/vendor/OwlCarousel/owl.carousel.js" asp-append-version="true"></script> *@
     <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.0/dist/browser/signalr.min.js"></script>
-
     <script src="https://cdnjs.cloudflare.com/ajax/libs/OwlCarousel2/2.3.4/owl.carousel.min.js"
         asp-append-version="true"></script>
     <script src="~/vendor/bootstrap-select/js/bootstrap-select.min.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11" asp-append-version="true"></script>
-    <script>
-        const connection = new signalR.HubConnectionBuilder()
-            .withUrl("/notifikasiHub")
-            .build();
-
-        connection.on("TerimaNotifikasi", function (pesan) {
-            Swal.fire({
-                icon: 'info',
-                title: 'Notifikasi Baru',
-                text: pesan,
-                toast: true,
-                position: 'top-end',
-                timer: 4000,
-                showConfirmButton: false
-            });
-        });
-
-        connection.start().catch(function (err) {
-            console.error(err.toString());
-        });
-    </script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBS9s8GewgkGEaj3ANIwMaTOmZCYbd-aR0" asp-append-version="true"></script>
     
     <script src="~/js/custom.js" asp-append-version="true"></script>
     <script src="~/js/Globalfunction.js" asp-append-version="true"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@@microsoft/signalr@@8.0.0/dist/browser/signalr.min.js"></script>
+    <script src="~/js/notificationHelper.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const token = getCleanToken();
+            if (token) {
+                await window.SignalRHelper.init(token);
+            }
+        });
+    </script>
 </head>
 
 <body class="fixed-bottom-bar">
     <div class="app-page">
         @await Html.PartialAsync("_Header")
         @await Html.PartialAsync("_Notifikasi")
-        @await Html.PartialAsync("_ModalLogin_Test")
+        @await Html.PartialAsync("_ModalLogin")
+        @await Html.PartialAsync("_ModalRegistrasi")
+        @await Html.PartialAsync("_ModalConnectionError")
         @RenderBody()
         @await Html.PartialAsync("_Footer")
     </div>

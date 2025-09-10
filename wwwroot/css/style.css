@@ -481,14 +481,14 @@ p {
 	position: relative;
 }
 
-.homepage-gobo-header,
+/* .homepage-gobo-header,
 .gobo-inner-header {
 	position: sticky;
 	top: 0px;
 	z-index: 9;
 	height: 64px;
 	background: #ffffff;
-}
+} */
 
 .header-location span {
     display: block;
@@ -533,11 +533,11 @@ p {
 	left: auto !important;
 }
 
-.gobo-menu-footer {
+/* .gobo-menu-footer {
 	background: #eb394d;
 	padding: 0px !important;
 	border-radius: 0;
-}
+} */
 
 .gobo-menu-footer .row {
 	margin: 0px;
@@ -562,11 +562,11 @@ p {
 	color: #fff !important;
 }
 
-.gobo-menu-footer .col.selected a {
+/* .gobo-menu-footer .col.selected a {
 	color: #ffffff !important;
     background: #eb394d;
     opacity: 1;
-}
+} */
 
 .gobo-menu-footer .col.selected p {
 	color: #ffffff;

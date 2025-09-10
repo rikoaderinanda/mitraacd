@@ -1,46 +1,73 @@
 <style>
 .gobo-menu-footer {
-    background-color: #e63946;
+    background: linear-gradient(135deg, #007bff, #6f42c1, #00c9ff);
     padding: 0.5rem 0;
-    border-top: 2px solid #d62828;
-    box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.05);
+    border-top: 2px solid #6f42c1;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.15);
+    animation: gradientMove 8s ease infinite;
+    background-size: 200% 200%;
+}
+
+@@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
 .gobo-menu-footer .col {
     text-align: center;
     color: #fff;
-    padding: 0.3rem 0;
+    padding: 0.4rem 0;
+    transition: background 0.3s, transform 0.2s;
+    border-radius: 10px 10px 0 0;
 }
 
 .gobo-menu-footer .col a {
     color: #fff;
     text-decoration: none;
-    font-size: 0.75rem;
+    font-size: 0.78rem;
     display: flex;
     flex-direction: column;
     align-items: center;
 }
 
 .gobo-menu-footer .col a i {
-    font-size: 1.2rem;
+    font-size: 1.3rem;
     margin-bottom: 4px;
-    transition: color 0.3s;
+    transition: transform 0.3s, color 0.3s;
 }
 
+/* Hover effect */
+.gobo-menu-footer .col:hover {
+    background-color: rgba(255, 255, 255, 0.12);
+    transform: translateY(-2px);
+}
+
+.gobo-menu-footer .col a:hover i {
+    transform: scale(1.2);
+    color: #a5f3fc; /* biru muda glow */
+}
+
+/* Active menu (selected) */
 .gobo-menu-footer .col.selected {
-    background-color: rgba(255, 255, 255, 0.08);
-    border-radius: 10px 10px 0 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.25), rgba(255,255,255,0.05));
+    border-top: 3px solid #00c9ff; /* highlight cyan sesuai bg */
+    font-weight: 600;
+    border-radius: 12px 12px 0 0;
 }
 
 .gobo-menu-footer .col.selected a {
-    font-weight: 600;
-    color: #fff;
+    color: #e0f7ff; /* teks putih kebiruan */
 }
 
 .gobo-menu-footer .col.selected i {
-    color: #fff;
+    color: #00c9ff; /* ikon cyan glowing */
+    transform: scale(1.15);
 }
+
 </style>
+
+
 <div id="MenuBottom"></div>
 
 <script>

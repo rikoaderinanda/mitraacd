@@ -1,0 +1,57 @@
+<style>
+    
+    .illustration {
+        max-width: 200px;
+        margin: 20px auto;
+        display: block;
+    }
+
+    .btn-retry {
+        background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        border: none;
+        color: #fff;
+        font-weight: 600;
+        border-radius: 50px;
+        padding: 10px 30px;
+        transition: 0.3s ease-in-out;
+    }
+
+    .btn-retry:hover {
+        background: linear-gradient(135deg, #ff9a44, #ff4b2b);
+        transform: scale(1.05);
+    }
+
+    .modal-content {
+        display: flex;
+        flex-direction: column;
+        height: 100%; /* isi seluruh tinggi modal */
+    }
+</style>
+
+<div class="modal fade" id="ModalConnectionError" tabindex="-1" aria-labelledby="ModalConnectionErrorLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="home-cart mt-0">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="login-top position-relative text-white">
+                            <div class="logo-section">
+                                <h5 class="fs-3 fw-bold mb-2">😮 OUUPSS...</h5>
+                                <p class="fs-6 mb-0 opacity-100 text-white">
+                                    Sepertinya koneksi kamu terputus,<br> silahkan cek internet kamu ya..
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="login-bottom p-4 text-center">
+                            <img src="https://cdn-icons-png.flaticon.com/512/2748/2748558.png" alt="Connection Error" class="illustration">
+                            <p class="text-muted mb-4">Kami tidak bisa menjangkau server saat ini.</p>
+                            <button class="btn btn-retry" onclick="location.reload()">🔄 Coba Lagi</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

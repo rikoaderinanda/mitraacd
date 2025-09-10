@@ -1,0 +1,232 @@
+<style>
+
+    .login-top {
+        background: linear-gradient(135deg, #007bff, #6f42c1, #00c9ff);
+        padding: 1rem;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    /* Pastikan tombol Google Sign-In memiliki lebar 100% */
+    #google-signin-container {
+        display: flex;
+        justify-content: center; /* Posisikan item secara horizontal di tengah */
+        align-items: center; /* Opsional: Posisikan item secara vertikal di tengah */
+        text-align: center; /* Posisikan semua konten di tengah secara horizontal */
+    }
+
+    /* Target iframe yang dibuat oleh Google untuk menyesuaikan tinggi dan gaya lainnya */
+    #google-signin-container iframe {
+        height: 50px !important; /* Menyesuaikan tinggi dengan h_50 */
+        border-radius: 8px !important; /* Menyesuaikan border-radius dengan br-8 */
+        box-shadow: none !important; /* Menghapus shadow default Google jika ada */
+        margin-top:20px;
+        margin-top:20px;
+        width: 100%; /* Pastikan iframe mengisi lebar kontainer */
+        max-width: 300px; /* Opsional: Batasi lebar maksimum agar tidak terlalu lebar di layar besar */
+    }
+
+    /* Atau menyesuaikan tampilan tombol sosial jika diperlukan */
+    .social-icons {
+        margin-top: 15px; /* Menyesuaikan margin di bawah tombol Google */
+    }
+
+    .login-bottom {
+        flex: 1; /* isi sisa ruang di bawah */
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* konten tetap di tengah */
+        margin-top: -50px; /* tambahan opsional */
+    }
+</style>
+<script
+    src="https://accounts.google.com/gsi/client"
+    async
+    defer
+    onload="onGoogleScriptLoad()"
+    onerror="onGoogleScriptError()">
+</script>
+
+<div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content">
+            <div class="home-cart mt-0">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="login-top position-relative">
+                            <div class="logo-section">
+                                <h5 class="fs-4 fw-6 text-white mb-2">Aplikasi Mitra AC Dikari</h5>
+                                <p class="text-white fs-7 fw-4">
+                                    Masuk ke akun Anda untuk menerima dan mengelola pekerjaan.
+                                </p>
+                            </div>
+                            <a class="back-btn text-white" data-bs-dismiss="modal" onclick="CloseModalLogin()">
+                                <i class="bi bi-x"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-12">
+                        <div class="login-bottom p-4 text-center">
+                            <h5 class="fs-4 fw-6 mb-2">Masuk dengan Google</h5>
+                            <p class="fs-7 text-muted mb-4">
+                                Gunakan akun Google Anda untuk mengakses aplikasi teknisi.
+                            </p>
+
+                            <!-- Tombol Google Sign In -->
+                            <div id="google-signin-container">
+                                <div id="g_id_signin"></div>
+                            </div>
+
+                            <p class="fs-7 text-muted mt-4">
+                                Dengan login, Anda menyetujui <a href="#">Syarat & Ketentuan</a> kami.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+var $;
+
+
+document.addEventListener('DOMContentLoaded', function () {
+    if (typeof window.jQuery === 'undefined') {
+        console.error('jQuery is not loaded.');
+        return;
+    }
+    $ = window.jQuery;
+    //const token = localStorage.getItem("jwt");
+    const token = Storage.get("jwt");
+    
+    if (!token) {
+        if (typeof google === 'undefined' || !google.accounts) {
+            console.warn("Google Sign-In API tidak tersedia.");
+            loadGoogleSignInScript(function () {
+                google.accounts.id.initialize({
+                    client_id: "88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com",
+                    callback: handleCredentialResponse
+                });
+
+                google.accounts.id.renderButton(
+                    document.getElementById("g_id_signin"),
+                    { theme: "outline", size: "large" }
+                );
+            });
+            return;
+        }
+
+        google.accounts.id.initialize({
+            client_id: "88037961929-iicocvnl4u3hjo265aoqe1ac3s4sv0jg.apps.googleusercontent.com",
+            callback: handleCredentialResponse
+        });
+
+        google.accounts.id.renderButton(
+            document.getElementById("g_id_signin"),
+            { theme: "outline", size: "large" }
+        );
+
+        //google.accounts.id.prompt(); // optional
+    } 
+    else {
+        // Optional: Validasi token ke backend jika perlu
+        console.log("User sudah login, token tersedia:", token);
+        document.getElementById("g_id_signin").style.display = "none";
+    }
+});
+
+function onGoogleScriptLoad() {
+    console.log("Google Sign-In script loaded");
+}
+
+function onGoogleScriptError() {
+    console.warn("Google Sign-In gagal dimuat. Pastikan koneksi atau coba mode login lain.");
+    document.getElementById("g_id_signin").innerHTML =
+        '<button class="btn btn-danger w-100">Login Google Tidak Tersedia</button>';
+}
+
+function loadGoogleSignInScript(callback) {
+    // Cek apakah sudah ada script sebelumnya, kalau ada hapus dulu
+    const existingScript = document.querySelector('script[src="https://accounts.google.com/gsi/client"]');
+    if (existingScript) {
+        existingScript.remove();
+    }
+
+    // Buat elemen script baru
+    const script = document.createElement('script');
+    script.src = "https://accounts.google.com/gsi/client";
+    script.async = true;
+    script.defer = true;
+
+    // Jika berhasil dimuat
+    script.onload = function () {
+        console.log("Google Sign-In API berhasil dimuat ulang.");
+        if (typeof callback === "function") callback();
+    };
+
+    // Jika gagal dimuat
+    script.onerror = function () {
+        console.error("Gagal memuat Google Sign-In API. Coba lagi...");
+        setTimeout(() => loadGoogleSignInScript(callback), 3000); // coba ulang setelah 3 detik
+    };
+
+    // Tambahkan script ke head
+    document.head.appendChild(script);
+}
+
+function handleCredentialResponse(response) {
+    // response.credential berisi ID Token (JWT)
+    const idToken = response.credential;
+    //console.log(idToken);
+    var _Data = { idToken: idToken }
+    callApi({
+        url: "/api/Auth/google-login",
+        method: 'POST',
+        data:_Data,
+        success: function (res) {
+            console.log('Login berhasil:', res);
+            document.getElementById("g_id_signin").style.display = "none";
+            setUser(res);
+        },
+        error: function (err) {
+            Swal.fire('Gagal!', 'Pesanan berhasil gagal dicheckout.', 'warning');
+        },
+        onBeforeSend : function () {
+            $("#btnSimpanDulu").prop("disabled", true).text("Memproses...");
+            $("#btnCheckout").prop("disabled", true).text("Memproses...");
+        },
+        onComplete : function () {
+            $("#btnSimpanDulu").prop("disabled", false).text("Simpan Dulu");
+            $("#btnCheckout").prop("disabled", false).text("Bayar");
+        }
+    });
+}
+
+function setUser(data){
+    Storage.set('username', data.user.name);
+    Storage.set('userId', data.user.id);
+    UserId = data.user.id;
+    Storage.set('nama_lengkap', data.user.fullname);
+    Storage.set('email', data.user.email);
+    Storage.set('no_hp', data.user.nohp);
+    Storage.set('photo', data.user.picture);
+    Storage.set("jwt", data.token);
+    Storage.remove("ChannelPayment");
+    window.location.reload();
+    $('#ModalLogin').modal('hide');
+}
+
+</script>

@@ -21,9 +21,11 @@
                 <i class="bi bi-arrow-clockwise text-primary"></i>
             </button>
         </div>
+        @await Html.PartialAsync("_Greeting_Location")
         <div id="ListBid"></div>
     </div>
 </div>
+
 <script>
     var $;
     document.addEventListener('DOMContentLoaded', function () {
@@ -34,16 +36,15 @@
         $ = window.jQuery;
         Storage.set("CurrentPage","");
         loadHeader();
-        var user = getUserInfo();
-        if (!isValidUser(user)) {
-            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
-            $("#btnClsModalLogin").show();
-            $('#ModalLogin').modal('show');
-        }
-        else {
-            console.log(user);
-            LoadListBid();
-        }
+        //checkStatusMitra();
+        checkStatusMitra().then(result => {
+            if (result.success) {
+            console.log("Lanjut ke halaman mitra:", result.data);
+                LoadListBid();
+            } else {
+                console.warn("Tidak bisa lanjut:", result.reason);
+            }
+        });
     });
     function LoadListBid() {
         callApi({
@@ -78,14 +79,14 @@
                         if(Object.keys(item.paket).length > 0){
                             paket = `
 
-                                <p class="d-flex justify-content-between">
+                                <li class="d-flex justify-content-between border-bottom">
                                     <span>${item.paket.deskripsi}</span>
                                     <span>${formatRupiah(TotalReg*item.paket.qty)}</span>
-                                </p>
-                                <p class="d-flex justify-content-between">
+                                </li>
+                                <li class="d-flex justify-content-between border-bottom">
                                     <span>Diskon berlangganan</span>
                                     <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
-                                </p>
+                                </li>
                                 <strong class="d-flex justify-content-between">
                                     <span>Sub Total </span>
                                     <span class="">${formatRupiah(item.paket.total)}</span>
@@ -144,8 +145,42 @@
                                     <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
                                         <ul class="list-unstyled mb-0" style="font-size: small;">
                                             ${dtPesanan}
+                                            ${paket}
                                         </ul>
-                                        ${paket}
+                                        
+                                    </div>
+                                </div>
+                                <!-- Accordion Detail Order -->
+                                <div class="mt-1 w-100">
+                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                        aria-expanded="true" aria-controls="collapseOrder">
+                                        <span class="me-2 accordion-icon">▶</span>
+                                        <strong class="text-muted">Customer</strong>
+                                    </button>
+
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
+                                        <ul class="list-unstyled mb-0" style="font-size: small;">
+                                            ${dtPesanan}
+                                            ${paket}
+                                        </ul>
+                                        
+                                    </div>
+                                </div>
+                                <div class="mt-1 w-100">
+                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
+                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
+                                        aria-expanded="true" aria-controls="collapseOrder">
+                                        <span class="me-2 accordion-icon">▶</span>
+                                        <strong class="text-muted">Jadwal</strong>
+                                    </button>
+
+                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
+                                        <ul class="list-unstyled mb-0" style="font-size: small;">
+                                            ${dtPesanan}
+                                            ${paket}
+                                        </ul>
+                                        
                                     </div>
                                 </div>
 
@@ -220,5 +255,9 @@
                     $("#btnBid"+id).prop("disabled", false).text("Memproses...");
                 }
             });
+    }
+
+    function checkKelengkapanDataTeknisi(){
+
     }
 </script>

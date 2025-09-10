@@ -1,0 +1,93 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+<!-- Landing Page Start -->
+<div class="landing-page-skip align-items-center text-center justify-content-center vh-100 d-flex flex-column bg-light">
+    
+    <!-- Skip Button -->
+    <a class="position-absolute btn btn-sm btn-outline-primary rounded-pill px-3 py-1 m-4 shadow-sm"
+       href="app-signup.html">
+        Skip <i class="bi bi-chevron-double-right ms-1"></i>
+    </a>
+
+    <!-- Onboarding Carousel -->
+    <div class="landing-page w-100 mb-4">
+        <div class="owl-carousel onboard-slider getStarted-slider owl-theme">
+            
+            <!-- Slide 1 -->
+            <div class="item landing-item">
+                <div class="d-flex align-items-center justify-content-center flex-column text-center px-4">
+                    <img src="img/landing-1.png" class="img-fluid mx-auto mb-3 shadow-sm rounded-4" 
+                         alt="Landing 1" style="max-height: 220px; object-fit: contain;">
+                    <h4 class="fw-bold text-primary mb-2">Best Quality Grocery At Your Doorstep!</h4>
+                    <p class="text-muted small">Aliquam imperdiet mauris lacus, a elementum ex imperdiet sit amet donec vulputate.</p>
+                </div>
+            </div>
+
+            <!-- Slide 2 -->
+            <div class="item landing-item">
+                <div class="d-flex align-items-center justify-content-center flex-column text-center px-4">
+                    <img src="img/landing-2.png" class="img-fluid mx-auto mb-3 shadow-sm rounded-4" 
+                         alt="Landing 2" style="max-height: 220px; object-fit: contain;">
+                    <h4 class="fw-bold text-success mb-2">Best Quality Products For Your Family</h4>
+                    <p class="text-muted small">Aliquam imperdiet mauris lacus, a elementum ex imperdiet sit amet donec vulputate.</p>
+                </div>
+            </div>
+
+            <!-- Slide 3 -->
+            <div class="item landing-item">
+                <div class="d-flex align-items-center justify-content-center flex-column text-center px-4">
+                    <img src="img/landing-3.png" class="img-fluid mx-auto mb-3 shadow-sm rounded-4" 
+                         alt="Landing 3" style="max-height: 220px; object-fit: contain;">
+                    <h4 class="fw-bold text-danger mb-2">Fast & Responsible Delivery By Our Courier</h4>
+                    <p class="text-muted small">Aliquam imperdiet mauris lacus, a elementum ex imperdiet sit amet donec vulputate.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- CTA Buttons -->
+    <div class="gbtn-wrap w-100">
+        <div class="container">
+            <div class="row g-3">
+                <div class="col-6">
+                    <a class="btn btn-gradient-primary w-100 rounded-pill h-50 py-2 shadow-sm"
+                       href="app-signup.html">
+                        <i class="bi bi-person-plus me-1"></i> Register
+                    </a>
+                </div>
+                <div class="col-6">
+                    <a class="btn btn-outline-dark w-100 rounded-pill h-50 py-2 shadow-sm"
+                       href="app-signin.html">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Sign In
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Extra Styling -->
+<style>
+    .btn-gradient-primary {
+        background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        color: white;
+        border: none;
+        transition: all 0.3s ease;
+    }
+    .btn-gradient-primary:hover {
+        background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 15px rgba(0, 0, 0, 0.15);
+    }
+    .owl-carousel .item {
+        transition: transform 0.4s ease, opacity 0.4s ease;
+    }
+    .owl-carousel .active .item {
+        transform: scale(1);
+        opacity: 1;
+    }
+</style>
+

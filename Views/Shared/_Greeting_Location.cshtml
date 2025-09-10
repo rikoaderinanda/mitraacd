@@ -1,0 +1,89 @@
+<div class="d-flex align-items-center w-100 bg-white" style="margin-top:20px;margin-bottom:20px;">
+    <!-- Kiri -->
+    <div class="flex-grow-1 me-2">
+        <span id="SalamWaktu" class="fw-semibold text-dark"></span>
+        <span id="Username" class="fw-bold text-primary"></span>
+    </div>
+
+    <!-- Kanan -->
+    <div class="d-flex align-items-center justify-content-end" style="max-width: 70%; overflow: hidden;">
+        <i class="bi bi-geo-alt-fill text-danger me-1 flex-shrink-0"></i>
+        <span id="currentLocation" 
+              class="fw-semibold small text-secondary text-truncate" 
+              style="white-space: nowrap;">
+            
+        </span>
+    </div>
+</div>
+
+
+
+<script>
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        var user = getUserInfo();
+        //console.log(user);
+        if (isValidUser(user)) {
+            $("#SalamWaktu").html(`${getSalamWaktu()},`);
+            $("#Username").html(`${user.username}`);
+            $("#currentLocation").text("memuat lokasi...");
+            initMap();
+        }
+        else {
+            var cr =
+                `
+                <button class="btn btn-warning btn-sm rounded-pill w-100" 
+                    onclick="showLogin();" id="btnLogin" 
+                    style="background: linear-gradient(to right, #6668df, #4b4db8); border-color: #6668df; color: white;"
+                >
+                    <i class="bi bi-exclamation-circle me-1"></i> Login sekarang
+                </button>
+
+            `;
+            $("#currentLocation").text("");
+            $("#Username").html(cr);
+
+        }
+        
+    });
+
+    function initMap() {
+        navigator.geolocation.getCurrentPosition(
+            success_getLocation,
+            error_getLocation
+        );
+        // inisialisasi peta
+    }
+
+    async function success_getLocation(pos) {
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        //console.log('Lat:', lat, 'Lng:', lng);
+
+        // setelah dapat lat/lng, panggil Google Geocoding API
+        const data = await getAddress_api(lat, lng);
+        //console.log(data);
+        if (data != null) {
+            $('#currentLocation').text(
+                `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+            );
+            //$('#AlamatSekarang').text(`${data.fullAddress}`);
+        }
+    }
+
+    function showLogin() {
+        $("#TitleModalLogin").text("Selamat datang");
+        $("#btnClsModalLogin").show();
+        $('#ModalLogin').modal('show');
+    }
+
+    function CloseModalLogin() {
+        $('#ModalLogin').modal('hide');
+    }
+</script>
+

@@ -97,6 +97,39 @@ function validasiForm() {
     return isValid;
 }
 
+function error_getLocation(err) {
+    console.error('Error:', err.message);
+}
+
+async function getAddress_api(lat, lng) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Location/reverse-geocode?lat=${lat}&lng=${lng}`,
+            method: 'GET',
+            success: function (res) {
+                resolve(res); // kembalikan data API
+            },
+            error: function () {
+                console.log('Proses gagal.');
+                //Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+                reject('API Error');
+            },
+            onBeforeSend: function () {
+                // btn.html(
+                //     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                // );
+                // btn.prop('disabled', true);
+            },
+            onComplete: function () {
+                // btn.html(
+                //     `<i class="bi bi-arrow-right" style="font-size: 1rem;"></i>`
+                // );
+                // btn.prop('disabled', false);
+            }
+        });
+    });
+}
+
 function isValidWhatsapp(number) {
     let cleaned = number.replace(/\D/g, ''); // Hapus semua karakter non-digit
     return /^((62)|0)8[1-9][0-9]{7,11}$/.test(cleaned); // Validasi pola umum WhatsApp di Indonesia
@@ -242,8 +275,9 @@ function callApi(options) {
         error: function (xhr) {
             const errMsg =
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
-            console.error('API Error:', errMsg);
-            error(errMsg);
+            console.log(errMsg);
+            //console.error('API Error:', errMsg);
+            $('#ModalConnectionError').modal('show');
         },
         complete: function () {
             onComplete();
@@ -253,16 +287,6 @@ function callApi(options) {
 
 function formatToSixDigits(number) {
     return number.toString().padStart(6, '0');
-}
-
-function isValidUser(u) {
-    return (
-        u != null &&
-        typeof u === 'object' &&
-        u.id != null &&
-        typeof u.username === 'string' &&
-        u.username.trim() !== ''
-    );
 }
 
 function getUserInfo() {
@@ -275,6 +299,16 @@ function getUserInfo() {
         photo: Storage.get('photo') || ''
     };
     return data;
+}
+
+function clearSessionForLOgout() {
+    Storage.remove('userId');
+    Storage.remove('username');
+    Storage.remove('email');
+    Storage.remove('nama_lengkap');
+    Storage.remove('no_hp');
+    Storage.remove('photo');
+    Storage.remove('jwt');
 }
 
 function getSalamWaktu() {
@@ -312,4 +346,80 @@ function dataURLToBlob(dataURL) {
         array[i] = binary.charCodeAt(i);
     }
     return new Blob([array], { type: mime });
+}
+
+function getCleanToken() {
+    let token = localStorage.getItem('jwt');
+    if (!token) return null;
+
+    // hapus tanda kutip di depan & belakang kalau ada
+    if (token.startsWith('"') && token.endsWith('"')) {
+        token = token.substring(1, token.length - 1);
+    }
+
+    return token;
+}
+
+function decodeJwt(token) {
+    const parts = token.split('.');
+    if (parts.length !== 3) return null;
+
+    const payload = JSON.parse(atob(parts[1]));
+    console.log('Header:', JSON.parse(atob(parts[0])));
+    console.log('Payload:', payload);
+    return payload;
+}
+
+async function GetDataAkunApi(id) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Auth/GetData_account?id=' + id,
+            method: 'GET',
+            success: function (res) {
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {},
+            onComplete: function () {}
+        });
+    });
+}
+
+function isValidUser(u) {
+    return (
+        u != null &&
+        typeof u === 'object' &&
+        u.id != null &&
+        typeof u.username === 'string' &&
+        u.username.trim() !== ''
+    );
+}
+
+async function checkStatusMitra() {
+    var user = getUserInfo();
+
+    if (!isValidUser(user)) {
+        $('#TitleModalLogin').text('Silahkan login terlebih dahulu');
+        $('#btnClsModalLogin').show();
+        $('#ModalLogin').modal('show');
+
+        return { success: false, reason: 'not_logged_in' };
+    } else {
+        try {
+            var data = await GetDataAkunApi(user.id);
+            console.log(data);
+
+            if (data.status_mitra == 0) {
+                $('#ModalRegistrasi').modal('show');
+                return { success: false, reason: 'not_registered', data: data };
+            }
+
+            return { success: true, reason: 'registered', data: data };
+        } catch (err) {
+            console.error('Error fetching akun:', err);
+            return { success: false, reason: 'api_error', error: err };
+        }
+    }
 }

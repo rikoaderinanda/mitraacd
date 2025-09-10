@@ -1,3 +1,83 @@
+<style>
+.homepage-gobo-header {
+    background: linear-gradient(135deg, #007bff, #6f42c1, #00c9ff);
+    background-size: 200% 200%;
+    animation: gradientMove 8s ease infinite;
+    color: #fff;
+    padding: 0.6rem 1rem;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    position: sticky;
+    top: 0;
+    z-index: 1030;
+    border-bottom: 2px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(6px); /* efek frosted glass */
+}
+
+@@keyframes gradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+.homepage-gobo-header .main-logo {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.homepage-gobo-header .main-logo img {
+    height: 34px;
+}
+
+.homepage-gobo-header .main-logo strong {
+    font-size: 0.85rem;
+    letter-spacing: 1px;
+    color: #e0f7ff; /* putih kebiruan biar nyatu dengan bg */
+}
+
+.homepage-gobo-header .header-right {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    gap: 14px;
+}
+
+.homepage-gobo-header .header-right li {
+    display: inline-flex;
+    align-items: center;
+}
+
+.homepage-gobo-header .header-action {
+    color: #fff;
+    font-size: 1.35rem;
+    transition: transform 0.25s, color 0.3s;
+}
+
+.homepage-gobo-header .header-action:hover {
+    transform: scale(1.2);
+    color: #00c9ff; /* glow cyan sama dengan footer */
+}
+
+.homepage-gobo-header .header-title {
+    font-weight: 600;
+    color: #e0f7ff;
+}
+
+.homepage-gobo-header .notify-count {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: #ffea00;
+    color: #000;
+    font-size: 0.7rem;
+    font-weight: 600;
+    border-radius: 50%;
+    padding: 2px 6px;
+    box-shadow: 0 0 6px rgba(0,0,0,0.2);
+}
+</style>
+
 <div class="gobo-shadow p-3 homepage-gobo-header">
     <div class="container p-0">
         <div class="d-flex align-items-center w-100" id="HeaderContent">
@@ -12,7 +92,6 @@
             return;
         }
         var $ = window.jQuery;
-        
     });
 
     function loadHeader(page) {
@@ -25,14 +104,8 @@
                 <a href="@Url.Action("Index", "Home")">
                     <img src="/img/logo_ACD.png" alt="logo">
                 </a>
-                <strong style="color:black;font-size:small;">MITRA</strong>
+                <strong>MITRA</strong>
             </div>
-            <a class="header-location" href="#addAddressModal" data-bs-toggle="modal">
-                <span class="b-color local-area fw-4 fs-7">
-                    <i class="bi bi-geo-alt ms-1 me-2 ls-f header-action"></i>
-                    Ciomas, Bogor
-                </span>
-            </a>
             <ul class="ms-auto header-right">
                 <li>
                     <a href="app-notifications.html" class="header-action position-relative">

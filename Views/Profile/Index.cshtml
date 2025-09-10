@@ -125,7 +125,8 @@
             }
         }).then((result) => {
             if (result.isConfirmed) {
-                Storage.remove('username');
+                clearSessionForLOgout();
+                Storage.clear();
                 window.location.href = '@Url.Action("Index", "Home")';
             }
         });
