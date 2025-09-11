@@ -20,6 +20,8 @@ namespace mitraacd.Services
         Task<bool> CheckLogTrxDgnAlamat(string _id);
         Task<bool> UpdateAccount(ReqUpdateAkun data);
         Task<dynamic> GetData_account(string id);
+        
+        Task<bool> CheckNama(ReqCheckNama data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -269,6 +271,22 @@ namespace mitraacd.Services
             var result = await _db.QueryFirstOrDefaultAsync<dynamic>(sql, param);
 
             return JsonColumnParser.ParseJsonColumns(new[] { result }).FirstOrDefault();
+        }
+
+        public async Task<bool> CheckNama(ReqCheckNama data)
+        {
+            var query = @"
+                select count(*) from mitra_data
+                where LOWER(nama_lengkap) = LOWER(@NamaLengkap) or LOWER(username) = LOWER(@NamaPanggilan);
+            ";
+
+            var param = new
+            {
+                NamaLengkap = data.NamaLengkap,
+                NamaPanggilan = data.NamaPanggilan
+            };
+            var result = await _db.ExecuteScalarAsync<int>(query, param);
+            return result > 0;
         }
 
     }

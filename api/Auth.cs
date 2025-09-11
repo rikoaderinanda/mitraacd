@@ -17,7 +17,7 @@ namespace mitraacd.api
 {
     [ApiController]
     [Route("api/[controller]")]
-
+    [ApiExplorerSettings(GroupName = "Account")]
     public class AuthController : ControllerBase
     {
         private readonly IConfiguration _configuration;
@@ -164,6 +164,19 @@ namespace mitraacd.api
         public async Task<ActionResult<dynamic>> GetData_account(string id)
         {
             var res = await _repo.GetData_account(id);
+            return Ok(res);
+        }
+
+        [HttpPost("CheckNamaLengkapDanPanggilan")]
+        public async Task<ActionResult<dynamic>> CheckNamaLengkapDanPanggilan([FromBody] ReqCheckNama req)
+        {
+            var res = await _repo.CheckNama(req);
+            if(res)
+            {
+                return Ok(new { message = "Nama yang diinput sudah pernah terdaftar", data = req });
+                
+            }
+            
             return Ok(res);
         }
     }

@@ -5,14 +5,13 @@ using Microsoft.OpenApi.Models;
 using mitraacd.Models;
 using mitraacd.Services;
 using mitraacd.Hubs;
-
 using Microsoft.AspNetCore.Authentication.Cookies;
-
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
+using Swashbuckle.AspNetCore.Annotations;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -37,6 +36,30 @@ builder.Services.AddSwaggerGen(c =>
         Title = "Mitra ACD API",
         Version = "v1"
     });
+    c.SwaggerDoc("account", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API Account",
+        Version = "v1"
+    });
+    c.SwaggerDoc("whatsapp", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API Whatsapp",
+        Version = "v1"
+    });
+
+    
+    // Filter supaya dokumen "Account" hanya memuat controller dengan GroupName = "transaksi"
+    c.DocInclusionPredicate((docName, apiDesc) =>
+    {
+        if (string.IsNullOrWhiteSpace(apiDesc.GroupName))
+        {
+            // Kalau endpoint tidak punya GroupName, taruh di "v1"
+            return docName == "v1";
+        }
+
+        return string.Equals(apiDesc.GroupName, docName, StringComparison.OrdinalIgnoreCase);
+    });
+    c.EnableAnnotations();
 });
 builder.Services.AddScoped<IDbConnection>(sp =>
 {
@@ -50,6 +73,9 @@ builder.Services.AddScoped<ITaskRepository, TaskRepository>();
 builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddScoped<IPerangkatPelangganRepository, PerangkatPelangganRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
+builder.Services.AddScoped<IWhatsappRepo, WhatsappRepo>();
+
+
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<IUserIdProvider, CustomUserIdProvider>();
 
@@ -131,6 +157,9 @@ app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mitra ACD API V1");
+    c.SwaggerEndpoint("/swagger/account/swagger.json", "API account");
+    c.SwaggerEndpoint("/swagger/whatsapp/swagger.json", "API Whatsapp");
+    
     c.RoutePrefix = "swagger"; // akses Swagger di /swagger
 });
 

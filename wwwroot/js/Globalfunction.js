@@ -423,3 +423,50 @@ async function checkStatusMitra() {
         }
     }
 }
+
+async function cekNamaApi(_data) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Auth/CheckNamaLengkapDanPanggilan',
+            method: 'POST',
+            data: _data,
+            success: function (res) {
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {},
+            onComplete: function () {}
+        });
+    });
+}
+
+async function getAddress_api(lat, lng) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Location/reverse-geocode?lat=${lat}&lng=${lng}`,
+            method: 'GET',
+            success: function (res) {
+                resolve(res); // kembalikan data API
+            },
+            error: function () {
+                console.log('Proses gagal.');
+                //Swal.fire('Gagal!', 'Proses gagal.', 'warning');
+                reject('API Error');
+            },
+            onBeforeSend: function () {
+                // btn.html(
+                //     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
+                // );
+                // btn.prop('disabled', true);
+            },
+            onComplete: function () {
+                // btn.html(
+                //     `<i class="bi bi-arrow-right" style="font-size: 1rem;"></i>`
+                // );
+                // btn.prop('disabled', false);
+            }
+        });
+    });
+}

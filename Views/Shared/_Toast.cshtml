@@ -1,0 +1,50 @@
+<style>
+  #myToast {
+    position: fixed;
+    z-index: 9999;
+    border-radius: 0.75rem;
+    background: #fcf7edff;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+    border-left: 4px solid #0d6efd;
+    animation: slideIn 0.35s ease-out;
+    min-width: 240px;
+    max-width: 300px;
+    padding: 0; /* hapus padding default */
+  }
+  @@keyframes slideIn {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+</style>
+<div id="myToast" class="toast align-items-center border-0 fade" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+        <div class="toast-body text-dark d-flex align-items-center">
+            <i class="bi bi-exclamation-triangle-fill text-warning me-2 fs-5"></i>
+            <span id="messageAlert" class=""></span>
+        </div>
+        <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"></button>
+    </div>
+</div>
+
+<script>
+function showToast(message, Id = "myToast") {
+    const toastEl = document.getElementById(Id);
+    if (!toastEl) {
+        console.error(`Elemen dengan id '${Id}' tidak ditemukan.`);
+        return;
+    }
+
+    $("#messageAlert").text(message);
+
+    const toast = new bootstrap.Toast(toastEl, {
+        delay: 3000
+    });
+    toast.show();
+}
+</script>

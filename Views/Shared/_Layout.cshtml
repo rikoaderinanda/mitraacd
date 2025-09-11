@@ -60,10 +60,12 @@
 <body class="fixed-bottom-bar">
     <div class="app-page">
         @await Html.PartialAsync("_Header")
+        @await Html.PartialAsync("_Toast")
         @await Html.PartialAsync("_Notifikasi")
         @await Html.PartialAsync("_ModalLogin")
         @await Html.PartialAsync("_ModalRegistrasi")
         @await Html.PartialAsync("_ModalConnectionError")
+        
         @RenderBody()
         @await Html.PartialAsync("_Footer")
     </div>

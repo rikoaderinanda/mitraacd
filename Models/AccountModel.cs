@@ -3,6 +3,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
 namespace mitraacd.Models
 {
+    public class ReqCheckNama
+    {
+        public string NamaLengkap { get; set; }
+        public string NamaPanggilan { get; set; }
+    }
+
     public class ReqUpdateAkun
     {
         public long Id { get; set; }
