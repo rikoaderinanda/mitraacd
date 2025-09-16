@@ -227,54 +227,51 @@ document.addEventListener("DOMContentLoaded", function () {
 
 });
 
-// Perbaikan nextStep agar auto buka kamera di step 4
+function nextStep(step, first = false) {
+    $(".wizard-step").addClass("d-none");
+    $("#step" + step).removeClass("d-none");
 
-function nextStep(step, first = false) 
-{
-  $(".wizard-step").addClass("d-none");
-  $("#step" + step).removeClass("d-none");
+    let totalSteps = $(".wizard-step").length;
+    let percent = (step / totalSteps) * 100;
+    $("#wizardProgress").css("width", percent + "%");
 
-  let totalSteps = $(".wizard-step").length;
-  let percent = (step / totalSteps) * 100;
-  $("#wizardProgress").css("width", percent + "%");
-
-  // Jika bukan step 4 → tutup kamera
-  
-  if (step < 4 && step > 5) {
-    closeCamera();
-  }
-
-  // Jika step 4 → auto buka kamera
-  if (step === 4) {
-    let ada = false;
-    const previewSelfie = document.getElementById("previewSelfie");
-    // cek apakah preview tampil & punya src (foto sudah diambil)
-    if (previewSelfie.classList.contains("d-none") || !previewSelfie.src || previewSelfie.src === window.location.href) {
-      ada = true;
+    // Jika bukan step 4 → tutup kamera
+    
+    if (step < 4 && step > 5) {
+      closeCamera();
     }
 
-    if(ada){
-      openCamera();
-    }
-  }
+    // Jika step 4 → auto buka kamera
+    if (step === 4) {
+      let ada = false;
+      const previewSelfie = document.getElementById("previewSelfie");
+      // cek apakah preview tampil & punya src (foto sudah diambil)
+      if (previewSelfie.classList.contains("d-none") || !previewSelfie.src || previewSelfie.src === window.location.href) {
+        ada = true;
+      }
 
-  if (step === 5) {
-    let ada = false;
-    const previewKTP = document.getElementById("previewKTP");
-    // cek apakah preview tampil & punya src (foto sudah diambil)
-    if (previewKTP.classList.contains("d-none") || !previewKTP.src || previewKTP.src === window.location.href) {
-      ada = true;
+      if(ada){
+        openCamera();
+      }
     }
 
-    if(ada){
-      openCameraKTP();
-    }
-  }
+    if (step === 5) {
+      let ada = false;
+      const previewKTP = document.getElementById("previewKTP");
+      // cek apakah preview tampil & punya src (foto sudah diambil)
+      if (previewKTP.classList.contains("d-none") || !previewKTP.src || previewKTP.src === window.location.href) {
+        ada = true;
+      }
 
-  // Isi konfirmasi di step 6
-  if (step === 6) {
-      ResumeData();
-  }
+      if(ada){
+        openCameraKTP();
+      }
+    }
+
+    // Isi konfirmasi di step 6
+    if (step === 6) {
+        ResumeData();
+    }
   
 }
 
@@ -382,8 +379,6 @@ function verifikasiKode() {
   //alert("Verifikasi berhasil!");
   nextStep(4);
 }
-
-
 
 // Fungsi buka kamera
 async function openCamera() {

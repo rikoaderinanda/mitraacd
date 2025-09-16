@@ -6,14 +6,11 @@
           <!-- Header -->
           <div class="col-12">
             <div class="login-top position-relative text-center bg-primary text-white p-4 rounded-top-4">
-              <!-- Tombol Close -->
               <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
-              <!-- Ilustrasi -->
               <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" 
-                   alt="Biodata Illustration" 
+                   alt="Skill Illustration" 
                    class="img-fluid mb-3" 
                    style="max-height:40px;">
-
               <h5 class="fs-4 fw-bold mb-2">Skill Mitra</h5>
               <p class="fs-7 mb-0 opacity-75 text-white">
                 Kami membutuhkan beberapa keterangan skill Anda, sobat.
@@ -24,94 +21,101 @@
           <!-- Body -->
           <div class="col-12">
             <div class="login-bottom p-4">
-              <form>
-                <!-- Checklist Skill -->
-                <label class="form-label fw-semibold mb-3">Pilih Skill Teknisi AC:</label>
-
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="instalasi" id="instalasi">
-                  <label class="form-check-label" for="instalasi">Instalasi AC</label>
-                </div>
-
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="perawatan" id="perawatan">
-                  <label class="form-check-label" for="perawatan">Perawatan / Servis AC</label>
-                </div>
-
-                <div class="form-check">
+              <div id="skillWizard">
+                
+                <!-- Step 1: Skill Utama -->
+                <div class="wizard-step" id="skillStep1">
+                  <h6 class="fw-bold mb-3 text-primary">🛠 Pilih Skill Utama</h6>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="instalasi" id="instalasi">
+                    <label class="form-check-label" for="instalasi">Instalasi AC</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="perawatan" id="perawatan">
+                    <label class="form-check-label" for="perawatan">Perawatan / Servis AC</label>
+                  </div>
+                  <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="perbaikan" id="perbaikan">
                     <label class="form-check-label" for="perbaikan">Perbaikan AC</label>
-                </div>
+                  </div>
 
-                <!-- Sub-skill perbaikan AC (disembunyikan default) -->
-                <div class="ms-4 mt-2 d-none" id="perbaikanDetail">
+                  <!-- Sub-skill perbaikan -->
+                  <div class="ms-4 mt-2 d-none" id="perbaikanDetail">
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="kebocoran" id="kebocoran">
-                        <label class="form-check-label" for="kebocoran">Perbaikan Kebocoran Pipa / Freon</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="kompresor" id="kompresor">
-                        <label class="form-check-label" for="kompresor">Perbaikan / Penggantian Kompresor</label>
+                      <input class="form-check-input" type="checkbox" value="kebocoran" id="kebocoran">
+                      <label class="form-check-label" for="kebocoran">Perbaikan Kebocoran Pipa / Freon</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="blower" id="blower">
-                        <label class="form-check-label" for="blower">Perbaikan Blower / Fan Indoor-Outdoor</label>
+                      <input class="form-check-input" type="checkbox" value="kompresor" id="kompresor">
+                      <label class="form-check-label" for="kompresor">Perbaikan / Penggantian Kompresor</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="kelistrikan" id="kelistrikan">
-                        <label class="form-check-label" for="kelistrikan">Perbaikan Kelistrikan AC</label>
+                      <input class="form-check-input" type="checkbox" value="blower" id="blower">
+                      <label class="form-check-label" for="blower">Perbaikan Blower / Fan Indoor-Outdoor</label>
                     </div>
                     <div class="form-check">
-                        <input class="form-check-input" type="checkbox" value="sparepart" id="sparepart">
-                        <label class="form-check-label" for="sparepart">Penggantian Sparepart (kapasitor, motor, dll)</label>
+                      <input class="form-check-input" type="checkbox" value="kelistrikan" id="kelistrikan">
+                      <label class="form-check-label" for="kelistrikan">Perbaikan Kelistrikan AC</label>
                     </div>
-                </div>
-
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="bongkarPasang" id="bongkarPasang">
-                  <label class="form-check-label" for="bongkarPasang">Bongkar & Pasang AC</label>
-                </div>
-
-                <div class="form-check">
-                  <input class="form-check-input" type="checkbox" value="isiFreon" id="isiFreon">
-                  <label class="form-check-label" for="isiFreon">Pengisian Freon</label>
-                </div>
-
-                <hr class="my-4">
-
-                <!-- Lama Pengalaman -->
-                <div class="mb-3">
-                  <label for="lamaPengalaman" class="form-label fw-semibold">Lama Pengalaman (Tahun)</label>
-                  <input type="number" class="form-control rounded-3" id="lamaPengalaman" name="lamaPengalaman" placeholder="Contoh: 3">
-                </div>
-
-                <!-- Deskripsi Pengalaman -->
-                <div class="mb-3">
-                  <label for="deskripsiSkill" class="form-label fw-semibold">Deskripsi Skill / Pengalaman</label>
-                  <textarea class="form-control rounded-3" id="deskripsiSkill" name="deskripsiSkill" rows="3" placeholder="Jelaskan pengalaman Anda, contoh: pernah instalasi AC split 1-2 PK, perawatan rutin gedung, dll."></textarea>
-                </div>
-
-                
-                <!-- Sertifikasi -->
-                <div class="mb-3">
-                    <label for="sertifikasi" class="form-label fw-semibold">Sertifikasi (Opsional)</label>
-                    <input type="text" class="form-control rounded-3 mb-2" id="sertifikasi" name="sertifikasi" placeholder="Contoh: Sertifikat BNSP Teknisi AC">
-
-                    <!-- Upload File Sertifikat -->
-                    <label for="fileSertifikat" class="form-label">Upload Sertifikat</label>
-                    <input class="form-control" type="file" id="fileSertifikat" name="fileSertifikat" accept=".jpg,.jpeg,.png,.pdf">
-                    <div class="form-text">
-                        Format yang diperbolehkan: JPG, PNG, atau PDF. Maksimal 2MB.
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="sparepart" id="sparepart">
+                      <label class="form-check-label" for="sparepart">Penggantian Sparepart (kapasitor, motor, dll)</label>
                     </div>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="bongkarPasang" id="bongkarPasang">
+                    <label class="form-check-label" for="bongkarPasang">Bongkar & Pasang AC</label>
+                  </div>
+                  <div class="form-check">
+                    <input class="form-check-input" type="checkbox" value="isiFreon" id="isiFreon">
+                    <label class="form-check-label" for="isiFreon">Pengisian Freon</label>
+                  </div>
+
+                  <div class="d-flex justify-content-end mt-3">
+                    <button class="btn btn-primary rounded-pill px-4" onclick="nextSkillStep(2)">Lanjut ➡</button>
+                  </div>
                 </div>
-                
-                <!-- Tombol Simpan -->
-                <div class="d-grid mt-4">
-                  <button type="submit" class="btn btn-primary rounded-3 fw-semibold">
-                    Simpan Skill
-                  </button>
+
+                <!-- Step 2: Lama + Deskripsi -->
+                <div class="wizard-step d-none" id="skillStep2">
+                  <h6 class="fw-bold mb-3 text-primary">📅 Lama & Deskripsi Pengalaman</h6>
+                  <div class="form-floating mb-3">
+                    <input type="number" class="form-control rounded-3" id="lamaPengalaman" placeholder="Contoh: 3">
+                    <label for="lamaPengalaman">Lama Pengalaman (Tahun)</label>
+                  </div>
+                  <div class="form-floating mb-3">
+                    <textarea class="form-control rounded-3"
+                              id="deskripsiSkill"
+                              placeholder="Jelaskan pengalaman Anda"
+                              style="height: 120px;"></textarea>
+                    <label for="deskripsiSkill">Deskripsi Skill / Pengalaman</label>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevSkillStep(1)">⬅ Kembali</button>
+                    <button class="btn btn-primary rounded-pill px-4" onclick="nextSkillStep(3)">Lanjut ➡</button>
+                  </div>
                 </div>
-              </form>
+
+                <!-- Step 3: Sertifikasi -->
+                <div class="wizard-step d-none" id="skillStep3">
+                  <h6 class="fw-bold mb-3 text-primary">🎓 Sertifikasi</h6>
+                  <div class="form-floating mb-3">
+                    <input type="text" class="form-control rounded-3" id="sertifikasi" placeholder="Contoh: Sertifikat BNSP Teknisi AC">
+                    <label for="sertifikasi">Nama Sertifikasi (Opsional)</label>
+                  </div>
+                  <div class="mb-3">
+                    <label for="fileSertifikat" class="form-label fw-semibold">Upload Sertifikat</label>
+                    <input class="form-control rounded-3" type="file" id="fileSertifikat" accept=".jpg,.jpeg,.png,.pdf">
+                    <div class="form-text">Format: JPG, PNG, atau PDF. Maksimal 2MB.</div>
+                  </div>
+                  <div class="d-flex justify-content-between">
+                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevSkillStep(2)">⬅ Kembali</button>
+                    <button class="btn btn-success rounded-pill px-4" onclick="simpanSkill()">💾 Simpan Skill</button>
+                  </div>
+                </div>
+
+              </div>
             </div>
           </div>
 
@@ -121,18 +125,37 @@
   </div>
 </div>
 
-
 <script>
   const perbaikanCheckbox = document.getElementById("perbaikan");
   const perbaikanDetail = document.getElementById("perbaikanDetail");
 
+  document.addEventListener("DOMContentLoaded", function () {
+    // Step pertama tampil saat modal muncul
+    $("#ModalSkill").on("shown.bs.modal", function () {
+      $(".wizard-step").addClass("d-none");
+      $("#skillStep1").removeClass("d-none");
+    });
+  });
+
+  // Tampilkan / sembunyikan sub-skill
   perbaikanCheckbox.addEventListener("change", function () {
     if (this.checked) {
-      perbaikanDetail.classList.remove("d-none"); // tampilkan
+      perbaikanDetail.classList.remove("d-none");
     } else {
-      perbaikanDetail.classList.add("d-none");    // sembunyikan
-      // Uncheck semua sub-skill kalau induk dicabut
+      perbaikanDetail.classList.add("d-none");
       perbaikanDetail.querySelectorAll("input[type=checkbox]").forEach(cb => cb.checked = false);
     }
   });
+
+  function nextSkillStep(step) {
+    $(".wizard-step").addClass("d-none");
+    $("#skillStep" + step).removeClass("d-none");
+  }
+  function prevSkillStep(step) {
+    $(".wizard-step").addClass("d-none");
+    $("#skillStep" + step).removeClass("d-none");
+  }
+  function simpanSkill() {
+    alert("Skill berhasil disimpan!");
+  }
 </script>

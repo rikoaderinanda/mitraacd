@@ -123,7 +123,7 @@ namespace mitraacd.api
             };
 
             var response = await client.PostAsJsonAsync(
-                $"https://graph.facebook.com/v20.0/{phoneNumberId}/messages",
+                $"https://graph.facebook.com/v22.0/{phoneNumberId}/messages",
                 payload
             );
 
