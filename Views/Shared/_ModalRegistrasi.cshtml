@@ -20,7 +20,6 @@
             </div>
           </div>
 
-
           <!-- Body -->
           <div class="col-12">
             <div class="login-bottom p-4">
@@ -32,193 +31,32 @@
 
               <!-- Step Content -->
               <div id="stepContent" class="position-relative">
-
                 <!-- Step 1 -->
                 <div class="wizard-step" id="step1">
-                    <h6 class="fw-bold mb-3 text-primary">Isi Biodata Anda</h6>
-
-                    <div class="form-floating mb-3">
-                      <input type="text" class="form-control rounded-3" id="namaLengkap" placeholder="Nama Lengkap">
-                      <label for="namaLengkap">Nama Lengkap</label>
-                      <div class="invalid-feedback">Nama Lengkap wajib diisi</div>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                      <input type="text" class="form-control rounded-3" id="namaPanggilan" placeholder="Nama Panggilan">
-                      <label for="namaPanggilan">Nama Panggilan</label>
-                      <div class="invalid-feedback">Nama Panggilan wajib diisi</div>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                      <select class="form-select rounded-3" id="jenisKelamin">
-                        <option value="" selected disabled>Pilih...</option>
-                        <option value="Laki-laki">Laki-laki</option>
-                        <option value="Perempuan">Perempuan</option>
-                      </select>
-                      <label for="jenisKelamin">Jenis Kelamin</label>
-                      <div class="invalid-feedback">Jenis Kelamin wajib dipilih</div>
-                    </div>
-
-                    <div class="form-floating mb-3">
-                      <input type="date" class="form-control rounded-3" id="tanggalLahir" placeholder="Tanggal Lahir">
-                      <label for="tanggalLahir">Tanggal Lahir</label>
-                      <div class="invalid-feedback">Tanggal Lahir wajib diisi</div>
-                    </div>
-
-                    <div class="d-flex justify-content-end">
-                      <button type="button" class="btn btn-primary rounded-pill px-4" onclick="validateStep1()">Lanjut</button>
-                    </div>
-                  </div>
+                  @await Html.PartialAsync("_BiodataPribadi")
+                </div>
 
                 <!-- Step 2 -->
                 <div class="wizard-step d-none" id="step2">
-                  <h6 class="fw-bold mb-3 text-primary">Alamat Domisili</h6>
-
-                  <div class="form-floating mb-3">
-                    <textarea class="form-control rounded-3" 
-                              placeholder="Alamat" 
-                              id="alamat" 
-                              style="height: 100px"></textarea>
-                    <label for="alamat">Alamat</label>
-                    <div class="invalid-feedback">Alamat wajib diisi</div>
-                  </div>
-
-                  <label for="inputMaps" class="form-label fw-bold">📍 Lokasi di Peta</label>
-                  <div class="form-floating mb-3">
-                      <!-- Container Map + Button -->
-                      <div class="position-relative mb-2 rounded border overflow-hidden" style="height: 400px; width: 100%;" id="googleMapContainer">
-                          <div id="googleMap" style="height: 100%; width: 100%;"></div>
-                          <button id="btnMyLocation" type="button" 
-                              class="position-absolute m-2"
-                              style="
-                                  bottom: 0;
-                                  left: 0;
-                                  z-index: 1000;
-                                  background-color: rgba(255, 255, 255, 0.9);
-                                  border: 1px solid #ccc;
-                                  border-radius: 4px;
-                                  padding: 6px 10px;
-                                  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-                                  cursor: pointer;
-                              ">
-                              <span id="spinnerLocation" class="spinner-border spinner-border-sm me-2" 
-                                      role="status" aria-hidden="true" style="display:none;"></span>
-                              <span id="btnText">📍 Lokasi Saya</span>
-                          </button>
-                      </div>
-                  </div>
-                  <div class="form-floating mb-3">
-                    <!-- Input koordinat -->
-                    <input type="text" id="inputMaps" class="form-control" readonly placeholder="Koordinat Anda akan muncul di sini">
-                    <label for="alamat">Koordinat Lat, lng</label>
-                    <div class="text-dark ms-3 text-muted" id="wilayah" style="font-size:10pt;"></div>
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(1)">Kembali</button>
-                    <button class="btn btn-primary rounded-pill px-4" onclick="validateStep2()">Lanjut</button>
-                  </div>
+                  @await Html.PartialAsync("_MapAddress")
                 </div>
 
                 <!-- Step 3 -->
                 <div class="wizard-step d-none" id="step3">
-                  <h6 class="fw-bold mb-3 text-primary">Verifikasi WhatsApp</h6>
-                  <p class="text-muted">Masukkan nomor WhatsApp aktif Anda, lalu kode verifikasi yang dikirim.</p>
-
-                  <div class="form-floating mb-3">
-                    <input type="tel" class="form-control rounded-3" id="noWhatsapp" placeholder="No WhatsApp">
-                    <label for="noWhatsapp">No WhatsApp</label>
-                  </div>
-
-                  <div class="input-group mb-3">
-                    <input type="text" class="form-control rounded-start-3" id="kodeVerifikasi" placeholder="Kode Verifikasi">
-                    <button class="btn btn-outline-primary rounded-end-3" type="button" onclick="kirimKode()">Kirim Ulang</button>
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(2)">Kembali</button>
-                    <button class="btn btn-success rounded-pill px-4" onclick="verifikasiKode()">Verifikasi</button>
-                  </div>
+                  @await Html.PartialAsync("_VerifikasiWhatsapp")
                 </div>
                 <!-- Step 4: Foto Selfie -->
                 <div id="step4" class="wizard-step d-none">
-                  <div class="text-center mb-4">
-                    <h5 class="fw-bold text-primary">Foto Selfie</h5>
-                    <p class="text-muted">Ambil foto selfie Anda dengan jelas. Pastikan wajah berada di dalam lingkaran.</p>
-                  </div>
-
-                  <div class="camera-section text-center mb-3 position-relative" style="max-width: 100%;">
-
-                    <!-- Video Kamera -->
-                    <video id="cameraSelfie" autoplay playsinline class="rounded shadow-sm d-none" style="width:100%;"></video>
-
-                    <!-- Frame Panduan -->
-                    <div id="faceFrame" class="position-absolute d-none"
-                        style="border: 3px dashed #00cc66; border-radius: 50%; width: 200px; height: 200px;
-                              top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;">
-                    </div>
-
-                    <!-- Tombol Floating -->
-                    <button type="button" id="btnTakePhoto"
-                      class="btn btn-success rounded-circle shadow position-absolute d-none"
-                      style="bottom: 15px; right: 15px; width: 60px; height: 60px; display:flex; align-items:center; justify-content:center;">
-                      <i class="bi bi-camera-fill fs-4"></i>
-                    </button>
-
-                  </div>
-
-                  <!-- Preview Foto -->
-                  <div class="text-center mb-3 position-relative" style="display: inline-block;">
-                    <!-- Preview Selfie -->
-                    <img id="previewSelfie" 
-                        class="img-fluid rounded shadow-sm d-none" 
-                        style="max-height:250px;" />
-
-                    <!-- Tombol Retake -->
-                    <button type="button" id="btnRetakePhoto"
-                      class="btn btn-warning rounded-circle shadow position-absolute d-none"
-                      style="bottom: 15px; right: 15px; width: 55px; height: 55px; display:flex; align-items:center; justify-content:center;">
-                      <i class="bi bi-arrow-repeat fs-4"></i>
-                    </button>
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary" onclick="prevStep(3)">⬅ Kembali</button>
-                    <button class="btn btn-primary" onclick="nextStep(5)">Lanjut ➡</button>
-                  </div>
+                  @await Html.PartialAsync("_FotoSelfie")
                 </div>
                 <!-- Step 5 -->
                 <div class="wizard-step d-none" id="step5">
-                  <h6 class="fw-bold mb-3 text-primary">Foto KTP</h6>
-                  <p class="text-muted">Unggah foto KTP Anda dengan jelas .</p>
-
-                  <input class="form-control mb-3" type="file" id="uploadSelfie" accept="image/*">
-
-                  <div class="text-center mb-3">
-                    <img id="previewSelfie" class="img-fluid rounded shadow-sm d-none" style="max-height:200px;" />
-                  </div>
-
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(4)">Kembali</button>
-                    <button class="btn btn-primary rounded-pill px-4" onclick="nextStep(6)">Lanjut</button>
-                  </div>
+                  @await Html.PartialAsync("_FotoKTP")
                 </div>
 
                 <!-- Step 6 -->
                 <div class="wizard-step d-none" id="step6">
-                  <h6 class="fw-bold mb-3 text-primary">Konfirmasi Data</h6>
-                  <p class="text-muted">Periksa kembali data Anda sebelum disimpan.</p>
-                  <ul class="list-group text-start mb-3">
-                    <li class="list-group-item"><strong>Nama Lengkap:</strong> <span id="konfNamaLengkap"></span></li>
-                    <li class="list-group-item"><strong>Nama Panggilan:</strong> <span id="konfNamaPanggilan"></span></li>
-                    <li class="list-group-item"><strong>No WhatsApp:</strong> <span id="konfNoWhatsapp"></span></li>
-                    <li class="list-group-item"><strong>Alamat:</strong> <span id="konfAlamat"></span></li>
-                    <li class="list-group-item"><strong>Kota:</strong> <span id="konfKota"></span></li>
-                  </ul>
-                  <div class="d-flex justify-content-between">
-                    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(5)">Kembali</button>
-                    <button class="btn btn-success rounded-pill px-4">Simpan</button>
-                  </div>
+                  @await Html.PartialAsync("_ResumeRegistrasi")
                 </div>
 
               </div><!-- stepContent -->
@@ -232,10 +70,24 @@
 </div>
 
 <script>
+let dataStep1 = {};
+let dataStep2 = {};
+let dataStep3 = {};
+let dataStep4 = {};
+let dataStep5 = {};
+
 let video = document.getElementById("cameraSelfie");
 let previewImg = document.getElementById("previewSelfie");
 let btnTake = document.getElementById("btnTakePhoto");
 let btnRetake = document.getElementById("btnRetakePhoto");
+
+let videoKTP = document.getElementById("cameraKTP");
+let previewImgKTP = document.getElementById("previewKTP");
+let PanelInputNik = document.getElementById("PanelInputNik");
+let nikInput = document.getElementById("nikInput");
+
+let btnTakeKTP = document.getElementById("btnTakePhotoKTP");
+let btnRetakeKTP = document.getElementById("btnRetakePhotoKTP");
 
 let namaLengkap = document.getElementById("namaLengkap");
 let namaPanggilan = document.getElementById("namaPanggilan");
@@ -279,6 +131,28 @@ document.addEventListener("DOMContentLoaded", function () {
   // Ambil Ulang Foto
   btnRetake.addEventListener("click", () => {
     openCamera();
+  });
+
+  // Ambil FotoKTP
+  btnTakeKTP.addEventListener("click", () => {
+    let canvas = document.createElement("canvas");
+    let ctx = canvas.getContext("2d");
+
+    canvas.width = videoKTP.videoWidth;
+    canvas.height = videoKTP.videoHeight;
+    ctx.drawImage(videoKTP, 0, 0, canvas.width, canvas.height);
+
+    previewImgKTP.src = canvas.toDataURL("image/png");
+    previewImgKTP.classList.remove("d-none");
+    PanelInputNik.classList.remove("d-none");
+
+    closeCameraKTP();
+    btnRetakeKTP.classList.remove("d-none");
+  });
+
+  // Ambil Ulang Foto KTP
+  btnRetakeKTP.addEventListener("click", () => {
+    openCameraKTP();
   });
 
   // Format otomatis untuk nomor WhatsApp
@@ -334,6 +208,22 @@ document.addEventListener("DOMContentLoaded", function () {
           alert("Browser tidak mendukung Geolocation");
       }
   });
+
+  if (nikInput) {
+    nikInput.addEventListener('input', function(e) {
+      // hapus semua selain angka
+      let value = e.target.value.replace(/\D/g, '');
+      // batasi max 16 digit
+      value = value.substring(0, 16);
+      // sisipkan spasi setiap 4 digit
+      let formatted = value.match(/.{1,4}/g);
+      if (formatted) {
+        e.target.value = formatted.join(' ');
+      } else {
+        e.target.value = '';
+      }
+    });
+  }
 });
 
 // Perbaikan nextStep agar auto buka kamera di step 4
@@ -349,22 +239,41 @@ function nextStep(step, first = false)
 
   // Jika bukan step 4 → tutup kamera
   
-  if (step !== 4) {
+  if (step < 4 && step > 5) {
     closeCamera();
   }
 
   // Jika step 4 → auto buka kamera
   if (step === 4) {
-    openCamera();
+    let ada = false;
+    const previewSelfie = document.getElementById("previewSelfie");
+    // cek apakah preview tampil & punya src (foto sudah diambil)
+    if (previewSelfie.classList.contains("d-none") || !previewSelfie.src || previewSelfie.src === window.location.href) {
+      ada = true;
+    }
+
+    if(ada){
+      openCamera();
+    }
+  }
+
+  if (step === 5) {
+    let ada = false;
+    const previewKTP = document.getElementById("previewKTP");
+    // cek apakah preview tampil & punya src (foto sudah diambil)
+    if (previewKTP.classList.contains("d-none") || !previewKTP.src || previewKTP.src === window.location.href) {
+      ada = true;
+    }
+
+    if(ada){
+      openCameraKTP();
+    }
+    
   }
 
   // Isi konfirmasi di step 6
   if (step === 6) {
-    $("#konfNamaLengkap").text($("#namaLengkap").val());
-    $("#konfNamaPanggilan").text($("#namaPanggilan").val());
-    $("#konfNoWhatsapp").text($("#noWhatsapp").val());
-    $("#konfAlamat").text($("#alamat").val());
-    $("#konfKota").text($("#kota").val());
+      ResumeData();
   }
   
 }
@@ -418,7 +327,9 @@ async function validateStep1() {
 
   if(isValid) 
   {
+    let _UserId = Storage.get('userId');
     let data = {
+      id:_UserId,
       namaLengkap: namaLengkap.value,
       namaPanggilan: namaPanggilan.value
     }
@@ -441,6 +352,7 @@ async function validateStep2() {
   // cek satu per satu
   if (alamat.value.trim() === "") {
     alamat.classList.add("is-invalid");
+    showToast("Silahkan isi alamat lengkap");
     isValid = false;
   }
 
@@ -457,18 +369,22 @@ function prevStep(step) {
 
 function kirimKode() {
   let noWa = $("#noWhatsapp").val();
-  if (!noWa) return alert("Masukkan nomor WhatsApp terlebih dahulu.");
+  if (!noWa) return showToast("Masukkan nomor WhatsApp terlebih dahulu.");
   // TODO: API kirim kode
-  alert("Kode verifikasi telah dikirim ke " + noWa);
+  //alert("Kode verifikasi telah dikirim ke " + noWa);
+  showToast("Kode verifikasi telah dikirim ke " + noWa);
 }
 
 function verifikasiKode() {
   let kode = $("#kodeVerifikasi").val();
-  if (!kode) return alert("Masukkan kode verifikasi.");
+  if (!kode) return showToast("Masukkan kode verifikasi.");
   // TODO: API cek kode
-  alert("Verifikasi berhasil!");
+  //alert("Verifikasi berhasil!");
   nextStep(4);
 }
+
+
+
 // Fungsi buka kamera
 async function openCamera() {
   try {
@@ -499,98 +415,74 @@ function closeCamera() {
   document.getElementById("faceFrame").classList.add("d-none");
 }
 
-function AlamatPosisiSaatIni() {
-    if (!navigator.geolocation) {
-    console.warn("Geolocation tidak didukung");
-    initMapFromUserLocation(-6.2, 106.8); // fallback Jakarta
-    return;
-    }
+// Fungsi buka kamera
+async function openCameraKTP() {
+  try {
+    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    videoKTP.classList.remove("d-none");
+    btnTakeKTP.classList.remove("d-none");
+    document.getElementById("KTPFrame").classList.remove("d-none");
 
-    navigator.geolocation.getCurrentPosition(
-    success_getLocationAlamatSaatIni,
-    () => initMapFromUserLocation(-6.2, 106.8) // fallback kalau user tolak izin
-    );
+    videoKTP.srcObject = stream;
+    streamTrack = stream.getTracks()[0];
+
+    // Reset tampilan
+    previewImgKTP.classList.add("d-none");
+    PanelInputNik.classList.add("d-none");
+    btnRetakeKTP.classList.add("d-none");
+  } catch (err) {
+    alert("Kamera tidak dapat diakses: " + err.message);
+  }
 }
 
-async function success_getLocationAlamatSaatIni(pos) 
-{
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    //console.log('Lat:', lat, 'Lng:', lng);
-    initMapFromUserLocation(lat, lng);
-    const mapDiv = document.getElementById("googleMap");
-    mapDiv.style.display = "block";
+// Fungsi tutup kamera
+function closeCameraKTP() {
+  if (streamTrack) {
+    streamTrack.stop();
+    streamTrack = null;
+  }
+  videoKTP.classList.add("d-none");
+  btnTakeKTP.classList.add("d-none");
+  document.getElementById("KTPFrame").classList.add("d-none");
+}
 
-    setTimeout(() => {
-    if (map) {
-            google.maps.event.trigger(map, "resize");
-            map.setCenter(marker.getPosition());
-        }
-    }, 300); 
-    // kasih delay sedikit biar DOM sudah render
-    // setelah dapat lat/lng, panggil Google Geocoding API
-    const data = await getAddress_api(lat, lng);
-    console.log(data);
-    if (data != null) {
-        $('#wilayah').text(
-          `Wilayah : ${data.kelurahan}, ${data.kecamatan}, ${data.city}`
-        );
-        $('#inputMaps').val(`${lat}, ${lng}`); // 👈 masukkan koordinat ke input maps
-    } else {
-        $('#inputMaps').val(`${lat}, ${lng}`); // fallback jika geocoding gagal
+function validatasiSelfie() {
+    let isValid = true;
+    const previewSelfie = document.getElementById("previewSelfie");
+
+    // cek apakah preview tampil & punya src (foto sudah diambil)
+    if (previewSelfie.classList.contains("d-none") || !previewSelfie.src || previewSelfie.src === window.location.href) {
+        //alert("Silakan ambil foto selfie terlebih dahulu sebelum melanjutkan.");
+        showToast("Silakan ambil foto selfie terlebih dahulu sebelum melanjutkan.");
+        isValid = false;
+    }
+    
+    if(isValid){
+      nextStep(5);
     }
 }
 
-async function initMapFromUserLocation(lat, lng) {
-    try {
-        if (typeof google === "undefined" || !google.maps) {
-            console.warn("Google Maps belum siap, coba lagi...");
-            setTimeout(() => initMapFromUserLocation(lat, lng), 1000); // ulang setelah 1 detik
-            return;
-        }
-        const posisi = { lat: lat, lng: lng };
+function validatasiKTP() {
+    let isValid = true;
+    const previewSelfie = document.getElementById("previewKTP");
+    // reset state
+    [nikInput].forEach(el => {
+      el.classList.remove("is-invalid");
+    });
 
-        map = new google.maps.Map(document.getElementById("googleMap"), {
-            zoom: 15,
-            center: posisi,
-        });
+    // cek apakah preview tampil & punya src (foto sudah diambil)
+    if (previewSelfie.classList.contains("d-none") || !previewSelfie.src || previewSelfie.src === window.location.href) {
+        showToast("Silakan ambil foto KTP terlebih dahulu sebelum melanjutkan.");
+        isValid = false;
+    }
 
-        marker = new google.maps.Marker({
-            position: posisi,
-            map: map,
-            draggable: true, // biar bisa digeser
-        });
-
-        // Update input saat marker digeser
-        google.maps.event.addListener(marker, 'dragend', async function(evt) {
-          let lat = evt.latLng.lat();
-          let lng = evt.latLng.lng();
-          $('#inputMaps').val(`${lat}, ${lng}`);
-          const data = await getAddress_api(lat, lng);
-          if (data != null) {
-              $('#wilayah').text(
-                `Wilayah : ${data.kelurahan}, ${data.kecamatan}, ${data.city}`
-              );
-          }
-        });
-
-        // Update marker saat klik map
-        map.addListener('click', async function(evt) {
-            marker.setPosition(evt.latLng);
-            let lat = evt.latLng.lat();
-            let lng = evt.latLng.lng();
-            $('#inputMaps').val(`${lat}, ${lng}`);
-            const data = await getAddress_api(lat, lng);
-            if (data != null) {
-                $('#wilayah').text(
-                  `Wilayah : ${data.kelurahan}, ${data.kecamatan}, ${data.city}`
-                );
-            }
-        });
-    } catch (err) {
-        console.error("Error in initMap:", err);
-        // coba ulang lagi
-        setTimeout(() => initMapFromUserLocation(lat, lng), 1000);
+    if (nikInput.value.trim() === "") {
+        nikInput.classList.add("is-invalid");
+        isValid = false;
+    }
+    
+    if(isValid){
+      nextStep(6);
     }
 }
 

@@ -39,7 +39,7 @@
         //checkStatusMitra();
         checkStatusMitra().then(result => {
             if (result.success) {
-            console.log("Lanjut ke halaman mitra:", result.data);
+                console.log("Lanjut ke halaman mitra:", result.data);
                 LoadListBid();
             } else {
                 console.warn("Tidak bisa lanjut:", result.reason);

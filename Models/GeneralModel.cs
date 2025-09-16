@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using System.Threading.Tasks;
+
 namespace mitraacd.Models
 {
     public class GeneralRequest
@@ -32,4 +34,17 @@ namespace mitraacd.Models
         public string Url { get; set; }
         public string PublicId { get; set; }
     }
+
+    public class PhotoBeforeUploadDto
+    {
+        public List<IFormFile> ImageFiles { get; set; }
+        public string IdTask { get; set; }
+    }
+
+    public class UploadSelfiePhotoDto
+    {
+        public IFormFile File { get; set; }
+        public string Id { get; set; }
+    }
+
 }

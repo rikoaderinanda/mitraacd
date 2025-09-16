@@ -1,0 +1,42 @@
+<div class="text-center mb-4">
+    <h5 class="fw-bold text-primary">Foto Selfie</h5>
+    <p class="text-muted">Ambil foto selfie Anda dengan jelas. Pastikan wajah berada di dalam lingkaran.</p>
+</div>
+
+<div class="camera-section text-center mb-3 position-relative" style="max-width: 100%;">
+    <!-- Video Kamera -->
+    <video id="cameraSelfie" autoplay playsinline class="rounded shadow-sm d-none" style="width:100%;"></video>
+
+    <!-- Frame Panduan -->
+    <div id="faceFrame" class="position-absolute d-none"
+        style="border: 3px dashed #00cc66; border-radius: 50%; width: 200px; height: 200px;
+            top: 50%; left: 50%; transform: translate(-50%, -50%); pointer-events: none;">
+    </div>
+
+    <!-- Tombol Floating -->
+    <button type="button" id="btnTakePhoto"
+    class="btn btn-success rounded-circle shadow position-absolute d-none"
+    style="bottom: 15px; right: 15px; width: 60px; height: 60px; display:flex; align-items:center; justify-content:center;">
+    <i class="bi bi-camera-fill fs-4"></i>
+    </button>
+</div>
+
+<!-- Preview Foto -->
+<div class="text-center mb-3 position-relative" style="display: inline-block;">
+    <!-- Preview Selfie -->
+    <img id="previewSelfie" 
+        class="img-fluid rounded shadow-sm d-none" 
+        style="max-height:250px;" />
+
+    <!-- Tombol Retake -->
+    <button type="button" id="btnRetakePhoto"
+        class="btn btn-warning rounded-circle shadow position-absolute d-none"
+        style="bottom: 15px; right: 15px; width: 55px; height: 55px; display:flex; align-items:center; justify-content:center;">
+        <i class="bi bi-arrow-repeat fs-4"></i>
+    </button>
+</div>
+
+<div class="d-flex justify-content-between">
+    <button class="btn btn-outline-secondary" onclick="prevStep(3)">⬅ Kembali</button>
+    <button class="btn btn-primary" onclick="validatasiSelfie()">Lanjut ➡</button>
+</div>

@@ -46,6 +46,11 @@ builder.Services.AddSwaggerGen(c =>
         Title = "API Whatsapp",
         Version = "v1"
     });
+    c.SwaggerDoc("cloudinary", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API Cloudinary",
+        Version = "v1"
+    });
 
     
     // Filter supaya dokumen "Account" hanya memuat controller dengan GroupName = "transaksi"
@@ -159,6 +164,7 @@ app.UseSwaggerUI(c =>
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mitra ACD API V1");
     c.SwaggerEndpoint("/swagger/account/swagger.json", "API account");
     c.SwaggerEndpoint("/swagger/whatsapp/swagger.json", "API Whatsapp");
+    c.SwaggerEndpoint("/swagger/cloudinary/swagger.json", "API Cloudinary");
     
     c.RoutePrefix = "swagger"; // akses Swagger di /swagger
 });

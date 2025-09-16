@@ -1,0 +1,174 @@
+<style>
+.camera-section {
+  position: relative;
+  overflow: hidden;
+}
+
+/* overlay gelap & blur */
+.ktp-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.6);        /* gelap */
+  backdrop-filter: blur(6px);          /* blur area belakang */
+  -webkit-backdrop-filter: blur(6px);  /* safari */
+  pointer-events: none;
+  z-index: 30;
+
+  /* lubang berbentuk kotak sesuai KTP */
+  -webkit-mask: 
+    linear-gradient(#000 0 0) content-box, 
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+
+  border-radius: 12px; /* biar sudut lubang ikut radius */
+}
+
+/* frame KTP */
+#KTPFrame {
+  position: absolute;
+  border: 3px dashed #00cc66;
+  border-radius: 12px;
+  width: 320px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 50;
+  pointer-events: none;
+}
+</style>
+
+<div class="text-center mb-4">
+    <h5 class="fw-bold text-primary">Foto KTP</h5>
+    <p class="text-muted">Ambil foto KTP Anda dengan jelas. Pastikan KTP berada di dalam Kotak.</p>
+</div>
+
+<div class="camera-section text-center mb-3 position-relative" style="max-width: 100%;">
+  <video id="cameraKTP" autoplay playsinline class="rounded shadow-sm" style="width:100%;"></video>
+
+  <!-- overlay -->
+  <div class="ktp-overlay"></div>
+  <!-- frame -->
+  <div id="KTPFrame"></div>
+
+  <!-- Tombol Floating -->
+  <button type="button" id="btnTakePhotoKTP"
+    class="btn btn-success rounded-circle shadow position-absolute"
+    style="bottom: 15px; right: 15px; width: 60px; height: 60px; display:flex; align-items:center; justify-content:center; z-index:60;">
+    <i class="bi bi-camera-fill fs-4"></i>
+  </button>
+</div>
+
+<!-- Preview Foto -->
+<div class="text-center mb-3 position-relative" style="display: inline-block;">
+    <!-- Preview Selfie -->
+    <img id="previewKTP" 
+        class="img-fluid rounded shadow-sm d-none" 
+        style="max-height:250px;" />
+
+    <!-- Tombol Retake -->
+    <button type="button" id="btnRetakePhotoKTP"
+        class="btn btn-warning rounded-circle shadow position-absolute d-none"
+        style="bottom: 15px; right: 15px; width: 55px; height: 55px; display:flex; align-items:center; justify-content:center;">
+        <i class="bi bi-arrow-repeat fs-4"></i>
+    </button>
+</div>
+<!-- Input NIK -->
+<div class="mb-3 text-start d-none" style="max-width: 420px; margin: auto;" id="PanelInputNik">
+  <label for="nikInput" class="form-label fw-bold">Nomor Induk Kependudukan (NIK)</label>
+  <input type="text" id="nikInput" name="nikInput" 
+         class="form-control" 
+         placeholder="Masukkan 16 digit NIK Anda"
+         maxlength="19"> <!-- 16 digit + 3 spasi -->
+  <div class="invalid-feedback">NIK wajib diisi dan harus 16 digit</div>
+  <div id="nikHelp" class="form-text">Format: 1234 5678 9012 3456</div>
+</div>
+
+<div class="d-flex justify-content-between">
+    <button class="btn btn-outline-secondary" onclick="prevStep(4)">⬅ Kembali</button>
+    <button class="btn btn-primary" onclick="validatasiKTP()">Lanjut ➡</button>
+</div>
+
+<script>
+(function () {
+  // buat overlay elemen sekali
+  const cameraSection = document.querySelector('.camera-section');
+  if (!cameraSection) return;
+
+  const overlays = ['top','left','right','bottom'].map(name => {
+    const d = document.createElement('div');
+    d.className = `ktp-overlay ktp-overlay-${name}`;
+    cameraSection.appendChild(d);
+    return d;
+  });
+
+  const frame = document.getElementById('KTPFrame');
+
+  function updateOverlays() {
+    // pastikan frame terlihat / memiliki ukuran
+    const frameRect = frame.getBoundingClientRect();
+    const containerRect = cameraSection.getBoundingClientRect();
+
+    // jika frame belum diposisikan atau display none -> sembunyikan overlays
+    if (frameRect.width === 0 || frameRect.height === 0 || window.getComputedStyle(frame).display === 'none') {
+      overlays.forEach(o => o.style.display = 'none');
+      return;
+    }
+
+    overlays.forEach(o => o.style.display = 'block');
+
+    // hitung koordinat relatif ke cameraSection (local coordinates)
+    const top = frameRect.top - containerRect.top;
+    const left = frameRect.left - containerRect.left;
+    const right = containerRect.width - (left + frameRect.width);
+    const bottom = containerRect.height - (top + frameRect.height);
+
+    // top overlay: dari atas container sampai top edge frame, full width
+    overlays[0].style.top = '0px';
+    overlays[0].style.left = '0px';
+    overlays[0].style.width = `${containerRect.width}px`;
+    overlays[0].style.height = `${Math.max(0, top)}px`;
+
+    // left overlay: dari top edge frame ke bottom edge frame, left area
+    overlays[1].style.top = `${Math.max(0, top)}px`;
+    overlays[1].style.left = '0px';
+    overlays[1].style.width = `${Math.max(0, left)}px`;
+    overlays[1].style.height = `${Math.max(0, frameRect.height)}px`;
+
+    // right overlay
+    overlays[2].style.top = `${Math.max(0, top)}px`;
+    overlays[2].style.left = `${containerRect.width - Math.max(0, right)}px`;
+    overlays[2].style.width = `${Math.max(0, right)}px`;
+    overlays[2].style.height = `${Math.max(0, frameRect.height)}px`;
+
+    // bottom overlay: dari bottom edge frame sampai bawah container, full width
+    overlays[3].style.top = `${containerRect.height - Math.max(0, bottom)}px`;
+    overlays[3].style.left = '0px';
+    overlays[3].style.width = `${containerRect.width}px`;
+    overlays[3].style.height = `${Math.max(0, bottom)}px`;
+  }
+
+  // panggil saat frame di-show / window resize / orientation change
+  window.addEventListener('resize', updateOverlays);
+  window.addEventListener('orientationchange', updateOverlays);
+
+  // Jika frame dibuat/ditampilkan lewat class toggle, observer untuk update otomatis
+  const mo = new MutationObserver(updateOverlays);
+  mo.observe(frame, { attributes: true, attributeFilter: ['class', 'style'] });
+
+  // jika konten cameraSection berubah ukurannya (mis. video dimuat), gunakan ResizeObserver
+  if (window.ResizeObserver) {
+    const ro = new ResizeObserver(updateOverlays);
+    ro.observe(cameraSection);
+    ro.observe(frame);
+  }
+
+  // initial call (delay kecil jika layout belum final)
+  setTimeout(updateOverlays, 80);
+
+})();
+</script>

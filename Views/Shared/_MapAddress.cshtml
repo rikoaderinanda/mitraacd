@@ -1,0 +1,146 @@
+<h6 class="fw-bold mb-3 text-primary">Alamat Domisili</h6>
+<div class="form-floating mb-3">
+<textarea class="form-control rounded-3" 
+            placeholder="Alamat" 
+            id="alamat" 
+            style="height: 100px"></textarea>
+<label for="alamat">Alamat</label>
+<div class="invalid-feedback">Alamat wajib diisi</div>
+</div>
+
+<label for="inputMaps" class="form-label fw-bold">📍 Lokasi di Peta</label>
+<p>
+Pastikan lokasi yang Anda tentukan di Google Maps sesuai dan akurat. Lokasi domisili ini akan menjadi acuan utama dalam menentukan jangkauan (coverage area) mitra untuk menerima orderan.
+</p>
+<div class="form-floating mb-3">
+    <!-- Container Map + Button -->
+    <div class="position-relative mb-2 rounded border overflow-hidden" style="height: 400px; width: 100%;" id="googleMapContainer">
+        <div id="googleMap" style="height: 100%; width: 100%;"></div>
+        <button id="btnMyLocation" type="button" 
+            class="position-absolute m-2"
+            style="
+                bottom: 0;
+                left: 0;
+                z-index: 1000;
+                background-color: rgba(255, 255, 255, 0.9);
+                border: 1px solid #ccc;
+                border-radius: 4px;
+                padding: 6px 10px;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+                cursor: pointer;
+            ">
+            <span id="spinnerLocation" class="spinner-border spinner-border-sm me-2" 
+                    role="status" aria-hidden="true" style="display:none;"></span>
+            <span id="btnText">📍 Lokasi Saya</span>
+        </button>
+    </div>
+</div>
+<div class="form-floating mb-3">
+    <!-- Input koordinat -->
+    <input type="text" id="inputMaps" class="form-control" readonly placeholder="Koordinat Anda akan muncul di sini">
+    <label for="alamat">Koordinat Lat, lng</label>
+    <div class="text-dark ms-3 text-muted"style="font-size:10pt;"> Wilayah : <span id="wilayah"></span> </div>
+</div>
+
+<div class="d-flex justify-content-between">
+    <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(1)">Kembali</button>
+    <button class="btn btn-primary rounded-pill px-4" onclick="validateStep2()">Lanjut</button>
+</div>
+
+
+<script>
+function AlamatPosisiSaatIni() {
+    if (!navigator.geolocation) {
+    console.warn("Geolocation tidak didukung");
+    initMapFromUserLocation(-6.2, 106.8); // fallback Jakarta
+    return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+    success_getLocationAlamatSaatIni,
+    () => initMapFromUserLocation(-6.2, 106.8) // fallback kalau user tolak izin
+    );
+}
+
+async function success_getLocationAlamatSaatIni(pos) 
+{
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    //console.log('Lat:', lat, 'Lng:', lng);
+    initMapFromUserLocation(lat, lng);
+    const mapDiv = document.getElementById("googleMap");
+    mapDiv.style.display = "block";
+
+    setTimeout(() => {
+    if (map) {
+            google.maps.event.trigger(map, "resize");
+            map.setCenter(marker.getPosition());
+        }
+    }, 300); 
+    // kasih delay sedikit biar DOM sudah render
+    // setelah dapat lat/lng, panggil Google Geocoding API
+    const data = await getAddress_api(lat, lng);
+    console.log(data);
+    if (data != null) {
+        $('#wilayah').text(
+          `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+        );
+        $('#inputMaps').val(`${lat}, ${lng}`); // 👈 masukkan koordinat ke input maps
+    } else {
+        $('#inputMaps').val(`${lat}, ${lng}`); // fallback jika geocoding gagal
+    }
+}
+
+async function initMapFromUserLocation(lat, lng) {
+    try {
+        if (typeof google === "undefined" || !google.maps) {
+            console.warn("Google Maps belum siap, coba lagi...");
+            setTimeout(() => initMapFromUserLocation(lat, lng), 1000); // ulang setelah 1 detik
+            return;
+        }
+        const posisi = { lat: lat, lng: lng };
+
+        map = new google.maps.Map(document.getElementById("googleMap"), {
+            zoom: 15,
+            center: posisi,
+        });
+
+        marker = new google.maps.Marker({
+            position: posisi,
+            map: map,
+            draggable: true, // biar bisa digeser
+        });
+
+        // Update input saat marker digeser
+        google.maps.event.addListener(marker, 'dragend', async function(evt) {
+          let lat = evt.latLng.lat();
+          let lng = evt.latLng.lng();
+          $('#inputMaps').val(`${lat}, ${lng}`);
+          const data = await getAddress_api(lat, lng);
+          if (data != null) {
+              $('#wilayah').text(
+                `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+              );
+          }
+        });
+
+        // Update marker saat klik map
+        map.addListener('click', async function(evt) {
+            marker.setPosition(evt.latLng);
+            let lat = evt.latLng.lat();
+            let lng = evt.latLng.lng();
+            $('#inputMaps').val(`${lat}, ${lng}`);
+            const data = await getAddress_api(lat, lng);
+            if (data != null) {
+                $('#wilayah').text(
+                  `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+                );
+            }
+        });
+    } catch (err) {
+        console.error("Error in initMap:", err);
+        // coba ulang lagi
+        setTimeout(() => initMapFromUserLocation(lat, lng), 1000);
+    }
+}
+</script>

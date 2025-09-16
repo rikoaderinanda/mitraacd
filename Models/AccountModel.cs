@@ -5,6 +5,7 @@ namespace mitraacd.Models
 {
     public class ReqCheckNama
     {
+        public long Id {get;set;}
         public string NamaLengkap { get; set; }
         public string NamaPanggilan { get; set; }
     }
@@ -32,7 +33,7 @@ namespace mitraacd.Models
 
     public class AlamatPelanggan
     {
-        public int Id { get; set; }
+        public long Id { get; set; }
         public object? JenisProperti { get; set; }
         public string Judul { get; set; }
         public string Alamat { get; set; }
@@ -55,5 +56,21 @@ namespace mitraacd.Models
         public int IdUser { get; set; }
 
         public string Koordinat { get; set; }
+    }
+
+    public class ReqSimpanBiodataMitra
+    {
+        public int Id { get; set; }                // id registrasi
+        public string NamaLengkap { get; set; }
+        public string NamaPanggilan { get; set; }
+        public string JenisKelamin { get; set; }
+        public DateTime? TanggalLahir { get; set; } // bisa nullable
+        
+        public string NoWhatsapp { get; set; }
+        public string Nik { get; set; }
+
+        public object? Alamat { get; set; }
+        public object? FotoSelfie { get; set; }
+        public object? FotoKTP { get; set; }
     }
 }

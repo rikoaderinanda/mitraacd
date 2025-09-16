@@ -470,3 +470,16 @@ async function getAddress_api(lat, lng) {
         });
     });
 }
+
+
+function base64ToBlob(base64Data) {
+    const parts = base64Data.split(',');
+    const mime = parts[0].match(/:(.*?);/)[1];
+    const byteString = atob(parts[1]);
+    const ab = new ArrayBuffer(byteString.length);
+    const ia = new Uint8Array(ab);
+    for (let i = 0; i < byteString.length; i++) {
+        ia[i] = byteString.charCodeAt(i);
+    }
+    return new Blob([ab], { type: mime });
+}

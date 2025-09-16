@@ -179,5 +179,17 @@ namespace mitraacd.api
             
             return Ok(res);
         }
+
+        [HttpPost("SimpanBiodataMitra")]
+        public async Task<ActionResult<dynamic>> SimpanBiodataMitra([FromBody] ReqSimpanBiodataMitra req)
+        {
+            var res = await _repo.SimpanBiodataMitra(req);
+            if(res)
+            {
+                return Ok(new { message = "Data berhasil disimpan", data = req });   
+            }
+            return Ok(res);
+        }
     }
+
 }

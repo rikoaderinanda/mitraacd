@@ -1,0 +1,34 @@
+
+    <h6 class="fw-bold mb-3 text-primary">Isi Biodata Anda</h6>
+
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control rounded-3" id="namaLengkap" placeholder="Nama Lengkap">
+        <label for="namaLengkap">Nama Lengkap</label>
+        <div class="invalid-feedback">Nama Lengkap wajib diisi</div>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="text" class="form-control rounded-3" id="namaPanggilan" placeholder="Nama Panggilan">
+        <label for="namaPanggilan">Nama Panggilan</label>
+        <div class="invalid-feedback">Nama Panggilan wajib diisi</div>
+    </div>
+
+    <div class="form-floating mb-3">
+        <select class="form-select rounded-3" id="jenisKelamin">
+        <option value="" selected disabled>Pilih...</option>
+        <option value="Laki-laki">Laki-laki</option>
+        <option value="Perempuan">Perempuan</option>
+        </select>
+        <label for="jenisKelamin">Jenis Kelamin</label>
+        <div class="invalid-feedback">Jenis Kelamin wajib dipilih</div>
+    </div>
+
+    <div class="form-floating mb-3">
+        <input type="date" class="form-control rounded-3" id="tanggalLahir" placeholder="Tanggal Lahir">
+        <label for="tanggalLahir">Tanggal Lahir</label>
+        <div class="invalid-feedback">Tanggal Lahir wajib diisi</div>
+    </div>
+
+    <div class="d-flex justify-content-end">
+        <button type="button" class="btn btn-primary rounded-pill px-4" onclick="validateStep1()">Lanjut</button>
+    </div>

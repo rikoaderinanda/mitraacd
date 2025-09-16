@@ -22,6 +22,7 @@ namespace mitraacd.Services
         Task<dynamic> GetData_account(string id);
         
         Task<bool> CheckNama(ReqCheckNama data);
+        Task<bool> SimpanBiodataMitra(ReqSimpanBiodataMitra data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -277,14 +278,53 @@ namespace mitraacd.Services
         {
             var query = @"
                 select count(*) from mitra_data
-                where LOWER(nama_lengkap) = LOWER(@NamaLengkap) or LOWER(username) = LOWER(@NamaPanggilan);
+                where 
+                    (LOWER(nama_lengkap) = LOWER(@NamaLengkap) or LOWER(username) = LOWER(@NamaPanggilan))
+                    and id not in (@Id);
             ";
 
             var param = new
             {
                 NamaLengkap = data.NamaLengkap,
-                NamaPanggilan = data.NamaPanggilan
+                NamaPanggilan = data.NamaPanggilan,
+                Id = data.Id
             };
+            var result = await _db.ExecuteScalarAsync<int>(query, param);
+            return result > 0;
+        }
+
+        public async Task<bool> SimpanBiodataMitra(ReqSimpanBiodataMitra data)
+        {
+            var query = @"
+                update mitra_data
+                set 
+                    nama_lengkap = @NamaLengkap,
+                    username = @NamaPanggilan,
+                    jenis_kelamin = @JenisKelamin,
+                    tanggal_lahir = @TanggalLahir,
+                    no_hp_whatapp = @NoWhatsapp,
+                    nik = @Nik,
+                    alamat = @Alamat::jsonb,
+                    photo_selfie = @FotoSelfie::jsonb,
+                    ktp = @FotoKTP::jsonb,
+                    status_mitra = 1
+                where id = @Id
+                RETURNING id;";
+
+            var param = new
+            {
+                Id = data.Id,
+                NamaLengkap = data.NamaLengkap,
+                NamaPanggilan = data.NamaPanggilan,
+                JenisKelamin = data.JenisKelamin,
+                TanggalLahir = data.TanggalLahir,
+                NoWhatsapp = data.NoWhatsapp,
+                Nik = data.Nik,
+                Alamat = JsonConvert.SerializeObject(data.Alamat),
+                FotoSelfie = JsonConvert.SerializeObject(data.FotoSelfie),
+                FotoKTP = JsonConvert.SerializeObject(data.FotoKTP)
+            };
+            
             var result = await _db.ExecuteScalarAsync<int>(query, param);
             return result > 0;
         }

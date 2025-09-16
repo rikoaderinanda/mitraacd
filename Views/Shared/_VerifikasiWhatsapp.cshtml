@@ -1,0 +1,17 @@
+<h6 class="fw-bold mb-3 text-primary">Verifikasi WhatsApp</h6>
+<p class="text-muted">Masukkan nomor WhatsApp aktif Anda, lalu kode verifikasi yang dikirim.</p>
+
+<div class="form-floating mb-3">
+<input type="tel" class="form-control rounded-3" id="noWhatsapp" placeholder="No WhatsApp">
+<label for="noWhatsapp">No WhatsApp</label>
+</div>
+
+<div class="input-group mb-3">
+<input type="text" class="form-control rounded-start-3" id="kodeVerifikasi" placeholder="Kode Verifikasi">
+<button class="btn btn-outline-primary rounded-end-3" type="button" onclick="kirimKode()">Kirim Ulang</button>
+</div>
+
+<div class="d-flex justify-content-between">
+<button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(2)">Kembali</button>
+<button class="btn btn-success rounded-pill px-4" onclick="verifikasiKode()">Verifikasi</button>
+</div>
