@@ -86,17 +86,28 @@
         }
         $ = window.jQuery;
         Storage.set("CurrentPage","");
+        
         loadHeader();
-        var user = getUserInfo();
-        if (!isValidUser(user)) {
-            $("#TitleModalLogin").text("Silahkan login terlebih dahulu");
-            $("#btnClsModalLogin").show();
-            $('#ModalLogin').modal('show');
-        }
-        else {
-            LoadListTask(0);
-            initFilter();
-        }
+        checkStatusMitra().then(result => {
+            if (result.data.status_mitra == 5) 
+            {
+                LoadListTask(0);
+                initFilter();
+            }
+            else{
+                Swal.fire({
+                    title: "Akun Belum Aktif",
+                    text: "Akun Mitra Anda belum aktif sepenuhnya. Silakan ikuti langkah aktivasi terlebih dahulu.",
+                    icon: "info",
+                    confirmButtonColor: "#198754",
+                    confirmButtonText: "Ikuti Aktivasi",
+                    timer: 6000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index","Home")';
+                });
+            }
+        });
     });
 
     function initFilter() {
