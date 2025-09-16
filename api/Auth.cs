@@ -30,8 +30,7 @@ namespace mitraacd.api
             IHttpClientFactory httpClientFactory,
             IAccountRepository repo,
             ILogger<AuthController> logger // ✅ inject logger
-        )
-        {
+        ){
             _configuration = configuration;
             _httpClientFactory = httpClientFactory;
             _repo = repo;

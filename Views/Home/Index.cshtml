@@ -3,31 +3,31 @@
 }
 
 <style>
+    body {
+        background-color: #f9fafb;
+        font-family: 'Inter', sans-serif;
+    }
     .hover-shadow:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
         transition: box-shadow 0.3s ease-in-out;
     }
 </style>
 
+@await Html.PartialAsync("_ModalRegistrasi")
+@await Html.PartialAsync("_ModalSkill")
+@await Html.PartialAsync("_ModalCoverageArea")
+
 <div class="app-body pb-30">
-    <div class="container mt-30 mb-30">
-        <div class="position-relative mb-4">
-            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
-                id="searchInput">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-            <button type="button"
-                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                onclick="LoadListBid()" title="Segarkan">
-                <i class="bi bi-arrow-clockwise text-primary"></i>
-            </button>
-        </div>
+    <div class="container mt-20 mb-30">
         @await Html.PartialAsync("_Greeting_Location")
+        @await Html.PartialAsync("_StatusPendaftaranMitra")
         <div id="ListBid"></div>
     </div>
 </div>
 
 <script>
     var $;
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -36,16 +36,17 @@
         $ = window.jQuery;
         Storage.set("CurrentPage","");
         loadHeader();
-        //checkStatusMitra();
         checkStatusMitra().then(result => {
-            if (result.success) {
-                console.log("Lanjut ke halaman mitra:", result.data);
+            if (result.data.status_mitra == 5) 
+            {
                 LoadListBid();
-            } else {
-                console.warn("Tidak bisa lanjut:", result.reason);
+            }
+            else{
+                LoadStatusDaftar();
             }
         });
     });
+    
     function LoadListBid() {
         callApi({
             url: '/api/Biding/GetBid',
@@ -257,7 +258,9 @@
             });
     }
 
-    function checkKelengkapanDataTeknisi(){
-
+    function LoadStatusDaftar(){
+        $("#statusAktifasiMitra").removeClass("d-none");
     }
+    
 </script>
+

@@ -1,0 +1,259 @@
+<style>
+  .steps-container {
+    position: relative;
+    margin: 0px 0;
+    padding-left: 20px;
+  }
+
+  .step-item {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 24px;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+  }
+
+  .step-item:last-child {
+    margin-bottom: 0;
+  }
+
+  .step-item:hover {
+    transform: translateX(6px);
+  }
+
+  .step-circle {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #dee2e6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: #6c757d;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+    z-index: 2;
+    flex-shrink: 0;
+  }
+
+  .step-circle.active {
+    background: linear-gradient(135deg, #0d6efd, #4dabf7);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(13,110,253,0.6);
+    transform: scale(1.1);
+  }
+
+  .step-circle.done {
+    background: linear-gradient(135deg, #198754, #51cf66);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(25,135,84,0.6);
+  }
+
+  .step-item .step-content {
+    margin-left: 15px;
+  }
+
+  .step-item .step-content p {
+    margin: 0;
+    font-weight: 600;
+    color: #212529;
+  }
+
+  .step-item .step-content small {
+    color: #6c757d;
+  }
+
+  /* Garis Progress */
+  .steps-container::before {
+    content: "";
+    position: absolute;
+    top: 20px;
+    left: 0px;
+    width: 2px;
+    height: calc(100% - 20px);
+    background: #dee2e6;
+    z-index: 0;
+  }
+
+  .progress-line {
+    content: "";
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 2px;
+    height: 0;
+    background: linear-gradient(180deg, #0d6efd, #198754);
+    z-index: 1;
+    transition: height 0.5s ease-in-out;
+  }
+
+  .status-header {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: linear-gradient(135deg, #e3f2fd, #f8f9fa);
+    border-radius: 12px;
+    margin-bottom: 20px;
+  }
+
+  .status-header img {
+    width: 60px;
+    height: 60px;
+    object-fit: contain;
+    animation: float 3s ease-in-out infinite;
+  }
+
+  @@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+    100% { transform: translateY(0); }
+  }
+
+  .status-header .title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #0d6efd;
+    margin: 0;
+  }
+
+  .status-header .subtitle {
+    font-size: 0.9rem;
+    color: #6c757d;
+    margin: 0;
+  }
+</style>
+
+<div class="container mt-3 d-none m-0 p-0" id="statusAktifasiMitra">
+  <!-- Panel Status Mitra -->
+  <div class="card border-0 shadow-sm rounded-4 mb-4">
+    <div class="card-body p-1">
+       <!-- Header modern -->
+      <div class="status-header">
+        <img src="https://cdn-icons-png.flaticon.com/512/942/942748.png" alt="Status Mitra">
+        <div>
+          <p class="title">📌 Status Pendaftaran Mitra</p>
+          <p class="subtitle">Pantau progres pendaftaranmu hingga aktif sepenuhnya 🚀</p>
+        </div>
+      </div>
+
+      <div class="steps-container">
+        <div class="progress-line" id="progressLine"></div>
+
+        <!-- Step 1 -->
+        <div class="step-item" data-bs-toggle="modal" data-bs-target="#ModalRegistrasi">
+          <div id="stepBiodata" class="step-circle">1</div>
+          <div class="step-content">
+            <p>👤 Biodata Mitra</p>
+            <small>Isi data pribadi & informasi dasar</small>
+          </div>
+        </div>
+
+        <!-- Step 2 -->
+        <div class="step-item" data-bs-toggle="modal" data-bs-target="#ModalSkill">
+          <div id="stepSkill" class="step-circle">2</div>
+          <div class="step-content">
+            <p>🎓 Skill Mitra</p>
+            <small>Pilih skill dan upload sertifikat</small>
+          </div>
+        </div>
+
+        <!-- Step 3 -->
+        <div class="step-item" data-bs-toggle="modal" data-bs-target="#ModalCoverageArea">
+          <div id="stepCoverage" class="step-circle">3</div>
+          <div class="step-content">
+            <p>📍 Coverage Area</p>
+            <small>Tentukan area layanan</small>
+          </div>
+        </div>
+
+        <!-- Step 4 -->
+        <div class="step-item" data-bs-toggle="modal" data-bs-target="#ModalInterview">
+          <div id="stepInterview" class="step-circle">4</div>
+          <div class="step-content">
+            <p>🎤 Interview</p>
+            <small>Ikuti interview online/offline</small>
+          </div>
+        </div>
+
+        <!-- Step 5 -->
+        <div class="step-item" data-bs-toggle="modal" data-bs-target="#ModalOnboarding">
+          <div id="stepOnboarding" class="step-circle">5</div>
+          <div class="step-content">
+            <p>🚀 Onboarding</p>
+            <small>Proses orientasi & aktivasi mitra</small>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    checkStatusMitra().then(result => {
+      let status = result.data.status_mitra; 
+      // 0 = Biodata, 1 = Skill, 2 = Coverage, 3 = Interview, 4 = Onboarding, 5 = Selesai
+      
+      const steps = ["stepBiodata", "stepSkill", "stepCoverage", "stepInterview", "stepOnboarding"];
+      const progressLine = document.getElementById("progressLine");
+
+      // Reset step
+      steps.forEach((id, index) => {
+        const el = document.getElementById(id);
+        el.classList.remove("active", "done");
+        el.textContent = index + 1; // reset angka
+      });
+
+      if(status == 0){
+        document.getElementById("stepBiodata").classList.add("active");
+        progressLine.style.height = "0";
+      }
+      else if(status == 1){
+        document.getElementById("stepBiodata").classList.add("done");
+        document.getElementById("stepBiodata").innerHTML = "✓";
+        document.getElementById("stepSkill").classList.add("active");
+        progressLine.style.height = "20%";
+      }
+      else if(status == 2){
+        ["stepBiodata","stepSkill"].forEach(id => {
+          const el = document.getElementById(id);
+          el.classList.add("done");
+          el.innerHTML = "✓";
+        });
+        document.getElementById("stepCoverage").classList.add("active");
+        progressLine.style.height = "40%";
+      }
+      else if(status == 3){
+        ["stepBiodata","stepSkill","stepCoverage"].forEach(id => {
+          const el = document.getElementById(id);
+          el.classList.add("done");
+          el.innerHTML = "✓";
+        });
+        document.getElementById("stepInterview").classList.add("active");
+        progressLine.style.height = "60%";
+      }
+      else if(status == 4){
+        ["stepBiodata","stepSkill","stepCoverage","stepInterview"].forEach(id => {
+          const el = document.getElementById(id);
+          el.classList.add("done");
+          el.innerHTML = "✓";
+        });
+        document.getElementById("stepOnboarding").classList.add("active");
+        progressLine.style.height = "80%";
+      }
+      else {
+        steps.forEach(id => {
+          const el = document.getElementById(id);
+          el.classList.add("done");
+          el.innerHTML = "✓";
+        });
+        progressLine.style.height = "100%";
+      }
+    });
+  });
+</script>

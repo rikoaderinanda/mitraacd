@@ -409,14 +409,16 @@ async function checkStatusMitra() {
     } else {
         try {
             var data = await GetDataAkunApi(user.id);
-            console.log(data);
+            return { data: data };
+            // console.log(data);
+            // if (data.status_mitra == 0) {
+            //     $('#ModalRegistrasi').modal('show');
+            //     return { success: false, reason: 'not_registered', data: data };
+            // } else if (data.status_mitra == 1) {
+            //     return { success: false, reason: 'not_registered', data: data };
+            // }
 
-            if (data.status_mitra == 0) {
-                $('#ModalRegistrasi').modal('show');
-                return { success: false, reason: 'not_registered', data: data };
-            }
-
-            return { success: true, reason: 'registered', data: data };
+            // return { success: true, reason: 'registered', data: data };
         } catch (err) {
             console.error('Error fetching akun:', err);
             return { success: false, reason: 'api_error', error: err };
@@ -452,21 +454,10 @@ async function getAddress_api(lat, lng) {
             },
             error: function () {
                 console.log('Proses gagal.');
-                //Swal.fire('Gagal!', 'Proses gagal.', 'warning');
                 reject('API Error');
             },
-            onBeforeSend: function () {
-                // btn.html(
-                //     `<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>`
-                // );
-                // btn.prop('disabled', true);
-            },
-            onComplete: function () {
-                // btn.html(
-                //     `<i class="bi bi-arrow-right" style="font-size: 1rem;"></i>`
-                // );
-                // btn.prop('disabled', false);
-            }
+            onBeforeSend: function () {},
+            onComplete: function () {}
         });
     });
 }

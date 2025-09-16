@@ -1,0 +1,100 @@
+<div class="modal fade" id="ModalCoverageArea" tabindex="-1" aria-labelledby="ModalCoverageAreaLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="home-cart mt-0">
+        <div class="row">
+          <!-- Header -->
+          <div class="col-12">
+            <div class="login-top position-relative text-center bg-primary text-white p-4 rounded-top-4">
+              <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+              <!-- Ilustrasi -->
+              <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" 
+                   alt="Coverage Illustration" 
+                   class="img-fluid mb-3" 
+                   style="max-height:40px;">
+
+              <h5 class="fs-4 fw-bold mb-2">Area Cakupan</h5>
+              <p class="fs-7 mb-0 opacity-75 text-white">
+                Pilih area yang ingin kamu jangkau untuk mendapatkan order.
+              </p>
+            </div>
+          </div>
+
+          <!-- Body -->
+          <div class="col-12">
+            <div class="login-bottom p-4">
+              <form>
+                <!-- Multi Select Area -->
+                <div class="mb-3">
+                  <label for="areaCakupan" class="form-label fw-semibold">Pilih Area</label>
+                  <select id="areaCakupan" name="areaCakupan[]" class="form-select rounded-3" multiple>
+                    <option value="jakarta">Jakarta</option>
+                    <option value="bogor">Bogor</option>
+                    <option value="depok">Depok</option>
+                    <option value="tangerang">Tangerang</option>
+                    <option value="bekasi">Bekasi</option>
+                    <option value="bandung">Bandung</option>
+                    <option value="semarang">Semarang</option>
+                    <option value="surabaya">Surabaya</option>
+                  </select>
+                  <div class="form-text">Gunakan Ctrl/Command + klik untuk pilih lebih dari satu area.</div>
+                </div>
+
+                <hr class="my-4">
+
+                <!-- Alternatif: Checklist Area -->
+                <label class="form-label fw-semibold mb-2">Atau pilih dengan checklist:</label>
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="jakarta" id="areaJakarta">
+                      <label class="form-check-label" for="areaJakarta">Jakarta</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="bogor" id="areaBogor">
+                      <label class="form-check-label" for="areaBogor">Bogor</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="depok" id="areaDepok">
+                      <label class="form-check-label" for="areaDepok">Depok</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="tangerang" id="areaTangerang">
+                      <label class="form-check-label" for="areaTangerang">Tangerang</label>
+                    </div>
+                  </div>
+                  <div class="col-6">
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="bekasi" id="areaBekasi">
+                      <label class="form-check-label" for="areaBekasi">Bekasi</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="bandung" id="areaBandung">
+                      <label class="form-check-label" for="areaBandung">Bandung</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="semarang" id="areaSemarang">
+                      <label class="form-check-label" for="areaSemarang">Semarang</label>
+                    </div>
+                    <div class="form-check">
+                      <input class="form-check-input" type="checkbox" value="surabaya" id="areaSurabaya">
+                      <label class="form-check-label" for="areaSurabaya">Surabaya</label>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Tombol Simpan -->
+                <div class="d-grid mt-4">
+                  <button type="submit" class="btn btn-primary rounded-3 fw-semibold">
+                    Simpan Area Cakupan
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
