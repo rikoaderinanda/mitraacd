@@ -61,6 +61,12 @@ namespace mitraacd.api
         {
             using var reader = new StreamReader(Request.Body);
             var body = await reader.ReadToEndAsync();
+            if (string.IsNullOrWhiteSpace(body))
+            {
+                _logger.LogWarning("Webhook POST dipanggil tapi body kosong!");
+                return Ok();
+            }
+            
             _logger.LogInformation("Pesan masuk dari WhatsApp: {Body}", body);
 
             try
