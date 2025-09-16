@@ -73,4 +73,10 @@ namespace mitraacd.Models
         public object? FotoSelfie { get; set; }
         public object? FotoKTP { get; set; }
     }
+
+    public class SendMessageRequest
+    {
+        public string To { get; set; } // nomor WA dengan kode negara, ex: "6281234567890"
+        public string Message { get; set; }
+    }
 }

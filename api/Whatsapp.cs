@@ -8,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using mitraacd.Services; // contoh repo kalau mau simpan OTP
+using mitraacd.Models;
+
 
 namespace mitraacd.api
 {
@@ -104,6 +106,27 @@ namespace mitraacd.api
         }
 
         /// <summary>
+        /// API untuk kirim pesan manual ke nomor WhatsApp
+        /// </summary>
+        [HttpPost("send")]
+        public async Task<IActionResult> SendMessage([FromBody] SendMessageRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.To) || string.IsNullOrWhiteSpace(request.Message))
+                return BadRequest("Nomor tujuan dan pesan wajib diisi");
+
+            try
+            {
+                await SendWhatsappMessageAsync(request.To, request.Message);
+                return Ok(new { success = true, to = request.To, message = request.Message });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Gagal kirim pesan WhatsApp");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
         /// Fungsi helper untuk kirim pesan WA via Cloud API
         /// </summary>
         private async Task SendWhatsappMessageAsync(string to, string message)
@@ -131,4 +154,6 @@ namespace mitraacd.api
             _logger.LogInformation("Balasan WA: {Result}", result);
         }
     }
+
+    
 }
