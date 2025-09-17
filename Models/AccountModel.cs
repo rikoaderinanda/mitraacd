@@ -76,7 +76,21 @@ namespace mitraacd.Models
 
     public class SendMessageRequest
     {
-        public string To { get; set; } // nomor WA dengan kode negara, ex: "6281234567890"
+        public long UserId { get; set; }
+        public string To { get; set; }
         public string Message { get; set; }
+    }
+
+    public class CheckOTPAktifReq
+    {
+        public long user_id {get;set;}
+        public string no_wa {get;set;}
+    }
+
+    public class CheckOTPValidReq
+    {
+        public long user_id {get;set;}
+        public string no_wa {get;set;}
+        public string otp {get;set;}
     }
 }

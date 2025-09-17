@@ -26,6 +26,12 @@
         flex-direction: column;
         height: 100%; /* isi seluruh tinggi modal */
     }
+
+    /* ✅ Biar modal paling atas */
+    #ModalConnectionError {
+        z-index: 9999 !important;
+    }
+
 </style>
 
 <div class="modal fade" id="ModalConnectionError" tabindex="-1" aria-labelledby="ModalConnectionErrorLabel" aria-hidden="true">

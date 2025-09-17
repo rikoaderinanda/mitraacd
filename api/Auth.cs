@@ -189,6 +189,30 @@ namespace mitraacd.api
             }
             return Ok(res);
         }
+
+        [HttpPost("CheckOTPValid")]
+        public async Task<ActionResult<dynamic>> CheckOTPValid([FromBody] CheckOTPValidReq req)
+        {
+            var res = await _repo.CheckOTPValid(req);
+            if(!res)
+            {
+                return Ok(new { message = "OTP tidak Valid", data = req });
+            }
+            
+            return Ok(new { success = true, message = "OTP valid" });
+        }
+
+        [HttpPut("UpdateOTPStatus")]
+        public async Task<ActionResult<dynamic>> UpdateOTPStatus([FromBody] CheckOTPValidReq req)
+        {
+            var res = await _repo.UpdateOTPStatus(req);
+            if(!res)
+            {
+                return Ok(new { message = "OTP gagal diupdate", data = req });
+            }
+            
+            return Ok(new { success = true, message = "OTP berhasil diupdate" });
+        }
     }
 
 }

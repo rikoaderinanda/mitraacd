@@ -25,7 +25,7 @@
                 
                 <!-- Step 1: Skill Utama -->
                 <div class="wizard-step" id="skillStep1">
-                  <h6 class="fw-bold mb-3 text-primary">🛠 Pilih Skill Utama</h6>
+                  <h5 class="fw-bold mb-3 text-primary">🛠 Pilih Skill Utama</h5>
                   <div class="form-check">
                     <input class="form-check-input" type="checkbox" value="instalasi" id="instalasi">
                     <label class="form-check-label" for="instalasi">Instalasi AC</label>
@@ -73,13 +73,13 @@
                   </div>
 
                   <div class="d-flex justify-content-end mt-3">
-                    <button class="btn btn-primary rounded-pill px-4" onclick="nextSkillStep(2)">Lanjut ➡</button>
+                    <button class="btn btn-primary rounded-pill px-4" onclick="validasiStep1()">Lanjut ➡</button>
                   </div>
                 </div>
 
                 <!-- Step 2: Lama + Deskripsi -->
                 <div class="wizard-step d-none" id="skillStep2">
-                  <h6 class="fw-bold mb-3 text-primary">📅 Lama & Deskripsi Pengalaman</h6>
+                  <h5 class="fw-bold mb-3 text-primary">📅 Lama & Deskripsi Pengalaman</h5>
                   <div class="form-floating mb-3">
                     <input type="number" class="form-control rounded-3" id="lamaPengalaman" placeholder="Contoh: 3">
                     <label for="lamaPengalaman">Lama Pengalaman (Tahun)</label>
@@ -93,13 +93,17 @@
                   </div>
                   <div class="d-flex justify-content-between">
                     <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevSkillStep(1)">⬅ Kembali</button>
-                    <button class="btn btn-primary rounded-pill px-4" onclick="nextSkillStep(3)">Lanjut ➡</button>
+                    <button class="btn btn-primary rounded-pill px-4" onclick="validasiStep2()">Lanjut ➡</button>
                   </div>
                 </div>
 
                 <!-- Step 3: Sertifikasi -->
                 <div class="wizard-step d-none" id="skillStep3">
-                  <h6 class="fw-bold mb-3 text-primary">🎓 Sertifikasi</h6>
+                  <h5 class="fw-bold mb-3 text-primary">🎓 Sertifikasi</h5>
+                  <div class="form-text mb-3">
+                    Format: JPG, PNG, atau PDF. Maksimal 2MB. 
+                    <br><span class="text-muted fst-italic">Tidak memiliki sertifikat? Abaikan bagian ini, Anda tetap bisa melanjutkan.</span>
+                  </div>
                   <div class="form-floating mb-3">
                     <input type="text" class="form-control rounded-3" id="sertifikasi" placeholder="Contoh: Sertifikat BNSP Teknisi AC">
                     <label for="sertifikasi">Nama Sertifikasi (Opsional)</label>
@@ -126,6 +130,16 @@
 </div>
 
 <script>
+
+  // Object global untuk simpan data skill
+  let dataSkill = {
+    skills: [],
+    lamaPengalaman: null,
+    deskripsi: "",
+    sertifikasi: null,
+    fileSertifikat: null
+  };
+  
   const perbaikanCheckbox = document.getElementById("perbaikan");
   const perbaikanDetail = document.getElementById("perbaikanDetail");
 
@@ -155,7 +169,150 @@
     $(".wizard-step").addClass("d-none");
     $("#skillStep" + step).removeClass("d-none");
   }
-  function simpanSkill() {
-    alert("Skill berhasil disimpan!");
+  
+
+function validasiStep1() {
+  let selectedSkills = [];
+
+  // Skill utama
+  const skillUtama = [
+    "instalasi",
+    "perawatan",
+    "perbaikan",
+    "bongkarPasang",
+    "isiFreon"
+  ];
+
+  skillUtama.forEach(id => {
+    let checkbox = document.getElementById(id);
+    if (checkbox && checkbox.checked) {
+      // Kalau perbaikan, cek juga sub-skill
+      if (id === "perbaikan") {
+        let subSkills = [];
+        document
+          .querySelectorAll("#perbaikanDetail input[type=checkbox]:checked")
+          .forEach(cb => {
+            subSkills.push(cb.value);
+          });
+
+        if (subSkills.length === 0) {
+          Swal.fire({
+            icon: "warning",
+            title: "Sub-skill diperlukan",
+            text: "Kalau memilih Perbaikan, pilih minimal 1 jenis perbaikan yang bisa kamu lakukan."
+          });
+          return;
+        }
+
+        selectedSkills.push({ skill: id, subSkills: subSkills });
+      } else {
+        selectedSkills.push({ skill: id });
+      }
+    }
+  });
+
+  if (selectedSkills.length === 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "Oops!",
+      text: "Pilih minimal 1 skill utama dulu ya 👍"
+    });
+    return;
   }
+
+  // Simpan ke object global
+  dataSkill.skills = selectedSkills;
+
+  console.log("Skill yang dipilih:", dataSkill);
+
+  // Lanjut ke step berikutnya
+  nextSkillStep(2);
+}
+
+function validasiStep2() {
+  let lama = document.getElementById("lamaPengalaman").value.trim();
+  let deskripsi = document.getElementById("deskripsiSkill").value.trim();
+
+  // Validasi lama pengalaman
+  if (!lama || isNaN(lama) || parseInt(lama) <= 0) {
+    Swal.fire({
+      icon: "warning",
+      title: "Oops!",
+      text: "Isi lama pengalaman dengan angka lebih dari 0 ya 👍"
+    });
+    return;
+  }
+
+  // Validasi deskripsi
+  if (deskripsi.length < 10) {
+    Swal.fire({
+      icon: "warning",
+      title: "Deskripsi kurang lengkap",
+      text: "Tolong isi deskripsi pengalaman minimal 10 karakter."
+    });
+    return;
+  }
+
+  // Simpan ke object global
+  dataSkill.lamaPengalaman = parseInt(lama);
+  dataSkill.deskripsi = deskripsi;
+
+  console.log("Data skill step 2:", dataSkill);
+
+  // Lanjut ke step berikutnya
+  nextSkillStep(3);
+}
+
+function simpanSkill() {
+  let sertifikasi = document.getElementById("sertifikasi").value.trim();
+  let fileInput = document.getElementById("fileSertifikat");
+  let file = fileInput.files[0];
+
+  // Sertifikasi opsional
+  dataSkill.sertifikasi = sertifikasi || null;
+
+  // Validasi file sertifikat jika ada
+  if (file) {
+    let allowedTypes = ["image/jpeg", "image/png", "application/pdf"];
+    let maxSize = 2 * 1024 * 1024; // 2MB
+
+    if (!allowedTypes.includes(file.type)) {
+      Swal.fire({
+        icon: "error",
+        title: "Format tidak valid",
+        text: "File harus JPG, PNG, atau PDF."
+      });
+      return;
+    }
+
+    if (file.size > maxSize) {
+      Swal.fire({
+        icon: "error",
+        title: "File terlalu besar",
+        text: "Ukuran file maksimal 2MB."
+      });
+      return;
+    }
+
+    dataSkill.fileSertifikat = file;
+  } else {
+    dataSkill.fileSertifikat = null;
+  }
+
+  console.log("Data skill lengkap:", dataSkill);
+
+  Swal.fire({
+    icon: "success",
+    title: "Berhasil!",
+    text: "Skill berhasil disimpan 🚀"
+  }).then(() => {
+    // Tutup modal setelah berhasil
+    let modal = bootstrap.Modal.getInstance(document.getElementById("ModalSkill"));
+    modal.hide();
+  });
+}
+
+function simpanSkillApi(){
+  
+}
 </script>

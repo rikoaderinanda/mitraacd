@@ -1,17 +1,188 @@
 <h6 class="fw-bold mb-3 text-primary">Verifikasi WhatsApp</h6>
-<p class="text-muted">Masukkan nomor WhatsApp aktif Anda, lalu kode verifikasi yang dikirim.</p>
+<p class="text-muted">Masukkan nomor WhatsApp aktif Anda, lalu klik tombol kirim kode.</p>
 
+<!-- Input nomor WhatsApp -->
 <div class="form-floating mb-3">
-<input type="tel" class="form-control rounded-3" id="noWhatsapp" placeholder="No WhatsApp">
-<label for="noWhatsapp">No WhatsApp</label>
+  <input type="tel" class="form-control rounded-3" id="noWhatsapp" placeholder="No WhatsApp">
+  <label for="noWhatsapp">No WhatsApp</label>
 </div>
 
-<div class="input-group mb-3">
-<input type="text" class="form-control rounded-start-3" id="kodeVerifikasi" placeholder="Kode Verifikasi">
-<button class="btn btn-outline-primary rounded-end-3" type="button" onclick="kirimKode()">Kirim Ulang</button>
+<!-- Tombol kirim kode -->
+
+<!-- Input kode verifikasi (disembunyikan dulu) -->
+<div class="mb-3 d-none" id="kodeWrapper">
+  <label for="kodeVerifikasi" class="form-label fw-bold">Kode Verifikasi</label>
+  <div class="d-flex gap-2 justify-content-center" id="otpInputs">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+    <input type="text" class="form-control text-center fs-4" maxlength="1">
+  </div>
+
+  <div class="text-center mt-2 text-muted" id="otpTimer">Waktu tersisa: 00:10</div>
 </div>
 
-<div class="d-flex justify-content-between">
-<button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(2)">Kembali</button>
-<button class="btn btn-success rounded-pill px-4" onclick="verifikasiKode()">Verifikasi</button>
+<!-- Tombol navigasi -->
+<div class="d-flex justify-content-between" id="btnVerifikasiWrapper">
+  <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(2)" id="btnKembaliPrev2">Kembali</button>
+  <button class="btn btn-primary rounded-pill px-4" type="button" onclick="kirimKode()" id="btnKirimKodeAwal">Kirim Kode</button>
 </div>
+
+<script>
+let countdown;
+function startOtpTimer(duration = 60) {
+    const timerDisplay = document.getElementById("otpTimer");
+    let timeLeft = duration;
+
+    clearInterval(countdown); // reset kalau ada timer sebelumnya
+
+    countdown = setInterval(() => {
+      let minutes = Math.floor(timeLeft / 60);
+      let seconds = timeLeft % 60;
+      timerDisplay.textContent = `Waktu tersisa: ${minutes}:${seconds.toString().padStart(2, "0")}`;
+
+      if (timeLeft <= 0) {
+        clearInterval(countdown);
+        showToast("Kode OTP kadaluarsa!, silahkan kirim ulang kode kembali");
+        // di sini bisa aktifkan tombol "Kirim Ulang"
+        $("#kodeWrapper").addClass("d-none");
+        $("#btnKirimKodeAwal").removeClass("d-none");
+
+      }
+      timeLeft--;
+    }, 1000);
+}
+
+function sendOTPApi(data) {
+    return new Promise((resolve, reject) => {
+        console.log("Mengirim data akhir:", data);
+        callApi({
+            url: '/api/Whatsapp/sendOTP',
+            method: 'POST',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log("Respon simpan biodata:", res);
+                resolve(res);
+            },
+            error: function (err) {
+                console.error("Error simpan biodata:", err);
+                reject(err);
+            },
+            onBeforeSend: function () {
+                $("#btnKirimKodeAwal").prop("disabled", true).text("Menyimpan...");
+                $("#btnKembaliPrev2").prop("disabled", true).text("Kembali");
+            },
+            onComplete: function () {
+                $("#btnKirimKodeAwal").prop("disabled", false).text("Kirim Kode");
+                $("#btnKembaliPrev2").prop("disabled", false).text("Kembali");
+            }
+        });
+    });
+}
+
+function checkOTPValid(data){
+    return new Promise((resolve, reject) => {
+        console.log("Mengirim data checkOTPValid:", data);
+        callApi({
+            url: '/api/Auth/CheckOTPValid',
+            method: 'POST',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log(res);
+
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {
+                Swal.fire({
+                    title: "Checking OTP Code...",
+                    text: "Mohon tunggu sebentar.",
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            },
+            onComplete: function () {
+                Swal.close(); 
+            }
+        });
+    });
+}
+
+function UpdateOTPStatus(data){
+    return new Promise((resolve, reject) => {
+        console.log("Mengirim data UpdateOTPStatus:", data);
+        callApi({
+            url: '/api/Auth/UpdateOTPStatus',
+            method: 'PUT',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log(res);
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {
+                Swal.fire({
+                    title: "Update OTP Status...",
+                    text: "Mohon tunggu sebentar.",
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            },
+            onComplete: function () {
+                Swal.close();
+            }
+        });
+    });
+}
+
+const inputs = document.querySelectorAll("#otpInputs input");
+
+  inputs.forEach((input, index) => {
+    input.addEventListener("input", () => {
+      // hanya angka
+      input.value = input.value.replace(/[^0-9]/g, "");
+
+      // pindah ke input berikutnya kalau sudah isi
+      if (input.value && index < inputs.length - 1) {
+        inputs[index + 1].focus();
+      }
+
+      // cek apakah semua sudah terisi
+      if (isAllFilled()) {
+        verifikasiKode();
+      }
+    });
+
+    input.addEventListener("keydown", (e) => {
+      // kalau backspace di input kosong, pindah ke sebelumnya
+      if (e.key === "Backspace" && !input.value && index > 0) {
+        inputs[index - 1].focus();
+      }
+    });
+  });
+
+  function isAllFilled() {
+    return Array.from(inputs).every(input => input.value !== "");
+  }
+
+  function getOtpValue() {
+    return Array.from(inputs).map(input => input.value).join("");
+  }
+
+
+function clearOtpInputs() {
+    const inputs = document.querySelectorAll("#otpInputs input");
+    inputs.forEach(input => input.value = "");
+    // fokuskan lagi ke input pertama (opsional)
+    if (inputs.length > 0) {
+      inputs[0].focus();
+    }
+}
+
+</script>

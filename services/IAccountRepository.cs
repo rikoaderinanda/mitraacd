@@ -23,6 +23,9 @@ namespace mitraacd.Services
         
         Task<bool> CheckNama(ReqCheckNama data);
         Task<bool> SimpanBiodataMitra(ReqSimpanBiodataMitra data);
+        
+        Task<bool> CheckOTPValid(CheckOTPValidReq data);
+        Task<bool> UpdateOTPStatus(CheckOTPValidReq data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -325,6 +328,54 @@ namespace mitraacd.Services
                 FotoKTP = JsonConvert.SerializeObject(data.FotoKTP)
             };
             
+            var result = await _db.ExecuteScalarAsync<int>(query, param);
+            return result > 0;
+        }
+
+        public async Task<bool> CheckOTPValid(CheckOTPValidReq data)
+        {
+            var query = @"
+                select count(*) from otp_verification
+                where 
+                    user_id = @user_id 
+                    AND no_wa = @no_wa
+                    AND expired_at > NOW()
+                    and opt_code = @otp::bigint
+                    and status = 0
+                    ;
+            ";
+
+            var param = new
+            {
+                user_id = data.user_id,
+                no_wa = data.no_wa,
+                otp = data.otp
+            };
+            var result = await _db.ExecuteScalarAsync<int>(query, param);
+            return result > 0;
+        }
+
+        public async Task<bool> UpdateOTPStatus(CheckOTPValidReq data)
+        {
+            var query = @"
+                update 
+                    otp_verification
+                set 
+                    status = 1,
+                    verified_at = NOW()
+                where 
+                    user_id = @user_id::bigint
+                    AND no_wa = @no_wa
+                    and status = 0
+                RETURNING id;
+            ";
+
+            var param = new
+            {
+                user_id = data.user_id,
+                no_wa = data.no_wa
+            };
+
             var result = await _db.ExecuteScalarAsync<int>(query, param);
             return result > 0;
         }

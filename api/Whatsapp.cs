@@ -21,6 +21,7 @@ namespace mitraacd.api
         private readonly IConfiguration _configuration;
         private readonly IHttpClientFactory _httpClientFactory;
         private readonly IWhatsappRepo _repo;
+        private readonly IAccountRepository _repoAcc;
         private readonly ILogger<WhatsappController> _logger;
 
         public WhatsappController(
@@ -122,8 +123,75 @@ namespace mitraacd.api
 
             try
             {
-                await SendWhatsappMessageAsync(request.To, request.Message);
-                return Ok(new { success = true, to = request.To, message = request.Message });
+                var res = await SendWhatsappMessageAsync(request.To, request.Message);
+                return Ok(new { success = true, to = request.To, message = request.Message, response = res });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Gagal kirim pesan WhatsApp");
+                return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, error = ex.Message });
+            }
+        }
+
+        /// <summary>
+        /// API untuk kirim pesan manual ke nomor WhatsApp
+        /// </summary>
+        [HttpPost("sendOTP")]
+        public async Task<IActionResult> sendOTP([FromBody] SendMessageRequest request)
+        {
+            if (string.IsNullOrWhiteSpace(request.To) || string.IsNullOrWhiteSpace(request.Message))
+                return BadRequest("Nomor tujuan dan pesan wajib diisi");
+
+            try
+            {
+                var d = new CheckOTPAktifReq();
+                d.user_id = request.UserId;
+                d.no_wa = request.To;
+                var cekOTPAktif = await _repo.CheckOTPAktif(d);
+                
+                if(cekOTPAktif){
+                    return Ok(new {success = false, message = "OTP yang sebelumnya belum dipakai"});
+                }
+                
+                var otp = new Random().Next(100000, 999999).ToString();
+string otpMessage = 
+$@"
+🔐 *Kode Verifikasi Anda* 🔐
+Kode OTP: 
+
+*{otp}*
+
+Berlaku selama 5 menit.
+Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.  
+_AC Dikari Mitra - PT Dikari Tata Udara Indonesia._
+";
+                var res = await SendWhatsappMessageAsync(request.To, otpMessage);
+                using var doc = JsonDocument.Parse(res);
+                var root = doc.RootElement;
+
+                var messageId = root
+                    .GetProperty("messages")[0]
+                    .GetProperty("id")
+                    .GetString();
+                Console.WriteLine($"Message ID: {messageId}");
+
+                if(messageId != null){
+                    var save = await _repo.SaveOtpAsync(request.UserId.ToString(),request.To,otp.ToString(), messageId.ToString());
+                    if(save)
+                    {
+                        return Ok(new { success = true, to = request.To, message = otpMessage, response = messageId });
+                    }
+                    else
+                    {
+                        return BadRequest("simpan OTP Error");
+                    }
+                }
+                else
+                {
+                    return BadRequest("Tidak ada respon dari meta api");
+                }
+            
+                
             }
             catch (Exception ex)
             {
@@ -135,7 +203,7 @@ namespace mitraacd.api
         /// <summary>
         /// Fungsi helper untuk kirim pesan WA via Cloud API
         /// </summary>
-        private async Task SendWhatsappMessageAsync(string to, string message)
+        private async Task<string> SendWhatsappMessageAsync(string to, string message)
         {
             var phoneNumberId = _configuration["Whatsapp:PhoneNumberId"];
             var token = _configuration["Whatsapp:AccessToken"];
@@ -158,7 +226,55 @@ namespace mitraacd.api
 
             var result = await response.Content.ReadAsStringAsync();
             _logger.LogInformation("Balasan WA: {Result}", result);
+
+            return result;
         }
+
+        private async Task<string> SendWhatsappMessageOTPAsync(string to, string otp, string bodyMessage)
+        {
+            var phoneNumberId = _configuration["Whatsapp:PhoneNumberId"];
+            var token = _configuration["Whatsapp:AccessToken"];
+
+            var client = _httpClientFactory.CreateClient();
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            var payload = new
+            {
+                messaging_product = "whatsapp",
+                to = to,
+                type = "interactive",
+                interactive = new
+                {
+                    type = "button",
+                    body = new { text = bodyMessage },
+                    action = new
+                    {
+                        buttons = new[]
+                        {
+                            new {
+                                type = "reply",
+                                reply = new {
+                                    id = "copy_otp_" + otp,   // id unik, bisa OTP
+                                    title = "📋 Salin Kode"
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+            var response = await client.PostAsJsonAsync(
+                $"https://graph.facebook.com/v23.0/{phoneNumberId}/messages",
+                payload
+            );
+
+            var result = await response.Content.ReadAsStringAsync();
+            _logger.LogInformation("Balasan WA: {Result}", result);
+
+            return result;
+        }
+
+
     }
 
     
