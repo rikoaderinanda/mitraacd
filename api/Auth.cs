@@ -213,6 +213,26 @@ namespace mitraacd.api
             
             return Ok(new { success = true, message = "OTP berhasil diupdate" });
         }
+
+        [HttpPost("simpanSkill")]
+        public async Task<ActionResult<dynamic>> simpanSkill([FromBody] ReqsimpanSkill req)
+        {
+            var res = await _repo.simpanSkill(req);
+
+            if (res)
+            {
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
+            }
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
+        }
     }
 
 }

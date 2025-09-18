@@ -1,3 +1,42 @@
+<style>
+/* === Checkbox Custom === */
+.custom-check {
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  accent-color: #0d6efd; /* Warna biru Bootstrap */
+}
+
+/* Label jadi lebih enak dibaca */
+.custom-label {
+  cursor: pointer;
+  font-weight: 500;
+  margin-left: 10px;
+  font-size: 0.95rem;
+  color: #333;
+}
+
+/* === Wrapper tiap item === */
+.kecamatan-item {
+  display: flex;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 10px;
+  background: #fff;
+  margin-bottom: 10px;
+  transition: all 0.2s ease-in-out;
+}
+
+/* Efek hover biar interaktif */
+.kecamatan-item:hover {
+  background: #f8f9fa;
+  border-color: #0d6efd;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+</style>
+
+
 <div class="modal fade" id="ModalCoverageArea" tabindex="-1" aria-labelledby="ModalCoverageAreaLabel" aria-hidden="true">
   <div class="modal-dialog modal-fullscreen-sm-down">
     <div class="modal-content rounded-4 border-0 shadow-lg">
@@ -19,82 +58,296 @@
               </p>
             </div>
           </div>
-
           <!-- Body -->
           <div class="col-12">
             <div class="login-bottom p-4">
-              <form>
-                <!-- Multi Select Area -->
-                <div class="mb-3">
-                  <label for="areaCakupan" class="form-label fw-semibold">Pilih Area</label>
-                  <select id="areaCakupan" name="areaCakupan[]" class="form-select rounded-3" multiple>
-                    <option value="jakarta">Jakarta</option>
-                    <option value="bogor">Bogor</option>
-                    <option value="depok">Depok</option>
-                    <option value="tangerang">Tangerang</option>
-                    <option value="bekasi">Bekasi</option>
-                    <option value="bandung">Bandung</option>
-                    <option value="semarang">Semarang</option>
-                    <option value="surabaya">Surabaya</option>
-                  </select>
-                  <div class="form-text">Gunakan Ctrl/Command + klik untuk pilih lebih dari satu area.</div>
-                </div>
+              <label class="form-label fw-semibold">Lokasi Anda:</label>
+              
+              <div id="LocationMe">
+                <!-- Lokasi akan tampil di sini -->
+              </div>
 
-                <hr class="my-4">
-
-                <!-- Alternatif: Checklist Area -->
-                <label class="form-label fw-semibold mb-2">Atau pilih dengan checklist:</label>
-                <div class="row">
-                  <div class="col-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="jakarta" id="areaJakarta">
-                      <label class="form-check-label" for="areaJakarta">Jakarta</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="bogor" id="areaBogor">
-                      <label class="form-check-label" for="areaBogor">Bogor</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="depok" id="areaDepok">
-                      <label class="form-check-label" for="areaDepok">Depok</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="tangerang" id="areaTangerang">
-                      <label class="form-check-label" for="areaTangerang">Tangerang</label>
-                    </div>
-                  </div>
-                  <div class="col-6">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="bekasi" id="areaBekasi">
-                      <label class="form-check-label" for="areaBekasi">Bekasi</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="bandung" id="areaBandung">
-                      <label class="form-check-label" for="areaBandung">Bandung</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="semarang" id="areaSemarang">
-                      <label class="form-check-label" for="areaSemarang">Semarang</label>
-                    </div>
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" value="surabaya" id="areaSurabaya">
-                      <label class="form-check-label" for="areaSurabaya">Surabaya</label>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Tombol Simpan -->
-                <div class="d-grid mt-4">
-                  <button type="submit" class="btn btn-primary rounded-3 fw-semibold">
-                    Simpan Area Cakupan
-                  </button>
-                </div>
-              </form>
+              <!-- Tambahan: Radius Jangkauan -->
+              <label for="radiusRange" class="form-label fw-semibold">Radius Jangkauan (km)</label>
+              <p class="form-text text-muted small mb-2">
+                Semakin besar radius, semakin luas peluang orderan yang bisa kamu dapatkan. 🚀
+              </p>
+              <input type="range" class="form-range" id="radiusRange" min="1" max="10" value="1" 
+                    oninput="document.getElementById('radiusValue').textContent = this.value">
+              <p class="small text-muted">Radius jangkauan: <span id="radiusValue">1</span> km dari tempat anda</p>
+              <div id="KecamatanList">
+              </div>
             </div>
           </div>
-
+          
         </div>
       </div>  
     </div>
   </div>
 </div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function () {
+    $('#ModalCoverageArea').on('show.bs.modal', function (event) {
+        let _UserId = Storage.get('userId');
+        getAddressLatLng(_UserId)
+        .then((res)=>{
+            if(res.alamat!=""){
+              console.log(res.alamat.koordinat);
+              const [lat, lng] = res.alamat.koordinat.split(",").map(c => c.trim());
+              console.log("Lat:", lat);
+              console.log("Lng:", lng);
+              currentLat = lat;
+              currentLng = lng;
+              getAddress_api(lat, lng)
+              .then((data)=>{
+                if (data != null) {
+                    console.log(data);
+                    console.log(
+                        `${data.kelurahan}, ${data.kecamatan}, ${data.city}`
+                    );
+                    $("#LocationMe").html(`
+                      <div class="d-flex align-items-center mb-3"> 
+                        <i class="bi bi-house-door-fill text-danger me-2 flex-shrink-0"></i>
+                        <span class="fw-semibold small text-secondary text-wrap" style="white-space: nowrap;">
+                            ${data.fullAddress}
+                        </span>
+                      </div>
+                      <div class="d-flex align-items-center mb-3"> 
+                        <i class="bi bi-geo-alt-fill text-danger me-2 flex-shrink-0"></i>
+                        <span class="fw-semibold small text-secondary text-truncate" style="white-space: nowrap;">
+                            ${data.kelurahan}, ${data.kecamatan}, ${data.city}
+                        </span>
+                      </div>
+                    `);
+                    let radiusKm = $("#radiusRange").val();
+                    getNearby(currentLat, currentLng, radiusKm);
+                }
+              });
+            }
+        })
+        .catch((err) => {
+          console.error("Error :", err);
+          showToast("Terjadi kesalahan saat ambil data lokasi. Coba lagi!");
+        });
+    });
+    
+    document.getElementById("radiusRange").addEventListener("change", function () {
+        const radiusKm = this.value;
+        getNearby(currentLat, currentLng, radiusKm);
+    });
+
+});
+
+function getNearby(currentLat, currentLng, radiusKm){
+    getNearbyDistricApi(currentLat, currentLng, radiusKm)
+    .then((res) => {
+        console.log(res);
+        if (res.length > 0) {
+            // Checkbox Select All
+            let selectAllHtml = `
+                <div class="kecamatan-item d-flex align-items-center bg-light">
+                    <input class="form-check-input custom-check me-2" 
+                        type="checkbox" 
+                        id="check-all" 
+                        onclick="toggleSelectAll(this)">
+                    <label class="custom-label mb-0 flex-grow-1 d-flex align-items-center" for="check-all">
+                        <i class="bi bi-check-all text-success me-1"></i>
+                        <span class="fw-semibold">Pilih Semua</span> 
+                    </label>
+                </div>
+            `;
+
+            // Daftar kecamatan
+            let html = res.map((d, i) => `
+                <div class="kecamatan-item d-flex align-items-center">
+                    <input class="form-check-input custom-check me-2" 
+                        type="checkbox" 
+                        value="${d.provinsi}:${d.kabupaten}:${d.kecamatan}:${d.latitude}:${d.longitude}" 
+                        id="check-${i}">
+                    <label class="custom-label mb-0 flex-grow-1 d-flex align-items-center" for="check-${i}">
+                        <i class="bi bi-geo-alt-fill text-primary me-1"></i>
+                        <span class="fw-semibold">${d.kecamatan}</span> 
+                        <small class="text-muted ms-1">(${d.kabupaten})</small>
+                        <span class="badge bg-light text-dark ms-auto">${d.jarak_km.toFixed(2)} km</span>
+                    </label>
+                </div>
+            `).join("");
+
+            document.getElementById("KecamatanList").innerHTML = 
+                selectAllHtml + html + `
+                <p class="text-muted small fst-italic mt-2">
+                    📌 Info: jarak dihitung <b>tarik lurus</b> (garis udara), 
+                    jadi bisa berbeda dengan jarak di Google Maps atau rute jalan.
+                </p>
+                <div class="d-grid gap-2 mt-3">
+                    <button class="btn btn-primary btn-lg rounded-3 shadow-sm" onclick="ambilTerpilih()">
+                        <i class="bi bi-check2-circle me-2"></i> Simpan Area
+                    </button>
+                </div>
+            `;
+        } else {
+            document.getElementById("KecamatanList").innerHTML =
+                `<p class="text-muted">Tidak ada kecamatan dalam radius ${radiusKm} km dari tempat anda</p>`;
+        }
+    })
+    .catch((err) => {
+        console.error("Error :", err);
+        showToast("Terjadi kesalahan saat ambil data lokasi. Coba lagi!");
+    });
+}
+
+// ✅ Fungsi untuk toggle semua checkbox
+function toggleSelectAll(source) {
+    let checkboxes = document.querySelectorAll("#KecamatanList input[type=checkbox]");
+    checkboxes.forEach(cb => {
+        if (cb.id !== "check-all") { // selain checkbox utama
+            cb.checked = source.checked;
+        }
+    });
+}
+
+// fungsi ambil kecamatan yang dipilih
+function ambilTerpilih(){
+    let selected = [];
+    document.querySelectorAll("#KecamatanList input[type=checkbox]:checked")
+    .forEach(cb => {
+        let [provinsi, kabupaten, kecamatan, latitude, longitude] = cb.value.split(":");
+        selected.push({
+            provinsi,
+            kabupaten,
+            kecamatan,
+            latitude: parseFloat(latitude),
+            longitude: parseFloat(longitude)
+        });
+    });
+
+    if(selected.length > 0){
+        console.log(selected);
+        let radiusKm = $("#radiusRange").val();
+        let _UserId = Storage.get('userId');
+        let data = {
+          user_id : _UserId,
+          coverage_areas : {
+              radius: radiusKm,
+              list :  selected 
+          } 
+        }
+
+        simpanCoverageAreaApi(data)
+        .then((res)=>{
+            console.log(res);
+            if(res.success){
+                Swal.fire({
+                  icon: "success",
+                  title: "Berhasil!",
+                  text: "Coverage Area berhasil disimpan 🚀"
+                }).then(() => {
+                  let modal = bootstrap.Modal.getInstance(document.getElementById("ModalCoverageArea"));
+                  modal.hide();
+                  window.location.href = '@Url.Action("Index","Home")';
+                });
+            }
+            else
+            {
+                showToast(res.message);
+            }
+        })
+        .catch((err) => {
+          console.error("Error update coverage area :", err);
+          showToast("Terjadi kesalahan saat update coverage area. Coba lagi!");
+        });
+
+    } else {
+        showToast("Belum ada kecamatan yang dipilih.");
+    }
+}
+
+function getAddressLatLng(userId){
+  return new Promise((resolve, reject) => {
+      callApi({
+          url: '/api/Auth/GetData_account?id='+userId,
+          method: 'GET',
+          success: function (res) {
+              resolve(res);
+          },
+          error: function (err) {
+              console.error("Error:", err);
+              reject(err);
+          },
+          onBeforeSend: function () {
+              Swal.fire({
+                  title: "Tunggu ya...",
+                  text: "Sedang memuat lokasi.",
+                  allowOutsideClick: false,
+                  didOpen: () => Swal.showLoading()
+              });
+          },
+          onComplete: function () {
+              Swal.close();
+          }
+      });
+  });  
+}
+
+function getNearbyDistricApi(_lat,_lng,_radiusKm){
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Location/NearbyKecamatan?lat=${_lat}&lng=${_lng}&radiusKm=${_radiusKm}`,
+            method: 'GET',
+            //data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {
+                document.getElementById("KecamatanList").innerHTML = `
+                  <p class="text-muted small mb-1">
+                      🔍 Sedang mencari kecamatan dalam radius ${_radiusKm} km...
+                  </p>
+                  
+                  <div class="placeholder-glow mb-2">
+                      <span class="placeholder col-8"></span>
+                  </div>
+                  <div class="placeholder-glow mb-2">
+                      <span class="placeholder col-6"></span>
+                  </div>
+                  <div class="placeholder-glow mb-2">
+                      <span class="placeholder col-10"></span>
+                  </div>
+                `;
+                $("#radiusRange").prop("disabled", true);
+            },
+            onComplete: function () {
+                $("#radiusRange").prop("disabled", false);
+            }
+        });
+    });
+}
+
+function simpanCoverageAreaApi(data){
+    return new Promise((resolve, reject) => {
+        console.log("Mengirim data coverage area:", data);
+        callApi({
+            url: '/api/Location/simpanCoverageArea',
+            method: 'POST',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log("Respon simpan skill:", res);
+                resolve(res);
+            },
+            error: function (err) {
+                console.error("Error simpan skill:", err);
+                reject(err);
+            },
+            onBeforeSend: function () {
+            },
+            onComplete: function () {
+            }
+        });
+    });
+}
+</script>

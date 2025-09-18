@@ -26,6 +26,7 @@ namespace mitraacd.Services
         
         Task<bool> CheckOTPValid(CheckOTPValidReq data);
         Task<bool> UpdateOTPStatus(CheckOTPValidReq data);
+        Task<bool> simpanSkill(ReqsimpanSkill data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -379,6 +380,29 @@ namespace mitraacd.Services
             var result = await _db.ExecuteScalarAsync<int>(query, param);
             return result > 0;
         }
+
+        public async Task<bool> simpanSkill(ReqsimpanSkill data)
+        {
+            var query = @"
+                update mitra_data
+                    set 
+                        skill = @skills::jsonb,
+                        status_mitra = 2
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.user_id,
+                skills = JsonConvert.SerializeObject(data.skills)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
 
     }
 

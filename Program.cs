@@ -79,6 +79,7 @@ builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 builder.Services.AddScoped<IPerangkatPelangganRepository, PerangkatPelangganRepository>();
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IWhatsappRepo, WhatsappRepo>();
+builder.Services.AddScoped<ILocationRepo, LocationRepo>();
 
 
 builder.Services.AddHttpClient();

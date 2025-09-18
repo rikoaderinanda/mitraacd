@@ -93,4 +93,14 @@ namespace mitraacd.Models
         public string no_wa {get;set;}
         public string otp {get;set;}
     }
+
+    public class ReqsimpanSkill{
+        public long user_id {get;set;}
+        public object? skills {get;set;}
+    }
+
+    public class ReqsimpanCoverageArea{
+        public long user_id {get;set;}
+        public object? coverage_areas {get;set;}
+    }
 }

@@ -2,6 +2,7 @@ using System.Net.Http.Json;
 using Microsoft.AspNetCore.Mvc;
 using mitraacd.Models;
 using mitraacd.Services;
+using Newtonsoft.Json.Linq;
 
 namespace mitraacd.api
 {
@@ -10,10 +11,13 @@ namespace mitraacd.api
     public class LocationController : ControllerBase
     {
         private readonly HttpClient _http;
+        private readonly string _googleApiKey = "AIzaSyBS9s8GewgkGEaj3ANIwMaTOmZCYbd-aR0";
+        private readonly ILocationRepo _repo;
 
-        public LocationController(HttpClient http)
+        public LocationController(HttpClient http,ILocationRepo repo)
         {
             _http = http;
+            _repo = repo;
         }
 
         [HttpGet("reverse-geocode")]
@@ -21,7 +25,7 @@ namespace mitraacd.api
         {
             // lat = -6.5973453;
             // lng = 106.7659312;
-            string apiKey = "AIzaSyBS9s8GewgkGEaj3ANIwMaTOmZCYbd-aR0";
+            string apiKey = _googleApiKey;
             string url = $"https://maps.googleapis.com/maps/api/geocode/json?latlng={lat},{lng}&key={apiKey}";
 
             var response = await _http.GetFromJsonAsync<GeocodingResponse>(url);
@@ -60,6 +64,13 @@ namespace mitraacd.api
 
             return BadRequest(response);
         }
+        
+        [HttpGet("NearbyKecamatan")]
+        public async Task<IActionResult> NearbyKecamatan(double lat, double lng, int radiusKm = 1)
+        {
+            var res = await _repo.NearbyKecamatan(lat,lng,radiusKm);
+            return Ok(res);
+        }
 
         private static string Singkatkan(string input)
         {
@@ -74,6 +85,26 @@ namespace mitraacd.api
                 return input.Replace("Kecamatan", "Kec.");
 
             return input;
+        }
+
+        [HttpPost("simpanCoverageArea")]
+        public async Task<ActionResult<dynamic>> simpanCoverageArea([FromBody] ReqsimpanCoverageArea req)
+        {
+            var res = await _repo.simpanCoverageArea(req);
+
+            if (res)
+            {
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
+            }
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
         }
     }
 }

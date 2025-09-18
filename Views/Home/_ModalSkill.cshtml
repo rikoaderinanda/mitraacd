@@ -80,8 +80,15 @@
                 <!-- Step 2: Lama + Deskripsi -->
                 <div class="wizard-step d-none" id="skillStep2">
                   <h5 class="fw-bold mb-3 text-primary">📅 Lama & Deskripsi Pengalaman</h5>
+                  
                   <div class="form-floating mb-3">
-                    <input type="number" class="form-control rounded-3" id="lamaPengalaman" placeholder="Contoh: 3">
+                    <input type="number" 
+                          class="form-control rounded-3" 
+                          id="lamaPengalaman" 
+                          placeholder="Contoh: 3" 
+                          min="0" 
+                          max="99" 
+                          oninput="if(this.value.length > 2) this.value = this.value.slice(0,2);">
                     <label for="lamaPengalaman">Lama Pengalaman (Tahun)</label>
                   </div>
                   <div class="form-floating mb-3">
@@ -300,19 +307,67 @@ function simpanSkill() {
   }
 
   console.log("Data skill lengkap:", dataSkill);
+  let _UserId = Storage.get('userId');
+  let data = {
+    user_id : _UserId,
+    skills : dataSkill  
+  }
 
-  Swal.fire({
-    icon: "success",
-    title: "Berhasil!",
-    text: "Skill berhasil disimpan 🚀"
-  }).then(() => {
-    // Tutup modal setelah berhasil
-    let modal = bootstrap.Modal.getInstance(document.getElementById("ModalSkill"));
-    modal.hide();
+  simpanSkillApi(data)
+  .then((res)=>{
+      console.log(res);
+      if(res.success){
+          Swal.fire({
+            icon: "success",
+            title: "Berhasil!",
+            text: "Skill berhasil disimpan 🚀"
+          }).then(() => {
+            // Tutup modal setelah berhasil
+            let modal = bootstrap.Modal.getInstance(document.getElementById("ModalSkill"));
+            modal.hide();
+            window.location.href = '@Url.Action("Index","Home")';
+          });
+      }
+      else
+      {
+          showToast(res.message);
+      }
+  })
+  .catch((err) => {
+    console.error("Error update Skill :", err);
+    showToast("Terjadi kesalahan saat update skill. Coba lagi!");
   });
+
+  
 }
 
-function simpanSkillApi(){
-  
+function simpanSkillApi(data){
+    return new Promise((resolve, reject) => {
+        console.log("Mengirim data skill:", data);
+        callApi({
+            url: '/api/Auth/simpanSkill',
+            method: 'POST',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log("Respon simpan skill:", res);
+                resolve(res);
+            },
+            error: function (err) {
+                console.error("Error simpan skill:", err);
+                reject(err);
+            },
+            onBeforeSend: function () {
+                Swal.fire({
+                    title: "Update Skill...",
+                    text: "Mohon tunggu sebentar.",
+                    allowOutsideClick: false,
+                    didOpen: () => Swal.showLoading()
+                });
+            },
+            onComplete: function () {
+                Swal.close();
+            }
+        });
+    });
 }
 </script>
