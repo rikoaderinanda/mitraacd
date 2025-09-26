@@ -275,9 +275,15 @@ function callApi(options) {
         error: function (xhr) {
             const errMsg =
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
-            console.log(errMsg);
-            //console.error('API Error:', errMsg);
-            $('#ModalConnectionError').modal('show');
+            console.log('Error:', errMsg, 'Status:', xhr.status);
+
+            // ✅ Munculkan modal hanya jika koneksi terputus
+            if (xhr.status === 0) {
+                $('#ModalConnectionError').modal('show');
+            } else {
+                // kalau mau bisa tampilkan toast / swal error biasa
+                showToast(errMsg);
+            }
         },
         complete: function () {
             onComplete();

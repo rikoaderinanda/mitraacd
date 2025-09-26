@@ -233,6 +233,19 @@ namespace mitraacd.api
                 data = req
             });
         }
+
+        [HttpPost("CheckUndanganInterview")]
+        public async Task<ActionResult<dynamic>> CheckUndanganInterview([FromBody] CheckOTPValidReq req)
+        {
+            var res = await ;
+            if(!res)
+            {
+                return Ok(new { message = "", data = req });
+            }
+            
+            return Ok(new { success = true, message = "" });
+        }
+
     }
 
 }

@@ -141,7 +141,6 @@ namespace mitraacd.api
         {
             if (string.IsNullOrWhiteSpace(request.To) || string.IsNullOrWhiteSpace(request.Message))
                 return BadRequest("Nomor tujuan dan pesan wajib diisi");
-
             try
             {
                 var d = new CheckOTPAktifReq();
@@ -166,6 +165,7 @@ Jangan bagikan kode ini kepada siapa pun demi keamanan akun Anda.
 _AC Dikari Mitra - PT Dikari Tata Udara Indonesia._
 ";
                 var res = await SendWhatsappMessageAsync(request.To, otpMessage);
+                _logger.LogInformation("Balasan WA: {res}", res);
                 using var doc = JsonDocument.Parse(res);
                 var root = doc.RootElement;
 
@@ -190,13 +190,11 @@ _AC Dikari Mitra - PT Dikari Tata Udara Indonesia._
                 {
                     return BadRequest("Tidak ada respon dari meta api");
                 }
-            
-                
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Gagal kirim pesan WhatsApp");
-                return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, error = ex.Message });
+                return StatusCode(StatusCodes.Status500InternalServerError, new { success = false, error = "Gagal kirim pesan WhatsApp" });
             }
         }
 

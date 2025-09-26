@@ -1,0 +1,106 @@
+
+<div class="modal fade" id="ModalInterview" tabindex="-1" aria-labelledby="ModalInterviewLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="home-cart mt-0">
+        <div class="row">
+          <!-- Header -->
+          <div class="col-12">
+            <div class="login-top position-relative text-center bg-primary text-white p-4 rounded-top-4">
+              <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" data-bs-dismiss="modal" aria-label="Close"></button>
+              <!-- Ilustrasi -->
+              <img src="https://cdn-icons-png.flaticon.com/512/2922/2922510.png" 
+                   alt="Interview Illustration" 
+                   class="img-fluid mb-3" 
+                   style="max-height:40px;">
+
+              <h5 class="fs-4 fw-bold mb-2">Undangan Interview</h5>
+              <p class="fs-7 mb-0 opacity-75 text-white">
+                Kamu diundang untuk tahap interview sebagai mitra teknisi AC. 
+                Silakan pilih konfirmasi kehadiran.
+              </p>
+            </div>
+          </div>
+          <!-- Body -->
+          <div class="col-12">
+            <div class="login-bottom p-4">
+              <!-- Jadwal Interview -->
+                <div class="mb-3 justify-content-center" id="waitingInvitation">
+                    <img src="https://cdn-icons-png.flaticon.com/512/7486/7486742.png" 
+                        alt="Waiting Illustration" 
+                        class="img-fluid mb-4" 
+                        style="max-height:100px;">
+                    
+                    <!-- Judul -->
+                    <h4 class="fw-bold mb-2">Menunggu Undangan Interview</h4>
+                    
+                    <!-- Deskripsi -->
+                    <p class="text-muted mb-4">
+                    Kamu sudah mendaftar sebagai mitra teknisi AC.<br>
+                    Saat ini kamu sedang menunggu undangan interview dari admin.<br>
+                    Notifikasi akan muncul di aplikasi ketika undangan dikirim.
+                    </p>
+
+                    <!-- Status -->
+                    <div class="alert alert-info rounded-3 fw-semibold">
+                    ⏳ Status: Menunggu Undangan
+                    </div>
+
+                    <!-- Tombol refresh / cek -->
+                    <button class="btn btn-primary rounded-3 fw-semibold mt-2" type="button">
+                    🔄 Cek Undangan Terbaru
+                    </button>
+                </div>
+                    
+                <div id="InvitationInterview">
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Jadwal Interview:</label>
+                        <p class="mb-1">🗓️ Senin, 23 September 2025</p>
+                        <p class="mb-0">⏰ 10:00 WIB</p>
+                    </div>
+
+                    <!-- Pilihan Mode -->
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Mode Interview:</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="modeInterview" id="online" value="online" checked>
+                            <label class="form-check-label" for="online">Online (via Zoom/Google Meet)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="modeInterview" id="offline" value="offline">
+                            <label class="form-check-label" for="offline">Offline (Kantor Pusat)</label>
+                        </div>
+                    </div>
+
+                    <!-- Aksi -->
+                    <div class="d-flex flex-column gap-2">
+                        <button class="btn btn-success rounded-3 fw-semibold" type="button">
+                        ✅ Konfirmasi Hadir
+                        </button>
+                        <button class="btn btn-outline-warning rounded-3 fw-semibold" type="button">
+                        🔄 Ajukan Reschedule
+                        </button>
+                        <button class="btn btn-outline-secondary rounded-3 fw-semibold" data-bs-dismiss="modal">
+                        ❌ Batal
+                        </button>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    checkUndangan();
+});
+
+function checkUndangan(){
+    $("#waitingInvitation").removeClass("d-none");
+    $("#InvitationInterview").addClass("d-none");
+}
+</script>
+

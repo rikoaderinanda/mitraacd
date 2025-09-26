@@ -194,66 +194,108 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function () {
-    checkStatusMitra().then(result => {
-      let status = result.data.status_mitra; 
-      // 0 = Biodata, 1 = Skill, 2 = Coverage, 3 = Interview, 4 = Onboarding, 5 = Selesai
-      
-      const steps = ["stepBiodata", "stepSkill", "stepCoverage", "stepInterview", "stepOnboarding"];
-      const progressLine = document.getElementById("progressLine");
+document.addEventListener('DOMContentLoaded', function () {
+  checkStatusMitra().then(result => {
+    let status = result.data.status_mitra; 
+    // 0 = Biodata, 1 = Skill, 2 = Coverage, 3 = Interview, 4 = Onboarding, 5 = Selesai
+    
+    const steps = ["stepBiodata", "stepSkill", "stepCoverage", "stepInterview", "stepOnboarding"];
+    const progressLine = document.getElementById("progressLine");
 
-      // Reset step
-      steps.forEach((id, index) => {
+    // Reset step
+    steps.forEach((id, index) => {
+      const el = document.getElementById(id);
+      el.classList.remove("active", "done");
+      el.textContent = index + 1; // reset angka
+      const item = el.closest(".step-item");
+      item.setAttribute("data-bs-toggle","modal"); // reset default
+      item.removeAttribute("onclick");
+      item.style.cursor = "pointer";
+      item.style.opacity = "1";
+    });
+
+    // Fungsi disable modal step yang sudah selesai
+    function disableStepModal(stepId) {
+      const item = document.getElementById(stepId).closest(".step-item");
+      item.removeAttribute("data-bs-toggle");
+      item.style.cursor = "not-allowed";
+      item.style.opacity = "0.6";
+    }
+
+    // Fungsi blokir klik step di atas step aktif
+    function blockStep(stepId) {
+      const item = document.getElementById(stepId).closest(".step-item");
+      item.removeAttribute("data-bs-toggle");
+      item.style.cursor = "not-allowed";
+      item.setAttribute("onclick", "showToast('Kamu harus menyelesaikan langkah yang sedang berjalan dulu sebelum bisa lanjut 🚀');");
+    }
+
+    // Atur status
+    if(status == 0){
+      document.getElementById("stepBiodata").classList.add("active");
+      progressLine.style.height = "0";
+
+      // Step lain di atas aktif → blokir
+      steps.slice(1).forEach(id => blockStep(id));
+    }
+    else if(status == 1){
+      document.getElementById("stepBiodata").classList.add("done");
+      document.getElementById("stepBiodata").innerHTML = "✓";
+      disableStepModal("stepBiodata");
+
+      document.getElementById("stepSkill").classList.add("active");
+      progressLine.style.height = "20%";
+
+      steps.slice(2).forEach(id => blockStep(id));
+    }
+    else if(status == 2){
+      ["stepBiodata","stepSkill"].forEach(id => {
         const el = document.getElementById(id);
-        el.classList.remove("active", "done");
-        el.textContent = index + 1; // reset angka
+        el.classList.add("done");
+        el.innerHTML = "✓";
+        disableStepModal(id);
       });
 
-      if(status == 0){
-        document.getElementById("stepBiodata").classList.add("active");
-        progressLine.style.height = "0";
-      }
-      else if(status == 1){
-        document.getElementById("stepBiodata").classList.add("done");
-        document.getElementById("stepBiodata").innerHTML = "✓";
-        document.getElementById("stepSkill").classList.add("active");
-        progressLine.style.height = "20%";
-      }
-      else if(status == 2){
-        ["stepBiodata","stepSkill"].forEach(id => {
-          const el = document.getElementById(id);
-          el.classList.add("done");
-          el.innerHTML = "✓";
-        });
-        document.getElementById("stepCoverage").classList.add("active");
-        progressLine.style.height = "40%";
-      }
-      else if(status == 3){
-        ["stepBiodata","stepSkill","stepCoverage"].forEach(id => {
-          const el = document.getElementById(id);
-          el.classList.add("done");
-          el.innerHTML = "✓";
-        });
-        document.getElementById("stepInterview").classList.add("active");
-        progressLine.style.height = "60%";
-      }
-      else if(status == 4){
-        ["stepBiodata","stepSkill","stepCoverage","stepInterview"].forEach(id => {
-          const el = document.getElementById(id);
-          el.classList.add("done");
-          el.innerHTML = "✓";
-        });
-        document.getElementById("stepOnboarding").classList.add("active");
-        progressLine.style.height = "80%";
-      }
-      else {
-        steps.forEach(id => {
-          const el = document.getElementById(id);
-          el.classList.add("done");
-          el.innerHTML = "✓";
-        });
-        progressLine.style.height = "100%";
-      }
-    });
+      document.getElementById("stepCoverage").classList.add("active");
+      progressLine.style.height = "40%";
+
+      steps.slice(3).forEach(id => blockStep(id));
+    }
+    else if(status == 3){
+      ["stepBiodata","stepSkill","stepCoverage"].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.add("done");
+        el.innerHTML = "✓";
+        disableStepModal(id);
+      });
+
+      document.getElementById("stepInterview").classList.add("active");
+      progressLine.style.height = "60%";
+
+      steps.slice(4).forEach(id => blockStep(id));
+    }
+    else if(status == 4){
+      ["stepBiodata","stepSkill","stepCoverage","stepInterview"].forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.add("done");
+        el.innerHTML = "✓";
+        disableStepModal(id);
+      });
+
+      document.getElementById("stepOnboarding").classList.add("active");
+      progressLine.style.height = "80%";
+    }
+    else {
+      steps.forEach(id => {
+        const el = document.getElementById(id);
+        el.classList.add("done");
+        el.innerHTML = "✓";
+        disableStepModal(id); // semua step disable
+      });
+      progressLine.style.height = "100%";
+    }
   });
+});
+
+
 </script>
