@@ -27,6 +27,10 @@ namespace mitraacd.Services
         Task<bool> CheckOTPValid(CheckOTPValidReq data);
         Task<bool> UpdateOTPStatus(CheckOTPValidReq data);
         Task<bool> simpanSkill(ReqsimpanSkill data);
+
+        Task<bool> simpan_UndanganInterview(Reqsimpan_UndanganInterview data);
+        Task<bool> simpan_ajuan_reschedule(Resimpan_ajuan_reschedule data);
+        Task<bool> simpan_updateStatus_interview(Req_simpan_updateStatus_interview data);
     }
 
     public class AccountRepository : IAccountRepository
@@ -403,8 +407,95 @@ namespace mitraacd.Services
             return result.HasValue && result.Value > 0;
         }
 
+        public async Task<bool> simpan_UndanganInterview(Reqsimpan_UndanganInterview data)
+        {
+            var query = @"
+                update mitra_data
+                    set 
+                        undangan_interview = @undangan_interview::jsonb
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.user_id,
+                undangan_interview = JsonConvert.SerializeObject(data.undangan_interview)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> simpan_ajuan_reschedule(Resimpan_ajuan_reschedule data)
+        {
+            var query = @"
+                UPDATE mitra_data
+                    SET undangan_interview = jsonb_set(
+                        undangan_interview,
+                        '{status}',
+                        '2',     
+                        false    
+                    )
+                WHERE id = @Id;
+
+                update mitra_data
+                    set 
+                        ajuan_reschedule_interview = @ajuan_reschedule::jsonb
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.user_id,
+                ajuan_reschedule = JsonConvert.SerializeObject(data.ajuan_reschedule)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> simpan_updateStatus_interview(Req_simpan_updateStatus_interview data)
+        {
+            var query = @"
+                UPDATE mitra_data
+                    SET undangan_interview = jsonb_set(
+                        undangan_interview,
+                        '{status}',
+                        to_jsonb(@Status::int),     
+                        false    
+                    )
+                WHERE id = @Id
+            ";
+
+            if(data.status == 3){
+                query = query+"; ";
+                query = query + @"
+                    update mitra_data
+                    SET
+                        ajuan_reschedule_interview = null
+                    WHERE id = @Id
+                ";
+            }
+
+            query = query + @" 
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.user_id,
+                status = data.status
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
 
     }
-
-
 }

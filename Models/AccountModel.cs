@@ -103,4 +103,20 @@ namespace mitraacd.Models
         public long user_id {get;set;}
         public object? coverage_areas {get;set;}
     }
+    
+    public class Reqsimpan_UndanganInterview
+    {
+        public long user_id {get;set;}
+        public object? undangan_interview {get;set;}
+    }
+
+    public class Resimpan_ajuan_reschedule{
+        public long user_id {get;set;}
+        public object? ajuan_reschedule {get;set;}
+    }
+
+    public class Req_simpan_updateStatus_interview{
+        public long user_id {get;set;}
+        public int status {get;set;}
+    }
 }

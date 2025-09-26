@@ -480,3 +480,53 @@ function base64ToBlob(base64Data) {
     }
     return new Blob([ab], { type: mime });
 }
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+
+    // Pecah string dd-MM-yyyy
+    const [day, month, year] = dateStr.split('-');
+
+    // Nama bulan dalam bahasa Indonesia
+    const monthNames = [
+        'Januari',
+        'Februari',
+        'Maret',
+        'April',
+        'Mei',
+        'Juni',
+        'Juli',
+        'Agustus',
+        'September',
+        'Oktober',
+        'November',
+        'Desember'
+    ];
+
+    // Validasi sederhana
+    if (!day || !month || !year) return dateStr;
+
+    return `${parseInt(day)} ${monthNames[parseInt(month) - 1]} ${year}`;
+}
+
+function formatPhoneNumber(phone) {
+    // pastikan input string
+    if (!phone) return '';
+
+    // hilangkan karakter non-angka
+    let digits = phone.replace(/\D/g, '');
+
+    // kalau mulai dengan 62 → tambah tanda +
+    if (digits.startsWith('62')) {
+        digits = '+' + digits;
+    }
+
+    // contoh: +6281234567890
+    // ambil prefix +62
+    const prefix = digits.substring(0, 3); // +62
+    const part1 = digits.substring(3, 6); // 812
+    const part2 = digits.substring(6, 10); // 3456
+    const part3 = digits.substring(10); // 7890
+
+    return `${prefix} ${part1}-${part2}-${part3}`;
+}

@@ -5,8 +5,8 @@ using mitraacd.Models;
 using mitraacd.Services;
 using Microsoft.Extensions.Configuration;
 using System.Text;
-using System.Text.Json; // ✅ untuk JsonSerializer
-using Microsoft.Extensions.Logging; // ✅ untuk ILogger
+using System.Text.Json; 
+using Microsoft.Extensions.Logging;
 
 using Google.Apis.Auth;
 using System.Security.Claims;
@@ -234,18 +234,63 @@ namespace mitraacd.api
             });
         }
 
-        [HttpPost("CheckUndanganInterview")]
-        public async Task<ActionResult<dynamic>> CheckUndanganInterview([FromBody] CheckOTPValidReq req)
+        [HttpPost("simpan_UndanganInterview")]
+        public async Task<ActionResult<dynamic>> simpan_UndanganInterview([FromBody] Reqsimpan_UndanganInterview req)
         {
-            var res = await ;
-            if(!res)
+            var res = await _repo.simpan_UndanganInterview(req);
+            if (res)
             {
-                return Ok(new { message = "", data = req });
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
             }
-            
-            return Ok(new { success = true, message = "" });
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
         }
 
-    }
+        [HttpPost("simpan_ajuan_reschedule")]
+        public async Task<ActionResult<dynamic>> simpan_ajuan_reschedule([FromBody] Resimpan_ajuan_reschedule req)
+        {
+            var res = await _repo.simpan_ajuan_reschedule(req);
+            if (res)
+            {
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
+            }
 
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
+        }
+
+        [HttpPost("simpan_updateStatus_interview")]
+        public async Task<ActionResult<dynamic>> simpan_updateStatus_interview([FromBody] Req_simpan_updateStatus_interview req)
+        {
+            var res = await _repo.simpan_updateStatus_interview(req);
+            if (res)
+            {
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
+            }
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
+        }
+
+        
+    }
 }
