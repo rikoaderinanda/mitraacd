@@ -18,9 +18,9 @@ namespace mitraacd.api
         }
 
         [HttpGet("GetTask")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetTask(int Id, int Hari)
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTask(string Id,string hari)
         {
-            var res = await _taskRepository.GetTaskAsync(Id, Hari);
+            var res = await _taskRepository.GetTask(Id, hari);
             return Ok(res);
         }
 
@@ -31,7 +31,7 @@ namespace mitraacd.api
                 return BadRequest(new { message = "Data tidak tersedia" });
             try
             {
-                var res = await _taskRepository.BerangkatKelokasiAsync(dto);
+                var res = await _taskRepository.Berangkat(dto);
                 return Ok(new { message = "Task berhasil diupdate", id = res });
             }
             catch (Exception ex)
@@ -40,20 +40,42 @@ namespace mitraacd.api
             }
         }
 
-        [HttpPost("SampaiDiLokasi")]
-        public async Task<IActionResult> SampaiDiLokasi([FromBody] SampaiDiLokasiModel dto)
+        [HttpPost("Berangkat")]
+        public async Task<IActionResult> Berangkat([FromBody] BerangkatKelokasiModel req)
         {
-            if (dto == null || dto.Id == null)
-                return BadRequest(new { message = "Data tidak tersedia" });
-            try
+            var res = await _taskRepository.Berangkat(req);
+            if (res)
             {
-                var res = await _taskRepository.SampaiDiLokasiAsync(dto);
-                return Ok(new { message = "Task berhasil diupdate", id = res });
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
             }
-            catch (Exception ex)
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
+        }
+
+        [HttpPost("SampaiDiLokasi")]
+        public async Task<IActionResult> SampaiDiLokasi([FromBody] SampaiDiLokasiModel req)
+        {
+            var res = await _taskRepository.SampaiLokasi(req);
+            if (res)
             {
-                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan Biding" });
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
             }
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
         }
 
         [HttpGet("CheckPhotoSebelumTask")]

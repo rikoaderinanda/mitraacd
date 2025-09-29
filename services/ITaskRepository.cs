@@ -15,9 +15,15 @@ namespace mitraacd.Services
         Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto);
         Task<IEnumerable<dynamic>> CheckPhotoSebelumTask(string IdTask);
         Task<bool> DeletePhotoSebelumTaskAsync(string publicId);
-        Task<bool> UpdateStatusTaskAsync(string idtask);
+        
         Task<dynamic> CheckQrCodeUnit(string decodedText);
 
+        
+        //versi 1.0
+        Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari);
+        Task<bool> Berangkat(BerangkatKelokasiModel data);
+        Task<bool> SampaiLokasi(SampaiDiLokasiModel idtask);
+        Task<bool> UpdateTask_PengukuranAwal(UpdateTask_PengukuranAwalDTO dt);
     }
 
     public class TaskRepository : ITaskRepository
@@ -31,12 +37,144 @@ namespace mitraacd.Services
             _cloudinaryService = cloudinaryService;
         }
 
+        public async Task<bool> UpdateTask_PengukuranAwal(UpdateTask_PengukuranAwalDTO dt)
+        {
+            var query = @"
+                update log_transaction 
+                set 
+                    status = 7,
+                    pengukuran_awal = @Pengukuran_awal::jsonb,
+                    pengukuran_awal_datetime = now(),
+                    img_pengukuran_awal = @Img_pengukuran_awal::jsonb
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(dt.IdTask),
+                Pengukuran_awal = dt.pengukuran_awal,
+                img_pengukuran_awal = JsonConvert.SerializeObject(dt.imageResults)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> SampaiLokasi(SampaiDiLokasiModel data)
+        {
+            var query = @"
+                update log_transaction 
+                    set status = 6,
+                    sampai_dilokasi_date = now()
+                where 
+                id = @id
+                and mitra_bid_id = @MitraId
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.Id,
+                MitraId = data.MitraId
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> Berangkat(BerangkatKelokasiModel data)
+        {
+            var query = @"
+                update log_transaction
+                set 
+                    berangkat_kelokasi_date = now(),
+                    status = 5
+                where 
+                status = 4
+                and id = @Id
+                and mitra_bid_id = @MitraId
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = data.Id,
+                MitraId = data.MitraId
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari)
+        {
+            var sql = @"
+                select a.* from
+                (
+                    select
+                        id,
+                        kategori_layanan ,jenis_layanan , 
+                        (total_transaksi*70/100) fee_teknisi,
+                        kunjungan,kontak_pelanggan,alamat_pelanggan,
+                        alamat_pelanggan->>'koordinat' as tujuan,
+                        (select alamat->>'koordinat'  from mitra_data where id = @Id) as origin,
+                        ST_DistanceSphere(
+                            ST_Point(
+                                split_part(alamat_pelanggan->>'koordinat', ',', 2)::float,
+                                split_part(alamat_pelanggan->>'koordinat', ',', 1)::float
+                            ),
+                            ST_Point(
+                                split_part((select alamat->>'koordinat' from mitra_data where id = @Id), ',', 2)::float, 
+                                split_part((select alamat->>'koordinat' from mitra_data where id = @Id), ',', 1)::float
+                            )
+                        ) as jarak_meter,
+                        bid_date,
+                        jenis_properti,
+                        kunjungan->> 'Member' as mbr,
+                        kunjungan->> 'Reguler' as reg,
+                        to_timestamp(
+                            (kunjungan->'Reguler'->>'tanggal') || ' ' || (kunjungan->'Reguler'->>'jam'),
+                            'YYYY-MM-DD HH24:MI'
+                        ) as waktu_kunjungan,
+                        status
+                    from log_transaction
+                    where status > 3 and mitra_bid_id = @Id
+                ) a
+                WHERE 
+                jarak_meter <= (
+                    SELECT (coverage_area->>'radius')::float * 1000
+                    FROM mitra_data 
+                    WHERE id = @Id
+                )
+                AND (
+                    (@FilterHari = 0 AND date(waktu_kunjungan) = current_date)
+                    OR (@FilterHari = 1 AND date(waktu_kunjungan) = current_date + 1)
+                    OR (@FilterHari = 2 AND date(waktu_kunjungan) > current_date + 1)
+                )
+                order by  waktu_kunjungan asc
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(Id),
+                FilterHari = long.Parse(FilterHari)
+            };
+
+            var result = await _db.QueryAsync<dynamic>(sql,param);
+
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+
         public async Task<IEnumerable<dynamic>> GetTaskAsync(int Id, int hari)
         {
             var finalResult = new List<dynamic>();
             string sql = "select order_json::text from get_task(" + Id + "," + hari + ")";
             var result = await _db.QueryAsync<string>(sql);
-            // Console.WriteLine(result.First().GetType().Name);
+            
             foreach (var jsonString in result)
             {
                 // Console.WriteLine("Raw JSON: " + jsonString);
@@ -140,17 +278,7 @@ namespace mitraacd.Services
             return result > 0; // true jika ada baris yang dihapus
         }
 
-        public async Task<bool> UpdateStatusTaskAsync(string idtask)
-        {
-            var sql = @"
-                update pemesanan 
-                    set status_order = 7
-                where id = @id
-            ";
-
-            var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});
-            return result > 0; // true jika ada baris yang dihapus
-        }
+        
 
         public async Task<dynamic?> CheckQrCodeUnit(string decodedText)
         {

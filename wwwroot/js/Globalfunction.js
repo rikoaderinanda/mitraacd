@@ -276,6 +276,7 @@ function callApi(options) {
             const errMsg =
                 xhr.responseJSON?.message || xhr.statusText || 'API Error';
             console.log('Error:', errMsg, 'Status:', xhr.status);
+            showToast('Error:' + errMsg);
 
             // ✅ Munculkan modal hanya jika koneksi terputus
             if (xhr.status === 0) {
@@ -468,7 +469,6 @@ async function getAddress_api(lat, lng) {
     });
 }
 
-
 function base64ToBlob(base64Data) {
     const parts = base64Data.split(',');
     const mime = parts[0].match(/:(.*?);/)[1];
@@ -508,6 +508,22 @@ function formatDate(dateStr) {
 
     return `${parseInt(day)} ${monthNames[parseInt(month) - 1]} ${year}`;
 }
+function formatTanggal(tanggalStr, plusHari = 0) {
+    const date = new Date(tanggalStr);
+
+    // Tambah hari kalau perlu
+    if (plusHari !== 0) {
+        date.setDate(date.getDate() + plusHari);
+    }
+
+    // Format ke Indonesia
+    return date.toLocaleDateString('id-ID', {
+        weekday: 'long', // Senin, Selasa, ...
+        day: '2-digit',
+        month: 'short', // Jan, Feb, Mar ...
+        year: 'numeric'
+    });
+}
 
 function formatPhoneNumber(phone) {
     // pastikan input string
@@ -529,4 +545,121 @@ function formatPhoneNumber(phone) {
     const part3 = digits.substring(10); // 7890
 
     return `${prefix} ${part1}-${part2}-${part3}`;
+}
+
+function showMaps(koordinat) {
+    console.log(koordinat);
+    if (!koordinat) {
+        Swal.fire({
+            icon: 'warning',
+            title: 'Koordinat tidak tersedia',
+            text: 'Alamat ini belum memiliki titik lokasi di Maps.'
+        });
+        return;
+    }
+
+    // pastikan format koordinat: "lat,lng"
+    const [lat, lng] = koordinat.split(',');
+    const mapUrl = `https://www.google.com/maps?q=${lat},${lng}`;
+
+    // buka di tab baru
+    window.open(mapUrl, '_blank');
+}
+
+function hitungJarakJalan(origin, destination) {
+    const service = new google.maps.DirectionsService();
+
+    return new Promise((resolve, reject) => {
+        service.route(
+            {
+                origin: origin, // { lat: -6.5973, lng: 106.7660 }
+                destination: destination, // { lat: -6.5930, lng: 106.7810 }
+                travelMode: google.maps.TravelMode.DRIVING // atau WALKING, BICYCLING
+            },
+            (response, status) => {
+                if (status === google.maps.DirectionsStatus.OK) {
+                    const distance = response.routes[0].legs[0].distance.text; // e.g. "5.4 km"
+                    const duration = response.routes[0].legs[0].duration.text; // e.g. "15 menit"
+                    resolve({ distance, duration });
+                } else {
+                    reject('Gagal hitung jarak: ' + status);
+                }
+            }
+        );
+    });
+}
+
+function startCountdown(id, paramB, elementId) {
+    const now = new Date();
+
+    // format ke YYYY-MM-DD (local time)
+    const today = [
+        now.getFullYear(),
+        String(now.getMonth() + 1).padStart(2, '0'),
+        String(now.getDate()).padStart(2, '0')
+    ].join('-');
+
+    //const today = new Date().toISOString().split('T')[0];
+    const endTime = new Date(`${today}T${paramB}:00`); // waktu target
+    let diff = endTime - new Date(); // selisih dari sekarang
+
+    if (diff <= 0) {
+        document.getElementById(elementId).innerText = 'Waktu habis';
+        $('#SLA_' + id).removeClass('d-none');
+        return;
+    }
+
+    const timer = setInterval(() => {
+        const now = new Date();
+        diff = endTime - now;
+
+        if (diff <= 0) {
+            $('#SLA_' + id).removeClass('d-none');
+            clearInterval(timer);
+            document.getElementById(elementId).innerText = 'Waktu habis';
+            return;
+        }
+
+        // Hitung jam, menit, detik
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+        let durasiText = $('#durasi_' + id).text();
+        let durasiMenit = parseDurationToMinutes(durasiText);
+        if (minutes <= durasiMenit) {
+            $('#SLA_' + id).removeClass(`d-none`);
+        } else {
+            $('#SLA_' + id).addClass(`d-none`);
+        }
+        // Update tampilan
+        const el = document.getElementById(elementId);
+        if (!el) {
+            console.warn('Element countdown tidak ditemukan:', elementId);
+            clearInterval(timer);
+            return;
+        }
+        document.getElementById(elementId).innerText =
+            `${hours.toString().padStart(2, '0')}:` +
+            `${minutes.toString().padStart(2, '0')}:` +
+            `${seconds.toString().padStart(2, '0')}`;
+    }, 1000);
+}
+
+function parseDurationToMinutes(durationText) {
+    // contoh input: "18 mins", "1 hour 5 mins", "45 min"
+    let totalMinutes = 0;
+
+    // Ambil jam kalau ada
+    let hourMatch = durationText.match(/(\d+)\s*hour/);
+    if (hourMatch) {
+        totalMinutes += parseInt(hourMatch[1], 10) * 60;
+    }
+
+    // Ambil menit kalau ada
+    let minuteMatch = durationText.match(/(\d+)\s*min/);
+    if (minuteMatch) {
+        totalMinutes += parseInt(minuteMatch[1], 10);
+    }
+
+    return totalMinutes;
 }

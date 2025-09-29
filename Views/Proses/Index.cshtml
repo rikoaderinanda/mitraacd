@@ -1,0 +1,84 @@
+@{
+    ViewData["Title"] = "Home Page";
+}
+<div class="app-body pb-30">
+    <div class="container mt-30 mb-30">
+        <div class="col-12">
+            <div class="home-categories mt-2">
+                <div class="category-group">
+                    <div class="owl-carousel category-slider text-center" id="jadwalCarousel">
+                        
+                        <div class="item px-1">
+                            <button id="btnHariIni" class="btn btn-outline-primary btn-sm w-100 rounded-pill"
+                                onclick="LoadListTask(0);">
+                                <i class="bi bi-truck me-1"></i> Perjalanan
+                            </button>
+                        </div>
+                        
+                        <div class="item px-1">
+                            <button id="btnHariBesok" class="btn btn-outline-warning btn-sm w-100 rounded-pill"
+                                onclick="LoadListTask(1);">
+                                <i class="bi bi-tools me-1"></i> Pengerjaan
+                            </button>
+                        </div>
+                        
+                        <div class="item px-1">
+                            <button id="btnHariJauh" class="btn btn-outline-success btn-sm w-100 rounded-pill"
+                                onclick="LoadListTask(2);">
+                                <i class="bi bi-check2-circle me-1"></i> Selesai
+                            </button>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script>
+    let hari = 0;
+    var $;
+    document.addEventListener('DOMContentLoaded', function () {
+        if (typeof window.jQuery === 'undefined') {
+            console.error('jQuery is not loaded.');
+            return;
+        }
+        $ = window.jQuery;
+        Storage.set("CurrentPage","");
+        loadHeader();
+        checkStatusMitra().then(result => {
+            if (result.data.status_mitra == 5) 
+            {
+                initFilter();
+            }
+            else{
+                Swal.fire({
+                    title: "Akun Belum Aktif",
+                    text: "Akun Mitra Anda belum aktif sepenuhnya. Silakan ikuti langkah aktivasi terlebih dahulu.",
+                    icon: "info",
+                    confirmButtonColor: "#198754",
+                    confirmButtonText: "Ikuti Aktivasi",
+                    timer: 6000,
+                    timerProgressBar: true
+                }).then(() => {
+                    window.location.href = '@Url.Action("Index","Home")';
+                });
+            }
+        });
+    });
+
+    function initFilter() {
+        $('#jadwalCarousel').owlCarousel({
+            loop: false,
+            margin: 7,
+            nav: false,
+            responsive: {
+                0: { items: 2.5 },
+                600: { items: 3 },
+                1000: { items: 3 }
+            }
+        });
+    }
+ </script>   

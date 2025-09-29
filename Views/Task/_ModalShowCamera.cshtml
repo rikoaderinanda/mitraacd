@@ -53,43 +53,70 @@
         <div class="modal-body p-4 bg-light">
             <div class="text-center mb-3">
                 <p class="fs-6 fw-semibold text-dark">
-                📷 Silakan ambil 3 foto unit yang akan dikerjakan untuk reparasi
+                📷 Silakan ambil Foto Suhu unit Indoor, Tekanan Freon, & Ampere Unit
                 </p>
             </div>
             <!-- Preview Foto -->
-            <div class="row g-3 mt-2 mb-2" id="previewContainer">
+            <div class="row g-3 mt-0 mb-2" id="previewContainer">
                 <!-- Foto 1 -->
                 <div class="col-4 text-center" id="can1">
                     <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">1. Suhu Unit Indoor</h6>
                         <img id="photo1" class="img-fluid rounded mb-0 preview-photo" data-index="1" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
                         <button id="redo1" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(1)">
                             <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
                         </button>
+                        <!-- Input hasil pengukuran suhu -->
+                        <div class="p-2">
+                            <input 
+                            type="number" step="0.1" required
+                            min="15" max="30"
+                            class="form-control form-control-sm" 
+                            id="inputSuhu" placeholder="(°C)"
+                            >
+                            <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Foto 2 -->
                 <div class="col-4 text-center" id="can2">
                     <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
-                    <img id="photo2" class="img-fluid rounded mb-0 preview-photo" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(2)">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
-                    </button>
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">2. Tekanan Freon</h6>
+                        <img id="photo2" class="img-fluid rounded mb-0 preview-photo" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(2)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        <!-- Input hasil pengukuran tekanan freon -->
+                        <div class="p-2">
+                            <input type="number" step="0.1" min="60" max="120" required
+                            class="form-control form-control-sm" id="inputTekanan" placeholder="(PSI)">
+                            <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Foto 3 -->
                 <div class="col-4 text-center" id="can3">
                     <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
-                    <img id="photo3" class="img-fluid rounded mb-0 preview-photo" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
-                    <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(3)">
-                        <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
-                    </button>
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">3. Cek Ampere Unit</h6>
+                        <img id="photo3" class="img-fluid rounded mb-0 preview-photo" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(3)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        <!-- Input hasil pengukuran ampere -->
+                        <div class="p-2">
+                            <input type="number" step="0.1" 
+                            min="1" max="10" required 
+                            class="form-control form-control-sm" id="inputAmpere" placeholder="(Amp)">
+                            <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div>
+                        </div>
                     </div>
                 </div>
             </div>
+
             <!-- Area Kamera -->
-            <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;">
+            <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;" id="panelCamera">
                 <video id="videoPreview" autoplay playsinline width="100%" height="auto"></video>
                 <canvas id="canvasPhoto" style="display: none;"></canvas>
                 <div class="camera-actions">
@@ -100,7 +127,53 @@
                         <i class="bi bi-camera fs-4"></i>
                     </button>
                 </div>
-            </div>                
+            </div>
+
+            <div id="panelInputHasilPengukuran" class="d-none">
+                <div class="card border rounded-3 shadow-sm p-3 mb-3">
+                  <h5 class="fw-semibold text-primary">Kondisi Unit Indoor</h5>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiIndoor" id="indoorNormal" value="Normal" checked>
+                    <label class="form-check-label" for="indoorNormal">Normal</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiIndoor" id="indoorAbnormal" value="Abnormal">
+                    <label class="form-check-label" for="indoorAbnormal">Abnormal</label>
+                  </div>
+
+                  <!-- Form Abnormal Indoor -->
+                  <div id="indoorAbnormalForm" class="mt-2" style="display:none;">
+                    <textarea class="form-control form-control-sm mb-2" id="catatanIndoor" placeholder="Catatan abnormal"></textarea>
+                  </div>
+                </div>
+
+                <div class="card border rounded-3 shadow-sm p-3 mb-3">
+                  <h5 class="fw-semibold text-primary">Kondisi Unit Outdoor</h5>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiOutdoor" id="outdoorNormal" value="Normal" checked>
+                    <label class="form-check-label" for="outdoorNormal">Normal</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiOutdoor" id="outdoorAbnormal" value="Abnormal">
+                    <label class="form-check-label" for="outdoorAbnormal">Abnormal</label>
+                  </div>
+
+                  <!-- Form Abnormal Outdoor -->
+                  <div id="outdoorAbnormalForm" class="mt-2" style="display:none;">
+                    <textarea class="form-control form-control-sm mb-2" id="catatanOutdoor" placeholder="Catatan abnormal"></textarea>
+                  </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="button" class="btn btn-success px-4 rounded-pill" onclick="ProsesLanjutan()">
+                        <i class="bi bi-send-fill me-2"></i> Submit Hasil
+                    </button>
+                </div>
+            </div>
         </div>
     
     </div>
@@ -108,7 +181,7 @@
 </div>
 
 <script>
-let IdTask;
+let Id_SC;
 let currentFacingMode = 'environment';
 let cameraStream = null;
 let video = document.getElementById('videoPreview');
@@ -117,36 +190,84 @@ let currentPhotoIndex = 1;
 const maxPhotos = 3;
 let photoTaken = [false, false, false];
 
-document.addEventListener('DOMContentLoaded', function () {
-  $ = window.jQuery;
-    $('#ShowCamera').on('hidden.bs.modal', function () {
-        stopCamera();
-        resetPhotos();
-    });
+// Indoor
+const indoorNormal = document.getElementById("indoorNormal");
+const indoorAbnormal = document.getElementById("indoorAbnormal");
+const indoorAbnormalForm = document.getElementById("indoorAbnormalForm");
 
-    $('.preview-photo').on('click', function () {
-        var index = $(this).data('index');
-        // Sembunyikan semua tombol dulu
-        $('[id^=redo]').hide();
+indoorNormal.addEventListener("change", () => {
+  indoorAbnormalForm.style.display = "none";
+});
+indoorAbnormal.addEventListener("change", () => {
+  indoorAbnormalForm.style.display = "block";
+});
 
-        // Tampilkan tombol hanya untuk yang diklik
-        $('#redo' + index).show();
-    });
-    // Jika klik di luar elemen gambar preview, sembunyikan semua tombol ulangi
-    $(document).on('click', function () {
-        $('[id^=redo]').hide();
-    });
+// Outdoor
+const outdoorNormal = document.getElementById("outdoorNormal");
+const outdoorAbnormal = document.getElementById("outdoorAbnormal");
+const outdoorAbnormalForm = document.getElementById("outdoorAbnormalForm");
 
-    // Cegah klik tombol "Ulangi" juga tidak dianggap klik luar
-    $('[id^=can]').on('click', function (e) {
-        e.stopPropagation();
+outdoorNormal.addEventListener("change", () => {
+  outdoorAbnormalForm.style.display = "none";
+});
+outdoorAbnormal.addEventListener("change", () => {
+  outdoorAbnormalForm.style.display = "block";
+});
+
+$('#ShowCamera').on('hidden.bs.modal', function () {
+    stopCamera();
+    resetPhotos();
+});
+
+$('#ShowCamera').on('show.bs.modal', function () {
+    Id_SC = $(this).data("id");
+    // Kalau mau ambil dari tombol pemicu modal:
+    if (e.relatedTarget) {
+        Id_SC = $(e.relatedTarget).data("id");
+    }
+
+    stopCamera(); // Hentikan kamera aktif
+    currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // toggle
+    startCamera(Id_SC);
+});
+
+const formInputs = document.querySelectorAll("#previewContainer input");
+
+formInputs.forEach(input => {
+    input.addEventListener("input", () => {
+        if (input.checkValidity()) {
+            input.classList.remove("is-invalid");
+            input.classList.add("is-valid");
+        } else {
+            input.classList.remove("is-valid");
+            input.classList.add("is-invalid");
+        }
     });
 });
+
+$('.preview-photo').on('click', function () {
+    var index = $(this).data('index');
+    // Sembunyikan semua tombol dulu
+    $('[id^=redo]').hide();
+
+    // Tampilkan tombol hanya untuk yang diklik
+    $('#redo' + index).show();
+});
+// Jika klik di luar elemen gambar preview, sembunyikan semua tombol ulangi
+$(document).on('click', function () {
+    $('[id^=redo]').hide();
+});
+
+// Cegah klik tombol "Ulangi" juga tidak dianggap klik luar
+$('[id^=can]').on('click', function (e) {
+    e.stopPropagation();
+});
+
 
 function switchCamera() {
   stopCamera(); // Hentikan kamera aktif
   currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // toggle
-  startCamera(IdTask); // Mulai kamera lagi
+  startCamera(Id_SC); // Mulai kamera lagi
 }
 
 function startCamera(Id) {
@@ -156,8 +277,6 @@ function startCamera(Id) {
     .then(function (stream) {
       cameraStream = stream;
       video.srcObject = stream;
-      $('#ShowCamera').modal('show');
-      IdTask = Id;
     })
     .catch(function (err) {
       console.error("Gagal mengakses kamera:", err);
@@ -196,41 +315,103 @@ function capturePhoto() {
   currentPhotoIndex = maxPhotos + 1;
   
   if (currentPhotoIndex > maxPhotos) {
-    ProsesLanjutan();
+    InputHasilPengukuran();
   }
+}
+function InputHasilPengukuran(){
+    $("#panelCamera").addClass("d-none");
+    $("#panelInputHasilPengukuran").removeClass("d-none");
 }
 
 function ProsesLanjutan(){
+  let idxEmpety = 0;
+  const formInputs_abc = document.querySelectorAll("#previewContainer input");
+  formInputs_abc.forEach(input => {
+      if (input.checkValidity()) {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          
+      } else {
+          input.classList.remove("is-valid");
+          input.classList.add("is-invalid");
+          idxEmpety++;
+      }
+  });
+  console.log(idxEmpety);
+
+  
+  const Suhu = document.getElementById('inputSuhu').value.trim();
+  const Tekanan = document.getElementById('inputTekanan').value.trim();
+  const Ampere = document.getElementById('inputAmpere').value.trim();
+
+  const kondisiIndoor = document.querySelector('input[name="kondisiIndoor"]:checked').value;
+  const catatanIndoor = document.getElementById('catatanIndoor').value.trim();
+
+  // ambil kondisi outdoor
+  const kondisiOutdoor = document.querySelector('input[name="kondisiOutdoor"]:checked').value;
+  const catatanOutdoor = document.getElementById('catatanOutdoor').value.trim();
+
+  // === Validasi ===
+  if (kondisiIndoor === "Abnormal" && catatanIndoor === "") {
+      showToast("Catatan untuk kondisi Indoor wajib diisi jika Abnormal.");
+      document.getElementById('catatanIndoor').focus();
+      return;
+  }
+
+  if (kondisiOutdoor === "Abnormal" && catatanOutdoor === "") {
+      showToast("Catatan untuk kondisi Outdoor wajib diisi jika Abnormal.");
+      document.getElementById('catatanOutdoor').focus();
+      return;
+  }
+  // bungkus dalam object
+  var hasil_ukur_awal = {
+      suhu : Suhu,
+      tekanan : Tekanan,
+      ampere : Ampere,
+      indoor: {
+          kondisi: kondisiIndoor,
+          catatan: kondisiIndoor === "Abnormal" ? catatanIndoor : null
+      },
+      outdoor: {
+          kondisi: kondisiOutdoor,
+          catatan: kondisiOutdoor === "Abnormal" ? catatanOutdoor : null
+      }
+  };  
+
+  //console.log(hasil_ukur_awal);
+  if(idxEmpety == 0){
     Swal.fire({
-            title: '<strong>📸 Foto Selesai!</strong>',
-            html: `
-                <div style="font-size: 15px; color: #555;">
-                    Semua <b>3 foto</b> telah diambil.<br>
-                    Apakah kamu ingin melanjutkan ke <b>Deskripsi Unit</b>?
-                </div>
-            `,
-            icon: 'info',
-            showCancelButton: true,
-            confirmButtonText: '<i class="bi bi-check-circle-fill"></i> Iya, lanjut',
-            cancelButtonText: '<i class="bi bi-arrow-clockwise"></i> Ulangi Foto',
-            reverseButtons: true,
-            background: '#f9f9f9',
-            
-            customClass: {
-                popup: 'shadow rounded-4',
-                confirmButton: 'btn btn-success rounded-pill px-4 py-2 mx-2',
-                cancelButton: 'btn btn-outline-danger rounded-pill px-4 py-2 mx-2'
-            },
-            buttonsStyling: false
-        }).then((result) => {
-            if (result.isConfirmed) {
-                lanjutLayanan(); // Panggil fungsi sesuai logikamu
-            } 
-        });
+          title: '<strong>📸 Pengecekan awal selesai !</strong>',
+          html: `
+              <div style="font-size: 15px; color: #555;">
+                  Semua <b> Pengukuran </b> telah diambil.<br>
+                  Apakah kamu ingin melanjutkan ke <b>Pengerjaan</b>?
+              </div>
+          `,
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: '<i class="bi bi-check-circle-fill"></i> Iya, lanjut',
+          cancelButtonText: '<i class="bi bi-arrow-clockwise"></i> Batal',
+          reverseButtons: true,
+          background: '#f9f9f9',
+          
+          customClass: {
+              popup: 'shadow rounded-4',
+              confirmButton: 'btn btn-success rounded-pill px-4 py-2 mx-2',
+              cancelButton: 'btn btn-outline-danger rounded-pill px-4 py-2 mx-2'
+          },
+          buttonsStyling: false
+      }).then((result) => {
+          if (result.isConfirmed) {
+              lanjutLayanan(hasil_ukur_awal);
+          } 
+      });
+  }
 }
 
-function lanjutLayanan(){
-    console.log(IdTask);
+function lanjutLayanan(hasil_ukur_awal){
+    console.log(Id_SC);
+    console.log(hasil_ukur_awal);
     const formData = new FormData();
     for (let i = 1; i <= 3; i++) {
         const img = document.getElementById(`photo${i}`);
@@ -244,16 +425,28 @@ function lanjutLayanan(){
         Swal.fire('Gagal', 'Tidak ada gambar yang dipilih.', 'warning');
         return;
     }
-
-    formData.append('IdTask', IdTask);
+    
+    formData.append('IdTask', Id_SC);
+    //formData.append('Pengukuran_awal',hasil_ukur_awal);
+    formData.append('pengukuran_awal', JSON.stringify(hasil_ukur_awal));
     console.log(formData);
     callApi({
         url: '/api/Cloudinary/PhotoBeforeUpload',
         method: 'POST',
         data: formData,
         success: function (res) {
-          $("#ShowDeskripsiUnit").modal('show');
-          $('#ShowCamera').modal('hide');
+          console.log(res);
+          if(res.success){
+              LoadListTask(0);
+              $("#ModalPengerjaan").modal("show");
+              $('#ShowCamera').modal('hide');
+              
+          }
+          else
+          {
+            showToast(res.message);
+          }
+          
         },
         error: function (err) {
             Swal.fire({
@@ -293,6 +486,8 @@ function lanjutLayanan(){
 
 
 function redoPhoto(index) {
+  $("#panelCamera").removeClass("d-none");
+  $("#panelInputHasilPengukuran").addClass("d-none");
   photoTaken[index - 1] = false;
   currentPhotoIndex = index;
   $(`#photo${index}`).attr('src', '').hide();

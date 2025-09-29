@@ -18,26 +18,29 @@ namespace mitraacd.api
         }
 
         [HttpGet("GetBid")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetBid()
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetBid(string Id)
         {
-            var res = await _bidRepository.GetBidAsync();
+            var res = await _bidRepository.GetBidAsync(Id);
             return Ok(res);
         }
 
         [HttpPost("Takeit")]
-        public async Task<IActionResult> Takeit([FromBody] TakeBidingModel dto)
+        public async Task<IActionResult> Takeit([FromBody] TakeBidingModel req)
         {
-            if (dto == null || dto.Id == null)
-                return BadRequest(new { message = "Pemesanan sudah tidak tersedia" });
-            try
+            var res = await _bidRepository.Takeit(req);
+            if (res)
             {
-                var res = await _bidRepository.TakeitAsync(dto);
-                return Ok(new { message = "Biding berhasil disimpan", id = res });
+                return Ok(new {
+                    success = true,
+                    message = "Data berhasil disimpan"
+                });
             }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan Biding"});
-            }
+
+            return BadRequest(new {
+                success = false,
+                message = "Data gagal disimpan",
+                data = req
+            });
         }
     }
 }

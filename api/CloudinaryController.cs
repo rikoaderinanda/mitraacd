@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using mitraacd.Models;
 using mitraacd.Services;
+using Newtonsoft.Json;
 
 namespace mitraacd.api
 {
@@ -43,21 +44,35 @@ namespace mitraacd.api
                 }
 
                 var imageResults = new List<ImageUploadResultDto>();
-
+                int idx = 0;
                 foreach (var file in dto.ImageFiles )
                 {
+                    
                     if (file.Length > 5 * 1024 * 1024)
                         return BadRequest("File terlalu besar");
+
                     if (!file.ContentType.StartsWith("image/"))
                         return BadRequest("Hanya gambar yang diperbolehkan");
 
                     var (url, publicId) = await _cloudinaryService.UploadImageAsync(file,"UnitBeforeCheck");
                     if (!string.IsNullOrEmpty(url))
                     {
+                        string name_pic = "";
+                        if(idx == 0){
+                            name_pic ="Suhu";
+                        }
+                        else if(idx == 1){
+                            name_pic ="Tekanan";
+                        }
+                        else if(idx == 2){
+                            name_pic ="Ampere";
+                        }
+
                         var _dt = new ImageUploadResultDto{
                             IdTask = dto.IdTask,
                             Url = url,
-                            PublicId = publicId
+                            PublicId = publicId,
+                            Name = name_pic
                         };
                         var res = await _TaskService.SimpanUrlFotoSebelumTask(_dt);
                         if(!res){
@@ -70,10 +85,16 @@ namespace mitraacd.api
                     {
                         return StatusCode(500, new { message = "Cloudinary upload failed" });
                     }
+                    idx++;
                 }
-
-                await _TaskService.UpdateStatusTaskAsync(dto.IdTask);
-                return Ok(new { message = "Upload berhasil", data = imageResults });
+                var up = new UpdateTask_PengukuranAwalDTO {
+                    IdTask = dto.IdTask,
+                    pengukuran_awal = dto.pengukuran_awal,
+                    imageResults = imageResults
+                };
+                Console.WriteLine("Data UP: " + JsonConvert.SerializeObject(up));
+                var resres = await _TaskService.UpdateTask_PengukuranAwal(up);
+                return Ok(new { message = "Upload berhasil", data = up, success = resres });
             }
             catch (Exception ex)
             {

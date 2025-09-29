@@ -23,59 +23,117 @@
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
 </style>
-@await Html.PartialAsync("_ModalShowCamera")
-@await Html.PartialAsync("_ModalDeskripsiUnit")
-@await Html.PartialAsync("_ModalBarcodeUnitBaru")
-<div class="app-body pb-30">
-    <div class="container mt-30 mb-30">
-        <strong>MY TASK</strong>
-        <div class="position-relative mb-4 mt-2">
-            <input class="form-control ps-5 pe-5 shadow-sm rounded-pill" type="text" placeholder="Cari"
-                id="searchInput">
-            <i class="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3 text-muted"></i>
-            <button type="button"
-                class="btn btn-light btn-sm rounded-circle shadow-sm position-absolute top-50 end-0 translate-middle-y me-2"
-                onclick="LoadListTask(0)" title="Segarkan">
-                <i class="bi bi-arrow-clockwise text-primary"></i>
-            </button>
-        </div>
+<style>
+    /* Animasi shimmer */
+    @@keyframes skeleton-loading {
+    0% {
+        background-position: -200px 0;
+    }
+    100% {
+        background-position: 200px 0;
+    }
+    }
 
-        <div class="col-12">
-            <div class="home-categories mt-3">
-                <div class="category-group">
-                    <div class="owl-carousel category-slider" id="jadwalCarousel">
-                        <!-- Hari Ini -->
-                        <div class="item px-1">
-                            <button id="btnHariIni" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm "
-                                onclick="LoadListTask(0);"
-                                style="background: linear-gradient(135deg, #007bff, #00c6ff); transition: 0.3s;">
-                                <i class="bi bi-calendar-day me-1"></i> Hari Ini
-                            </button>
-                        </div>
-                        <!-- Besok -->
-                        <div class="item px-1">
-                            <button id="btnHariBesok" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm"
-                                onclick="LoadListTask(1);"
-                                style="background: linear-gradient(135deg, #ffc107, #ff7b00); transition: 0.3s;">
-                                <i class="bi bi-calendar-check me-1"></i> Besok
-                            </button>
-                        </div>
-                        <!-- Jauh Hari -->
-                        <div class="item px-1">
-                            <button id="btnHariJauh" class="btn text-white btn-sm w-100 rounded-pill py-2 shadow-sm"
-                                onclick="LoadListTask(2);"
-                                style="background: linear-gradient(135deg, #28a745, #43e97b); transition: 0.3s;">
-                                <i class="bi bi-calendar-range me-1"></i> Jauh Hari
-                            </button>
-                        </div>
-                    </div>
-                </div>
+    /* Base skeleton style */
+    .skeleton-text,
+    .skeleton-icon {
+    background: linear-gradient(90deg, #e0e0e0 25%, #f2f2f2 50%, #e0e0e0 75%);
+    background-size: 400% 100%;
+    animation: skeleton-loading 1.5s infinite;
+    border-radius: 4px;
+    }
+
+    .skeleton-text {
+    height: 14px;
+    }
+
+    .skeleton-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    }
+</style>
+
+@await Html.PartialAsync("_ModalPengerjaan")
+@await Html.PartialAsync("_ModalDalamPerjalanan")
+@await Html.PartialAsync("_ModalShowCamera")
+
+<div class="app-body pb-30">    
+    <div class="container" style="margin-top:10px;margin-bottom :10px;">
+        <p>List Perkerjaan <span id="txtFiltered"></span></p>
+        <div class="owl-carousel" id="jadwalCarousel" style="margin-top:10px;margin-bottom:10px;">
+            <!-- Hari Ini -->
+            <div class="item">
+                <button id="btnHariIni" 
+                        class="btn btn-sm w-100 rounded-pill"
+                        onclick="LoadListTask(0);"
+                        style="background: #007bff; color:#fff;">
+                    <i class="bi bi-calendar-day me-1"></i> Hari Ini
+                </button>
+            </div>
+            <!-- Besok -->
+            <div class="item">
+                <button id="btnHariBesok" 
+                        class="btn btn-sm w-100 rounded-pill"
+                        onclick="LoadListTask(1);"
+                        style="background: #ffc107; color:#000;">
+                    <i class="bi bi-calendar-check me-1"></i> Besok
+                </button>
+            </div>
+            <!-- Jauh Hari -->
+            <div class="item">
+                <button id="btnHariJauh" 
+                        class="btn btn-sm w-100 rounded-pill"
+                        onclick="LoadListTask(2);"
+                        style="background: #28a745; color:#fff;">
+                    <i class="bi bi-calendar-range me-1"></i> Jauh Hari
+                </button>
             </div>
         </div>
-        <p>Perkerjaan <span id="txtFiltered"></span></p>
-        <div id="ListBid"></div>
+
+        
+        <div id="ListTask">
+                        <!-- Item Skeleton -->
+            <div class="p-3 mb-2 border rounded shadow-sm">
+                <div class="d-flex align-items-center mb-2">
+                <div class="skeleton-icon me-2"></div>
+                <div class="skeleton-text w-50"></div>
+                </div>
+                <div class="skeleton-text w-75 mb-1"></div>
+                <div class="skeleton-text w-25"></div>
+            </div>
+
+            <!-- Item Skeleton -->
+            <div class="p-3 mb-2 border rounded shadow-sm">
+                <div class="d-flex align-items-center mb-2">
+                <div class="skeleton-icon me-2"></div>
+                <div class="skeleton-text w-50"></div>
+                </div>
+                <div class="skeleton-text w-75 mb-1"></div>
+                <div class="skeleton-text w-25"></div>
+            </div>
+            <!-- Item Skeleton -->
+            <div class="p-3 mb-2 border rounded shadow-sm">
+                <div class="d-flex align-items-center mb-2">
+                <div class="skeleton-icon me-2"></div>
+                <div class="skeleton-text w-50"></div>
+                </div>
+                <div class="skeleton-text w-75 mb-1"></div>
+                <div class="skeleton-text w-25"></div>
+            </div>
+            <!-- Item Skeleton -->
+            <div class="p-3 mb-2 border rounded shadow-sm">
+                <div class="d-flex align-items-center mb-2">
+                <div class="skeleton-icon me-2"></div>
+                <div class="skeleton-text w-50"></div>
+                </div>
+                <div class="skeleton-text w-75 mb-1"></div>
+                <div class="skeleton-text w-25"></div>
+            </div>
+        </div>
     </div>
 </div>
+
 <script>
     let hari = 0;
     var $;
@@ -113,17 +171,196 @@
     function initFilter() {
         $('#jadwalCarousel').owlCarousel({
             loop: false,
-            margin: 7,
+            margin: 2,
             nav: false,
             responsive: {
-                0: { items: 2.2 },
+                0: { items: 3 },
                 600: { items: 3 },
                 1000: { items: 3 }
             }
         });
     }
 
-    function LoadListTask(filterHari) {
+    function LoadListTask(hari){
+        let _UserId = Storage.get('userId');
+        callApi({
+            url: '/api/Task/GetTask?Id='+_UserId+'&Hari='+hari,
+            method: 'GET',
+            success: function (data) {
+                console.log(data);
+                var html = "";
+                if (!data || data.length === 0) {
+                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
+                    $('#ListTask').html(html);
+                }
+                else {
+                    
+                    html = $.map(data, function (item) {
+                        var tglKunjung = "";
+                        var jamKunjung = "";
+                        if(item.jenis_layanan=="REG"){
+                            tglKunjung = item.kunjungan.reguler.tanggal;
+                            jamKunjung = item.kunjungan.reguler.jam;
+                        }
+
+                        let no_plgn = item.kontak_pelanggan.nomor.replace("+", "");
+                        let btnAction ="";
+                        
+                        btnAction = btnAction + `
+                            <!-- Tombol Aksi -->
+                            <button onclick="DetailPesanan(289,'btnDetail289');"
+                                    class="btn btn-sm btn-primary rounded-pill px-3">
+                                    Detail <i class="bi bi-arrow-right-short"></i>
+                            </button>
+                        `;
+
+                        let alertDurasi = "";
+                        if(item.status == 3)
+                        {
+                            alertDurasi = `
+                                <div class="alert alert-warning small py-2 mb-2 rounded-3 d-none" id="SLA_${item.id}">
+                                    <i class="bi bi-exclamation-triangle-fill me-1"></i>
+                                    Sesuai waktu kunjungan dan estimasi perjalanan, kemungkinan kamu akan <b>terlambat</b>.
+                                    Segera hubungi pelanggan untuk konfirmasi keterlambatan.
+                                </div> 
+                            `;
+                        }
+
+                        if(item.status == 4 && hari == 0){
+                            btnAction = btnAction + `
+                                <button onclick="TaskStart(${item.id});" id="btnStart${item.id}"
+                                        class="btn btn-sm btn-success rounded-pill px-3">
+                                        Mulai <i class="bi bi-arrow-right-short"></i>
+                                </button>
+                            
+                            `;
+                        }
+
+                        if(item.status > 4 && hari == 0){
+                            btnAction = btnAction + `
+                                <button onclick="showProcess(${item.id},${item.status});" id="btnProses${item.id}"
+                                        class="btn btn-sm btn-success rounded-pill px-3">
+                                        On Progres<i class="bi bi-arrow-right-short"></i>
+                                </button>
+                            `;
+                        }
+                       
+                        var src = `
+                            <div class="card mb-3 border-0 shadow rounded-4 order-card">
+                                <div class="card-body p-3">
+                                    <!-- Header -->
+                                    ${alertDurasi}
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <h6 class="fw-bold text-primary mb-0">ACD-${formatToSixDigits(item.id)}</h6>
+                                        <span class="badge bg-light text-primary border">
+                                            ${item.kategori_layanan} - ${item.jenis_layanan}
+                                        </span>
+                                    </div>
+
+                                    <!-- Info Grid -->
+                                    <div class="row g-2 small">
+                                        <!-- Customer -->
+                                        <div class="col-8 d-flex align-items-center">
+                                            <i class="bi bi-calendar-event me-1 text-primary"></i>
+                                            <span><strong>${formatTanggal(tglKunjung)}</strong> - <strong>${jamKunjung}</strong></span>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <span class="text-success text-decoration-none" id="count_${item.id}">--</span>
+                                        </div>
+                                        <!-- Customer -->
+                                        <div class="col-6 d-flex align-items-center">
+                                            <i class="bi bi-person-circle text-secondary me-2"></i>
+                                            <span class="fw-semibold">${item.kontak_pelanggan.nama}</span>
+                                        </div>
+                                        <div class="col-6 text-end">
+                                            <a href="https://wa.me/${no_plgn}" target="_blank" class="text-success text-decoration-none">
+                                                <i class="bi bi-whatsapp me-1"></i>Chat
+                                            </a>
+                                        </div>
+
+                                        <!-- Lokasi -->
+                                        <div class="col-8 d-flex align-items-center flex-wrap">
+                                            <!-- Jenis Properti -->
+                                            <div class="d-flex align-items-center me-3 mb-1">
+                                                <i class="bi bi-house-door-fill text-danger me-1"></i>
+                                                <span class="fw-semibold">${item.jenis_properti.nama_jenis}</span>
+                                            </div>
+
+                                            <!-- Alamat -->
+                                            <div class="d-flex align-items-center mb-1">
+                                                <span class="text-muted">${item.alamat_pelanggan.alamat}</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-4 text-end">
+                                            <a href="#" target="_blank" class="text-success text-decoration-none"
+                                                onclick="showMaps('${item.alamat_pelanggan.koordinat}')"
+                                            >
+                                                <i class="bi bi-geo me-1"></i>maps
+                                            </a>
+                                        </div>
+
+                                        <!-- Jarak & Fee -->
+                                        <div class="col-6 d-flex align-items-center small text-secondary">
+                                            <!-- Jarak -->
+                                            <div class="d-flex align-items-center me-3">
+                                                <i class="bi bi-signpost text-primary me-1"></i>
+                                                <span id="jarak_${item.id}" class="fw-semibold text-dark">--</span>
+                                            </div>
+
+                                            <!-- Durasi -->
+                                            <div class="d-flex align-items-center">
+                                                <i class="bi bi-stopwatch text-success me-1"></i>
+                                                <span id="durasi_${item.id}" class="fw-semibold text-dark">--</span>
+                                            </div>
+                                        </div>
+                                        <div class="col-6 text-end fw-semibold text-success">
+                                            ${formatRupiah(item.fee_teknisi)}
+                                        </div>
+                                    </div>
+
+                                    <div class="d-flex justify-content-end gap-2 mt-3">
+                                        ${btnAction}
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                        return src;
+                    }).join('');
+                        
+                    $('#ListTask').html(html);
+
+                    // setelah DOM sudah jadi baru panggil countdown & jarak
+                    if(data.length > 0){
+                        data.forEach(item => {
+                            let jamKunjung = item.kunjungan?.reguler?.jam ?? null;
+                            if(jamKunjung) {
+                                startCountdown(item.id,jamKunjung,"count_"+item.id);
+                            }
+
+                            hitungJarakJalan(item.origin, item.tujuan)
+                            .then(res => {
+                                $("#jarak_"+item.id).text(res.distance);
+                                $("#durasi_"+item.id).text(res.duration);
+                            })
+                            .catch(err => console.error("Gagal hitung jarak:", err));
+                        });
+                    }
+                    else
+                    {
+                        clearInterval(timer);
+                    }
+                }
+            },
+            error: function (err) {
+                $('#ListTask').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
+            },
+            onBeforeSend: function () {
+
+            },
+        });
+    }
+
+    function LoadListTaskV1(filterHari) {
         var selectedHari = "";
         if (filterHari == 0) { selectedHari = "Hari ini" }
         else if (filterHari == 1) { selectedHari = "Besok" }
@@ -440,4 +677,53 @@
     function InspeksiUnit(id){
         $("#ShowBarcodeUnitBaru").modal("show");
     }
+
+    function TaskStart(id){
+        let _UserId = Storage.get('userId');
+        
+        var Data = {
+            Id : id,
+            MitraId : _UserId
+        }
+        console.log(Data);
+
+        callApi({
+            url: '/api/Task/Berangkat',
+            method: 'POST',
+            data: Data,
+            success: function (res) {
+                console.log(res);
+                LoadListTask(0);
+                $("#ModalMulaiBerangkat").modal("show");
+            },
+            error: function (err) {
+                //alert("Gagal: " + err);
+                $("#btnStart"+id).prop("disabled", false).text("Mulai");
+            },
+            onBeforeSend: function () {
+                $("#btnStart"+id).prop("disabled", true).text("Memproses...");
+            },
+            onComplete: function () {
+                $("#btnStart"+id).prop("disabled", false).text("Mulai");
+            }
+        });
+
+    }
+
+    function showProcess(id,status){
+        console.log(id);
+        if(status == 5){
+            $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
+            $("#ModalDalamPerjalanan").modal("show");
+        }
+        else if(status == 6){
+            $("#ShowCamera").attr("data-id", id); // simpan id ke attribute modal    
+            $("#ShowCamera").modal("show");
+        }
+        else if(status == 7){
+            $("#ModalPengerjaan").attr("data-id", id);
+            $("#ModalPengerjaan").modal("show");
+        }
+    }
+
 </script>

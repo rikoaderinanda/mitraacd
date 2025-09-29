@@ -9,8 +9,8 @@ namespace mitraacd.Services
 {
     public interface IBidRepository
     {
-        Task<IEnumerable<dynamic>> GetBidAsync();
-        Task<int> TakeitAsync(TakeBidingModel Id);
+        Task<IEnumerable<dynamic>> GetBidAsync(string Id);
+        Task<bool> Takeit(TakeBidingModel data);
 
     }
 
@@ -23,67 +23,73 @@ namespace mitraacd.Services
             _db = db;
         }
 
-        public async Task<IEnumerable<dynamic>> GetBidAsync()
+        public async Task<IEnumerable<dynamic>> GetBidAsync(string _Id)
         {
             var sql = @"
-                SELECT
-                    lt.id,
-                    lt.kategori_layanan,
-                    lt.jenis_layanan,
-                    lt.total_transaksi,
-                    (cart_item::jsonb)->'Reguler' AS cart_items,
-                    lt.jenis_properti::jsonb AS properti,
-                    paket_member::jsonb AS paket
-                FROM log_transaction lt 
-                WHERE 
-                status = 3
-                ORDER BY id DESC;
+                select a.* from
+                (
+                    select
+                        id,
+                        kategori_layanan ,jenis_layanan , 
+                        (total_transaksi*70/100) fee_teknisi,
+                        kunjungan,kontak_pelanggan,alamat_pelanggan,
+                        alamat_pelanggan->>'koordinat' as tujuan,
+                        (select alamat->>'koordinat'  from mitra_data where id = @Id) as origin,
+                        ST_DistanceSphere(
+                            ST_Point(
+                                split_part(alamat_pelanggan->>'koordinat', ',', 2)::float,
+                                split_part(alamat_pelanggan->>'koordinat', ',', 1)::float
+                            ),
+                            ST_Point(
+                                split_part((select alamat->>'koordinat' from mitra_data where id = @Id), ',', 2)::float, 
+                                split_part((select alamat->>'koordinat' from mitra_data where id = @Id), ',', 1)::float
+                            )
+                        ) as jarak_meter,
+                        checkout_date,
+                        jenis_properti
+                    from log_transaction
+                    where status = 3
+                ) a
+                WHERE jarak_meter <= (
+                    SELECT (coverage_area->>'radius')::float * 1000
+                    FROM mitra_data 
+                    WHERE id = @Id
+                )
+                order by checkout_date asc
             ";
-            var result = await _db.QueryAsync<dynamic>(sql);
+
+            var param = new
+            {
+                Id = long.Parse(_Id)
+            };
+
+            var result = await _db.QueryAsync<dynamic>(sql,param);
 
             return JsonColumnParser.ParseJsonColumns(result);
         }
 
-        public async Task<IEnumerable<dynamic>> GetBidAsync1()
+        public async Task<bool> Takeit(TakeBidingModel data)
         {
-            var finalResult = new List<dynamic>();
-            string sql = "select*from lo";
-            var result = await _db.QueryAsync<string>(sql);
-            // Console.WriteLine(result.First().GetType().Name);
-            foreach (var jsonString in result)
-            {
-                // Console.WriteLine("Raw JSON: " + jsonString);
-                try
-                {
-                    dynamic? obj = JsonConvert.DeserializeObject<dynamic>(jsonString);
-                    if (obj is not null)
-                    {
-                        finalResult.Add(obj);
-                    }
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine("Gagal parsing JSON: " + ex.Message);
-                }
-            }
-            return finalResult;
-        }
-
-        public async Task<int> TakeitAsync(TakeBidingModel dto)
-        {
-            
             var query = @"
-                            select sp_bid_pemesanan(@Id,@MitraId);
-                        ";
+                update log_transaction lt 
+                set
+                    mitra_bid_id =@MitraId,
+                    bid_date = now(),
+                    status = 4
+                where lt.status = 3
+                and id = @Id
+                returning id;
+            ";
 
             var param = new
             {
-                Id = dto.Id,
-                MitraId = dto.MitraId
+                Id = data.Id,
+                MitraId = data.MitraId
             };
 
-            int res = await _db.ExecuteScalarAsync<int>(query, param);
-            return res;
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
         }
 
     }

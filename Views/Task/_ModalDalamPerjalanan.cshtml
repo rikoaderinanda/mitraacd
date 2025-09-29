@@ -1,0 +1,126 @@
+<div class="modal fade" id="ModalDalamPerjalanan" tabindex="-1" aria-labelledby="ModalDalamPerjalananLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content rounded-4 border-0 shadow-lg">
+      <div class="home-cart mt-0">
+        <div class="row">
+          <!-- Header -->
+            <div class="col-12">
+                <div class="login-top position-relative text-center bg-primary text-white p-4 rounded-top-4 mb-10">
+                <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+                        data-bs-dismiss="modal" aria-label="Close"></button>
+                
+                <!-- Ilustrasi -->
+                <img src="https://cdn-icons-png.flaticon.com/512/7398/7398228.png"
+                        alt="Verification Illustration"
+                        class="img-fluid mb-3 animate__animated animate__fadeInDown"
+                        style="max-height:40px;">
+                    
+
+                <h5 class="fs-2 fw-bold mb-2">Dalam Perjalanan menuju lokasi</h5>
+                
+                </div>
+            </div>
+
+            <div class="col-12">
+                <div class="login-bottom p-4 text-center">
+                    <div id="otw">
+                        <div style="margin-bottom:10px;">
+                            <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759160957/scooter-4657_256_jyblah.gif" 
+                                alt="Processing Icon" 
+                                class="img-fluid mb-3" 
+                                style="max-height:200px;">
+                            <h6 class="fw-bold">Sedang Dalam Perjalanan</h6>
+                            <p class="mb-0 text-muted small">
+                                Kamu sedang menuju lokasi pelanggan.  
+                                Segera hubungi atau konfirmasi jika sudah sampai.
+                            </p>
+                        </div>
+
+                        <!-- Tombol aksi -->
+                        <div class="d-flex flex-nowrap overflow-auto py-1 justify-content-center" style="gap: 0.5rem;">
+                            <button onclick="showMaps(${item.latitude}, ${item.longitude});"
+                                class="btn btn-sm btn-primary rounded-pill px-3">
+                                <i class="bi bi-geo-alt-fill me-1"></i> Maps
+                            </button>
+                            <button onclick="callCustomer('${item.no_hp}');"
+                                class="btn btn-sm btn-warning rounded-pill px-3 text-white">
+                                <i class="bi bi-telephone-fill me-1"></i> Call
+                            </button>
+                            <button onclick="showModaFotoUnit();" id="btnSudahSampai"
+                                class="btn btn-sm btn-success rounded-pill px-3">
+                                <i class="bi bi-check-circle-fill me-1"></i> Sudah Sampai
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>  
+    </div>
+  </div>
+</div>
+
+<script>
+let IdTask_OTW;
+$('#ModalDalamPerjalanan').on('show.bs.modal', function () {
+    IdTask_OTW = $(this).data("id");
+
+    // Kalau mau ambil dari tombol pemicu modal:
+    if (e.relatedTarget) {
+        IdTask_OTW = $(e.relatedTarget).data("id");
+    }
+});
+
+function showModaFotoUnit(){
+    let _UserId = Storage.get('userId');
+    var data =
+    {
+        Id : IdTask_OTW,
+        MitraId : _UserId
+    }
+
+    UpdateTeknisiSampaiLokasi(data)
+    .then((res) => {
+        if(res){
+            LoadListTask(0);
+            $("#ShowCamera").attr("data-id", IdTask_OTW); // simpan id ke attribute modal    
+            $("#ShowCamera").modal("show");
+            $("#ModalDalamPerjalanan").modal("hide");
+        }
+        else
+        {
+            showToast(res.message);
+        }
+    }).
+    catch((err) => {
+        console.error(err);
+        Swal.fire("❌ Gagal!", err || "Terjadi kesalahan saat menyimpan data.", "error");
+    });
+}
+
+function UpdateTeknisiSampaiLokasi(data) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Task/SampaiDiLokasi',
+            method: 'POST',
+            data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                console.log("Respon simpan biodata:", res);
+                resolve(res);
+            },
+            error: function (err) {
+                console.error("Error simpan biodata:", err);
+                $("#btnSudahSampai"+id).prop("disabled", false).text("Sudah Sampai");
+                reject(err);
+            },
+            onBeforeSend: function () {
+                $("#btnSudahSampai").prop("disabled", true).text("Memproses...");
+            },
+            onComplete: function () {
+                $("#btnSudahSampai").prop("disabled", false).text("Sudah Sampai");
+            }
+        });
+    });
+}
+
+</script>
