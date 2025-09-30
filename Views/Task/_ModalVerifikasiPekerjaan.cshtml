@@ -1,0 +1,285 @@
+<div class="modal fade" id="ModalVerifikasiPekerjaan" tabindex="-1" aria-labelledby="ModalVerifikasiPekerjaanLabel" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+        <div class="modal-content rounded-4 border-0 shadow-lg">
+            <div class="home-cart mt-0">
+                <div class="row">
+                <!-- Header -->
+                    <div class="col-12">
+                        <div class="login-top position-relative text-center bg-primary text-white p-4 rounded-top-4 mb-10">
+                            <button type="button" class="btn-close btn-close-white position-absolute top-0 end-0 m-3" 
+                                    data-bs-dismiss="modal" aria-label="Close"></button>
+                            <!-- Ilustrasi -->
+                            <img src="https://cdn-icons-png.flaticon.com/512/7398/7398228.png"
+                                    alt="Verification Illustration"
+                                    class="img-fluid mb-3 animate__animated animate__fadeInDown"
+                                    style="max-height:40px;">
+                            <h5 class="fs-2 fw-bold mb-2">Beritahu Ke Pelanggan bahwa pekerjaan telah selesai</h5>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="login-bottom p-4 text-center">
+                            <div id="SebelumServices"></div>
+                            <div id="SaatPengerjaan"></div>
+                            <div id="SetelahServices"></div>
+
+                            <!-- Tombol aksi -->
+                            <div class="d-flex flex-nowrap overflow-auto py-1 justify-content-center" style="gap: 0.5rem;">
+                                <button onclick="callCustomer('${item.no_hp}');"
+                                    class="btn btn-sm btn-warning rounded-pill px-3 text-white">
+                                    <i class="bi bi-telephone-fill me-1"></i> Ajukan Perbaikan
+                                </button>
+                                <button onclick="showModaFotoUnit();" id="btnSudahSampai"
+                                    class="btn btn-sm btn-success rounded-pill px-3">
+                                    <i class="bi bi-check-circle-fill me-1"></i> Konfirmasi ke Pelanggan
+                                </button>
+                            </div>
+                        
+                        </div>
+                    </div>
+                </div>
+            </div>  
+        </div>
+    </div>
+</div>
+
+<script>
+let Id_VP;
+$('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
+    Id_VP = $(this).data("id");
+    // Kalau mau ambil dari tombol pemicu modal:
+    if (e.relatedTarget) {
+        Id_VP = $(e.relatedTarget).data("id");
+    }
+    getDataKonfirmasiPekerjaan(Id_VP)
+    .then((res)=>{
+        console.log(res);
+        $("#SebelumServices").html(
+        `    
+            <div style="
+                margin-bottom:20px; 
+                padding:20px; 
+                border-radius:12px; 
+                background:#fff; 
+                box-shadow:0 4px 12px rgba(0,0,0,0.08); 
+                font-family:Arial, sans-serif;
+            ">
+                <!-- Header -->
+                <h4 style="
+                    margin:0 0 20px 0; 
+                    font-size:18px; 
+                    font-weight:600; 
+                    color:#222; 
+                    text-align:center; 
+                    padding-bottom:10px; 
+                    border-bottom:1px solid #eee;
+                ">
+                    Pengukuran Sebelum Diservice
+                </h4>
+
+                <!-- Grid Gambar -->
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
+                    
+                    <!-- Card Gambar 1 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
+                        alt="Foto Suhu" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Suhu <br><span style="font-weight:600; color:#007bff;">16 °C</span>
+                    </div>
+                    </div>
+
+                    <!-- Card Gambar 2 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
+                        alt="Foto Tekanan Freon" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Tekanan Freon <br><span style="font-weight:600; color:#28a745;">100 PSI</span>
+                    </div>
+                    </div>
+
+                    <!-- Card Gambar 3 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
+                        alt="Foto Ampere" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Ampere <br><span style="font-weight:600; color:#dc3545;">2 Amp</span>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Hasil Pengecekan -->
+                <div style="
+                    margin-top:20px; 
+                    padding:12px; 
+                    text-align:center; 
+                    border-radius:8px; 
+                    background:#e6f4ea; 
+                    color:#2e7d32; 
+                    font-size:15px; 
+                    font-weight:600;
+                ">
+                    Hasil Pengecekan : Normal
+                </div>
+            </div>
+        `
+        );
+
+        $("#SaatPengerjaan").html(`
+            <div style="
+                margin-bottom:20px; 
+                padding:20px; 
+                border-radius:12px; 
+                background:#fff; 
+                box-shadow:0 4px 12px rgba(0,0,0,0.08); 
+                font-family:Arial, sans-serif;
+            ">
+                <!-- Header -->
+                <h4 style="
+                    margin:0 0 20px 0; 
+                    font-size:18px; 
+                    font-weight:600; 
+                    color:#222; 
+                    text-align:center; 
+                    padding-bottom:10px; 
+                    border-bottom:1px solid #eee;
+                ">
+                    Saat Pengerjaan sesuai Layanan
+                </h4>
+
+                <!-- Grid Gambar -->
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
+                    
+                    <!-- Card Gambar 1 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
+                            alt="Foto Suhu" 
+                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    </div>
+
+                    <!-- Card Gambar 2 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
+                            alt="Foto Tekanan Freon" 
+                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    </div>
+
+                    <!-- Card Gambar 3 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
+                            alt="Foto Ampere" 
+                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    </div>
+                </div>
+            </div>
+        `);
+
+        $("#SetelahServices").html(
+        `    
+            <div style="
+                margin-bottom:20px; 
+                padding:20px; 
+                border-radius:12px; 
+                background:#fff; 
+                box-shadow:0 4px 12px rgba(0,0,0,0.08); 
+                font-family:Arial, sans-serif;
+            ">
+                <!-- Header -->
+                <h4 style="
+                    margin:0 0 20px 0; 
+                    font-size:18px; 
+                    font-weight:600; 
+                    color:#222; 
+                    text-align:center; 
+                    padding-bottom:10px; 
+                    border-bottom:1px solid #eee;
+                ">
+                    Pengukuran Setelah Diservice
+                </h4>
+
+                <!-- Grid Gambar -->
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
+                    
+                    <!-- Card Gambar 1 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
+                        alt="Foto Suhu" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Suhu <br><span style="font-weight:600; color:#007bff;">16 °C</span>
+                    </div>
+                    </div>
+
+                    <!-- Card Gambar 2 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
+                        alt="Foto Tekanan Freon" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Tekanan Freon <br><span style="font-weight:600; color:#28a745;">100 PSI</span>
+                    </div>
+                    </div>
+
+                    <!-- Card Gambar 3 -->
+                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
+                        alt="Foto Ampere" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        Ampere <br><span style="font-weight:600; color:#dc3545;">2 Amp</span>
+                    </div>
+                    </div>
+                </div>
+
+                <!-- Hasil Pengecekan -->
+                <div style="
+                    margin-top:20px; 
+                    padding:12px; 
+                    text-align:center; 
+                    border-radius:8px; 
+                    background:#e6f4ea; 
+                    color:#2e7d32; 
+                    font-size:15px; 
+                    font-weight:600;
+                ">
+                    Hasil Pengecekan : Normal
+                </div>
+            </div>
+        `
+        );
+    })
+    .catch((err) => {
+        console.error(err);
+        Swal.fire("❌ Gagal!", err || "Terjadi kesalahan saat menyimpan data.", "error");
+    });
+    console.log(Id_VP);
+});
+
+function getDataKonfirmasiPekerjaan(id) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Task/GetDataKonfirmasiPekerjaan?Id='+id,
+            method: 'GET',
+            //data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                //console.log("Respon get data:", res);
+                resolve(res);
+            },
+            error: function (err) {
+                console.error("Error get data:", err);
+                reject(err);
+            },
+            onBeforeSend: function () {
+                // misal disable tombol simpan
+                //$("#btnSimpan").prop("disabled", true).text("Menyimpan...");
+            },
+            onComplete: function () {
+                //$("#btnSimpan").prop("disabled", false).text("💾 Simpan");
+            }
+        });
+    });
+}
+</script>

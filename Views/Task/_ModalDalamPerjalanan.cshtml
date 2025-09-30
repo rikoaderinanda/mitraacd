@@ -64,7 +64,6 @@
 let IdTask_OTW;
 $('#ModalDalamPerjalanan').on('show.bs.modal', function () {
     IdTask_OTW = $(this).data("id");
-
     // Kalau mau ambil dari tombol pemicu modal:
     if (e.relatedTarget) {
         IdTask_OTW = $(e.relatedTarget).data("id");
@@ -72,6 +71,7 @@ $('#ModalDalamPerjalanan').on('show.bs.modal', function () {
 });
 
 function showModaFotoUnit(){
+
     let _UserId = Storage.get('userId');
     var data =
     {
@@ -110,7 +110,7 @@ function UpdateTeknisiSampaiLokasi(data) {
             },
             error: function (err) {
                 console.error("Error simpan biodata:", err);
-                $("#btnSudahSampai"+id).prop("disabled", false).text("Sudah Sampai");
+                $("#btnSudahSampai").prop("disabled", false).text("Sudah Sampai");
                 reject(err);
             },
             onBeforeSend: function () {

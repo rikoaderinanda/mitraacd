@@ -56,4 +56,29 @@ namespace mitraacd.Models
         public List<ImageUploadResultDto> imageResults { get; set; }
     }
 
+    public class PhotoPekerjaanUploadDto
+    {
+        public string IdTask { get; set; }
+        public List<IFormFile> ImageFiles { get; set; }
+    }
+
+    public class UpdateTask_PengerjaanDTO
+    {
+        public string IdTask { get; set; }
+        public List<ImageUploadResultDto> imageResults { get; set; }
+    }
+
+    public class Photo_QA_UploadDto
+    {
+        public string IdTask { get; set; }
+        public string pengukuran_akhir {get;set;}
+        public List<IFormFile> ImageFiles { get; set; }
+    }
+
+    public class UpdateTask_QADTO
+    {
+        public string IdTask { get; set; }
+        public string pengukuran_akhir { get; set; }
+        public List<ImageUploadResultDto> imageResults { get; set; }
+    }
 }

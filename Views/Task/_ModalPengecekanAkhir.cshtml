@@ -1,0 +1,533 @@
+<style>
+    .modal.fade .modal-dialog {
+        transition: transform 0.8s cubic-bezier(.4, 0, .2, 1), opacity 0.3s cubic-bezier(.4, 0, .2, 1);
+        transform: translateY(40px) scale(0.98);
+        opacity: 0;
+    }
+
+    .modal.fade.show .modal-dialog {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+
+    #previewContainer_QA img {
+        transition: transform 0.3s ease;
+    }
+
+    #previewContainer_QA img:hover {
+        transform: scale(1.05);
+        cursor: pointer;
+    }
+
+    .camera-actions {
+        position: absolute;
+        bottom: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 15px;
+        z-index: 10;
+    }
+
+    .camera-actions button {
+        width: 56px;
+        height: 56px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+</style>
+<div class="modal fade" id="ModalPengecekanAkhir" tabindex="-1" aria-labelledby="ModalPengecekanAkhirLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      
+      <!-- Header Gradient Merah -->
+      <div class="modal-header text-white rounded-top-4" style="background: linear-gradient(135deg, #d63031, #c0392b);">
+        <h5 class="modal-title" id="ModalPengecekanAkhirLabel">
+          <i class="bi bi-camera-video me-2"></i>  Foto Hasil Pengukuran Setelah Pengerjaan
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+
+      <!-- Modal Body -->
+        <div class="modal-body p-4 bg-light">
+            <div class="text-center mb-3">
+                <p class="fs-6 fw-semibold text-dark">
+                📷 Silakan ambil Foto Suhu unit Indoor, Tekanan Freon, & Ampere Unit
+                </p>
+            </div>
+            <!-- Preview Foto -->
+            <div class="row g-3 mt-0 mb-2" id="previewContainer_QA">
+                <!-- Foto 1 -->
+                <div class="col-4 text-center" id="can_QA1">
+                    <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">1. Suhu Unit Indoor</h6>
+                        <img id="photo_QA1" class="img-fluid rounded mb-0 preview-photo_QA" data-index="1" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo_QA1" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(1)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        <!-- Input hasil pengukuran suhu -->
+                        <div class="p-2">
+                            <input 
+                            type="number" step="0.1" required
+                            min="15" max="30"
+                            class="form-control form-control-sm" 
+                            id="inputSuhu_QA" placeholder="(°C)"
+                            >
+                            <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 2 -->
+                <div class="col-4 text-center" id="can_QA2">
+                    <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">2. Tekanan Freon</h6>
+                        <img id="photo_QA2" class="img-fluid rounded mb-0 preview-photo_QA" data-index="2" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo_QA2" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(2)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        <!-- Input hasil pengukuran tekanan freon -->
+                        <div class="p-2">
+                            <input type="number" step="0.1" min="60" max="120" required
+                            class="form-control form-control-sm" id="inputTekanan_QA" placeholder="(PSI)">
+                            <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Foto 3 -->
+                <div class="col-4 text-center" id="can_QA3">
+                    <div class="border rounded-3 p-0 shadow-sm position-relative bg-white">
+                        <h6 class="fw-semibold small text-primary mb-2 mt-2 p-1">3. Cek Ampere Unit</h6>
+                        <img id="photo_QA3" class="img-fluid rounded mb-0 preview-photo_QA" data-index="3" style="display: none; max-height: 100px; object-fit: cover; cursor: pointer;" />
+                        <button id="redo_QA3" class="btn btn-sm btn-outline-danger rounded-pill mt-1 small w-100" style="display: none;" onclick="redoPhoto(3)">
+                            <i class="bi bi-arrow-clockwise me-1"></i> Ulangi
+                        </button>
+                        <!-- Input hasil pengukuran ampere -->
+                        <div class="p-2">
+                            <input type="number" step="0.1" 
+                            min="1" max="10" required 
+                            class="form-control form-control-sm" id="inputAmpere_QA" placeholder="(Amp)">
+                            <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Area Kamera -->
+            <div class="rounded-3 overflow-hidden shadow-sm mb-3" style="border: 2px dashed #d63031;" id="panelCamera_QA">
+                <video id="videoPreview_QA" autoplay playsinline width="100%" height="auto"></video>
+                <canvas id="canvasPhoto_QA" style="display: none;"></canvas>
+                <div class="camera-actions">
+                    <button class="btn btn-primary rounded-circle shadow" onclick="switchCamera_QA()" title="Ganti Kamera">
+                        <i class="bi bi-arrow-repeat fs-5"></i>
+                    </button>
+                    <button class="btn btn-danger rounded-circle shadow" onclick="capturePhoto_QA()" title="Ambil Foto">
+                        <i class="bi bi-camera fs-4"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="panelInputHasilPengukuran_QA" class="d-none">
+                <div class="card border rounded-3 shadow-sm p-3 mb-3">
+                  <h5 class="fw-semibold text-primary">Kondisi Unit Indoor</h5>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiIndoor_QA" id="indoorNormal_QA" value="Normal" checked>
+                    <label class="form-check-label" for="indoorNormal_QA">Normal</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiIndoor_QA" id="indoorAbnormal_QA" value="Abnormal">
+                    <label class="form-check-label" for="indoorAbnormal_QA">Abnormal</label>
+                  </div>
+
+                  <!-- Form Abnormal Indoor -->
+                  <div id="indoorAbnormalForm_QA" class="mt-2" style="display:none;">
+                    <textarea class="form-control form-control-sm mb-2" id="catatanIndoor_QA" placeholder="Catatan abnormal"></textarea>
+                  </div>
+                </div>
+
+                <div class="card border rounded-3 shadow-sm p-3 mb-3">
+                  <h5 class="fw-semibold text-primary">Kondisi Unit Outdoor</h5>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiOutdoor_QA" id="outdoorNormal_QA" value="Normal" checked>
+                    <label class="form-check-label" for="outdoorNormal_QA">Normal</label>
+                  </div>
+
+                  <div class="form-check">
+                    <input class="form-check-input" type="radio" name="kondisiOutdoor_QA" id="outdoorAbnormal_QA" value="Abnormal">
+                    <label class="form-check-label" for="outdoorAbnormal_QA">Abnormal</label>
+                  </div>
+
+                  <!-- Form Abnormal Outdoor -->
+                  <div id="outdoorAbnormalForm_QA" class="mt-2" style="display:none;">
+                    <textarea class="form-control form-control-sm mb-2" id="catatanOutdoor_QA" placeholder="Catatan abnormal"></textarea>
+                  </div>
+                </div>
+
+                <div class="text-center mt-4">
+                    <button type="button" class="btn btn-success px-4 rounded-pill" onclick="ProsesLanjutan_QA()">
+                        <i class="bi bi-send-fill me-2"></i> Submit Hasil
+                    </button>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+  </div>
+</div>
+
+<script>
+let Id_QA;
+let currentFacingMode_QA = 'environment';
+let cameraStream_QA = null;
+let video_QA = document.getElementById('videoPreview_QA');
+let canvas_QA = document.getElementById('canvasPhoto_QA');
+let currentPhotoIndex_QA = 1;
+const maxPhotos_QA = 3;
+let photoTaken_QA = [false, false, false];
+
+// Indoor
+const indoorNormal_QA = document.getElementById("indoorNormal_QA");
+const indoorAbnormal_QA = document.getElementById("indoorAbnormal_QA");
+const indoorAbnormalForm_QA = document.getElementById("indoorAbnormalForm_QA");
+
+indoorNormal_QA.addEventListener("change", () => {
+  indoorAbnormalForm_QA.style.display = "none";
+});
+indoorAbnormal_QA.addEventListener("change", () => {
+  indoorAbnormalForm_QA.style.display = "block";
+});
+
+// Outdoor
+const outdoorNormal_QA = document.getElementById("outdoorNormal_QA");
+const outdoorAbnormal_QA = document.getElementById("outdoorAbnormal_QA");
+const outdoorAbnormalForm_QA = document.getElementById("outdoorAbnormalForm_QA");
+
+outdoorNormal_QA.addEventListener("change", () => {
+  outdoorAbnormalForm_QA.style.display = "none";
+});
+outdoorAbnormal_QA.addEventListener("change", () => {
+  outdoorAbnormalForm_QA.style.display = "block";
+});
+
+$('#ModalPengecekanAkhir').on('hidden.bs.modal', function () {
+    stopCamera_QA();
+    resetPhotos_QA();
+});
+
+$('#ModalPengecekanAkhir').on('show.bs.modal', function () {
+    Id_QA = $(this).data("id");
+    // Kalau mau ambil dari tombol pemicu modal:
+    if (e.relatedTarget) {
+        Id_QA = $(e.relatedTarget).data("id");
+    }
+
+    Swal.fire({
+        title: 'Mengaktifkan Kamera',
+        html: '<i class="fas fa-spinner fa-spin fa-2x" style="color:#3085d6;"></i><p>Mohon tunggu sebentar...</p>',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+
+    stopCamera_QA(); // Hentikan kamera aktif
+    currentFacingMode_QA = currentFacingMode_QA === 'user' ? 'environment' : 'user'; // toggle
+    startCamera_QA(Id_QA);
+
+    startCamera_QA(Id_QA)
+    .then(() => Swal.close())
+    .catch(err => {
+        Swal.fire('Error', 'Gagal mengaktifkan kamera: ' + err.message, 'error');
+    });
+});
+
+const formInputs_QA = document.querySelectorAll("#previewContainer_QA input");
+
+formInputs_QA.forEach(input_QA => {
+    input_QA.addEventListener("input", () => {
+        if (input_QA.checkValidity()) {
+            input_QA.classList.remove("is-invalid");
+            input_QA.classList.add("is-valid");
+        } else {
+            input_QA.classList.remove("is-valid");
+            input_QA.classList.add("is-invalid");
+        }
+    });
+});
+
+$('.preview-photo_QA').on('click', function () {
+    var index = $(this).data('index');
+    // Sembunyikan semua tombol dulu
+    $('[id^=redo_QA]').hide();
+
+    // Tampilkan tombol hanya untuk yang diklik
+    $('#redo_QA' + index).show();
+});
+// Jika klik di luar elemen gambar preview, sembunyikan semua tombol ulangi
+$(document).on('click', function () {
+    $('[id^=redo_QA]').hide();
+});
+
+// Cegah klik tombol "Ulangi" juga tidak dianggap klik luar
+$('[id^=can_QA]').on('click', function (e) {
+    e.stopPropagation();
+});
+
+
+function switchCamera_QA() {
+  stopCamera_QA(); // Hentikan kamera aktif
+  currentFacingMode_QA = currentFacingMode_QA === 'user' ? 'environment' : 'user'; // toggle
+  startCamera_QA(Id_QA); // Mulai kamera lagi
+}
+
+function startCamera_QA(Id) {
+  return navigator.mediaDevices.getUserMedia({
+    video: { facingMode: currentFacingMode_QA }
+  })
+    .then(function (stream) {
+      cameraStream_QA = stream;
+      video_QA.srcObject = stream;
+      return stream; // return supaya .then di luar bisa dipanggil
+    })
+    .catch(function (err) {
+      console.error("Gagal mengakses kamera:", err);
+      throw err; // biar bisa ditangkap di .catch luar
+    });
+}
+
+function stopCamera_QA() {
+  if (cameraStream_QA) {
+    cameraStream_QA.getTracks().forEach(track => track.stop());
+    cameraStream_QA = null;
+  }
+}
+
+function capturePhoto_QA() {
+  @* if (currentPhotoIndex_QA > maxPhotos_QA) {
+    ProsesLanjutan_QA();
+  } *@
+  
+  let context_QA = canvas_QA.getContext('2d');
+  canvas_QA.width = video_QA.videoWidth;
+  canvas_QA.height = video_QA.videoHeight;
+  context_QA.drawImage(video_QA, 0, 0, canvas_QA.width, canvas_QA.height);
+  let imageData_QA = canvas_QA.toDataURL('image/png');
+
+  $(`#photo_QA${currentPhotoIndex_QA}`).attr('src', imageData_QA).show();
+  $(`#photo_QA${currentPhotoIndex_QA}`).next('button').hide();
+  photoTaken_QA[currentPhotoIndex_QA - 1] = true;
+  
+  for (let i = 1; i <= maxPhotos_QA; i++) {
+    if (!photoTaken_QA[i - 1]) {
+      currentPhotoIndex_QA = i;
+      return;
+    }
+  }
+
+  currentPhotoIndex_QA = maxPhotos_QA + 1;
+  
+  if (currentPhotoIndex_QA > maxPhotos_QA) {
+    InputHasilPengukuran_QA();
+  }
+}
+function InputHasilPengukuran_QA(){
+    $("#panelCamera_QA").addClass("d-none");
+    $("#panelInputHasilPengukuran_QA").removeClass("d-none");
+}
+
+function ProsesLanjutan_QA(){
+  stopCamera_QA();
+  let idxEmpety_QA = 0;
+  const formInputs_QA = document.querySelectorAll("#previewContainer_QA input");
+  formInputs_QA.forEach(input => {
+      if (input.checkValidity()) {
+          input.classList.remove("is-invalid");
+          input.classList.add("is-valid");
+          
+      } else {
+          input.classList.remove("is-valid");
+          input.classList.add("is-invalid");
+          idxEmpety_QA++;
+      }
+  });
+  console.log(idxEmpety_QA);
+
+  
+  const Suhu_QA = document.getElementById('inputSuhu_QA').value.trim();
+  const Tekanan_QA = document.getElementById('inputTekanan_QA').value.trim();
+  const Ampere_QA = document.getElementById('inputAmpere_QA').value.trim();
+
+  const kondisiIndoor_QA = document.querySelector('input[name="kondisiIndoor_QA"]:checked').value;
+  const catatanIndoor_QA = document.getElementById('catatanIndoor_QA').value.trim();
+
+  // ambil kondisi outdoor
+  const kondisiOutdoor_QA = document.querySelector('input[name="kondisiOutdoor_QA"]:checked').value;
+  const catatanOutdoor_QA = document.getElementById('catatanOutdoor_QA').value.trim();
+
+  // === Validasi ===
+  if (kondisiIndoor_QA === "Abnormal" && catatanIndoor_QA === "") {
+      showToast("Catatan untuk kondisi Indoor wajib diisi jika Abnormal.");
+      document.getElementById('catatanIndoor_QA').focus();
+      return;
+  }
+
+  if (kondisiOutdoor_QA === "Abnormal" && catatanOutdoor_QA === "") {
+      showToast("Catatan untuk kondisi Outdoor wajib diisi jika Abnormal.");
+      document.getElementById('catatanOutdoor_QA').focus();
+      return;
+  }
+  // bungkus dalam object
+  var hasil_ukur_akhir_QA = {
+      suhu : Suhu_QA,
+      tekanan : Tekanan_QA,
+      ampere : Ampere_QA,
+      indoor: {
+          kondisi: kondisiIndoor_QA,
+          catatan: kondisiIndoor_QA === "Abnormal" ? catatanIndoor_QA : null
+      },
+      outdoor: {
+          kondisi: kondisiOutdoor_QA,
+          catatan: kondisiOutdoor_QA === "Abnormal" ? catatanOutdoor_QA : null
+      }
+  };  
+
+  //console.log(hasil_ukur_awal);
+  if(idxEmpety_QA == 0){
+    Swal.fire({
+          title: '<strong>📸 Pengecekan Akhir selesai !</strong>',
+          html: `
+              <div style="font-size: 15px; color: #555;">
+                  Semua <b> Pengukuran </b> telah diambil.<br>
+                  Apakah kamu ingin melanjutkan ke <b>Pengerjaan</b>?
+              </div>
+          `,
+          icon: 'info',
+          showCancelButton: true,
+          confirmButtonText: '<i class="bi bi-check-circle-fill"></i> Iya, lanjut',
+          cancelButtonText: '<i class="bi bi-arrow-clockwise"></i> Batal',
+          reverseButtons: true,
+          background: '#f9f9f9',
+          
+          customClass: {
+              popup: 'shadow rounded-4',
+              confirmButton: 'btn btn-success rounded-pill px-4 py-2 mx-2',
+              cancelButton: 'btn btn-outline-danger rounded-pill px-4 py-2 mx-2'
+          },
+          buttonsStyling: false
+      }).then((result) => {
+          if (result.isConfirmed) {
+              lanjutLayanan_QA(hasil_ukur_akhir_QA);
+          } 
+      });
+  }
+}
+
+function lanjutLayanan_QA(hasil_ukur_akhir_QA){
+    console.log(Id_QA);
+    console.log(hasil_ukur_akhir_QA);
+    const formData_QA = new FormData();
+    for (let i = 1; i <= 3; i++) {
+        const img_QA = document.getElementById(`photo_QA${i}`);
+        if (img_QA && img_QA.style.display !== 'none' && img_QA.src.startsWith('data:image')) {
+            const blob_QA = dataURLToBlob(img_QA.src);
+            formData_QA.append('imageFiles', blob_QA, `photo_QA${i}.jpg`);
+        }
+    }
+
+    if (!formData_QA.has('imageFiles')) {
+        Swal.fire('Gagal', 'Tidak ada gambar yang dipilih.', 'warning');
+        return;
+    }
+    
+    formData_QA.append('IdTask', Id_QA);
+    formData_QA.append('pengukuran_akhir', JSON.stringify(hasil_ukur_akhir_QA));
+    console.log(formData_QA);
+    callApi({
+        url: '/api/Cloudinary/PhotoPengukuran_QA',
+        method: 'POST',
+        data: formData_QA,
+        success: function (res) {
+          console.log(res);
+          if(res.success){
+              LoadListTask(0);
+              $("#ModalVerifikasiPekerjaan").attr("data-id", Id_QA);
+              $("#ModalVerifikasiPekerjaan").modal("show");
+              $('#ModalPengecekanAkhir').modal('hide');
+              
+          }
+          else
+          {
+            showToast(res.message);
+          }
+          
+        },
+        error: function (err) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops...',
+                text: 'Gagal memperbarui task: ' + err
+            });
+        },
+        onBeforeSend: function () {
+            Swal.fire({
+              title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Foto Unit</div>',
+              html: `
+                <div style="display: flex; flex-direction: column; align-items: center;">
+                  <div class="spinner" style="margin-bottom: 15px;">
+                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3085d6;"></i>
+                  </div>
+                  <p style="font-size: 14px; color: #555;">Mohon tunggu sebentar, sistem sedang memproses foto Anda...</p>
+                </div>
+              `,
+              allowOutsideClick: false,
+              allowEscapeKey: false,
+              showConfirmButton: false,
+              background: '#fff',
+              customClass: {
+                popup: 'swal2-border-radius',
+              },
+              didOpen: () => {
+                Swal.showLoading();
+              }
+            });
+        },
+        onComplete: function () {
+            Swal.close();
+        }
+    });
+}
+
+
+function redoPhoto_QA(index) {
+  $("#panelCamera_QA").removeClass("d-none");
+  $("#panelInputHasilPengukuran_QA").addClass("d-none");
+  photoTaken_QA[index - 1] = false;
+  currentPhotoIndex_QA = index;
+  $(`#photo_QA${index}`).attr('src', '').hide();
+  $(`#photo_QA${index}`).next('button').hide();
+
+  for (let i = 1; i <= maxPhotos_QA; i++) {
+    if (!photoTaken_QA[i - 1]) {
+      currentPhotoIndex_QA = i;
+      return;
+    }
+  }
+  
+}
+
+function resetPhotos_QA() {
+  currentPhotoIndex_QA = 1;
+  photoTaken_QA = [false, false, false, false, false];
+  for (let i = 1; i <= maxPhotos_QA; i++) {
+    $(`#photo_QA${i}`).attr('src', '').hide();
+    $(`#photo_QA${i}`).next('button').hide();
+  }
+  
+}
+</script>

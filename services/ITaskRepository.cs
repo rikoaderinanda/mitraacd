@@ -24,6 +24,18 @@ namespace mitraacd.Services
         Task<bool> Berangkat(BerangkatKelokasiModel data);
         Task<bool> SampaiLokasi(SampaiDiLokasiModel idtask);
         Task<bool> UpdateTask_PengukuranAwal(UpdateTask_PengukuranAwalDTO dt);
+        
+        Task<bool> SimpanUrlFotoPengerjaanTask(ImageUploadResultDto dto);
+        Task<bool> UpdateTask_Pengerjaan(UpdateTask_PengerjaanDTO dt);
+        Task<bool> DeletePengerjaanTask(string publicId);
+        Task<IEnumerable<dynamic?>> CheckPhotoPengerjaanExistsTask(string id);
+
+        Task<bool> UpdateTask_QA(UpdateTask_QADTO dt);
+        Task<bool> SimpanUrlFoto_QA(ImageUploadResultDto dto);
+        Task<bool> DeletePhoto_QA(string idtask);
+        Task<IEnumerable<dynamic?>> CheckPhoto_QA_Task(string id);
+
+        Task<dynamic?> GetDataKonfirmasiPekerjaan(string Id);
     }
 
     public class TaskRepository : ITaskRepository
@@ -55,6 +67,29 @@ namespace mitraacd.Services
                 Id = long.Parse(dt.IdTask),
                 Pengukuran_awal = dt.pengukuran_awal,
                 img_pengukuran_awal = JsonConvert.SerializeObject(dt.imageResults)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> UpdateTask_Pengerjaan(UpdateTask_PengerjaanDTO dt)
+        {
+            var query = @"
+                update log_transaction 
+                set 
+                    status = 8,
+                    pengerjaan_datetime = now(),
+                    img_pengerjaan = @img_pengerjaan::jsonb
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(dt.IdTask),
+                img_pengerjaan = JsonConvert.SerializeObject(dt.imageResults)
             };
 
             var result = await _db.ExecuteScalarAsync<int?>(query, param);
@@ -228,20 +263,25 @@ namespace mitraacd.Services
             return res;
         }
 
-        public async Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto){
+        public async Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto)
+        {
             var query = @"
-                            select sp_simpan_url_foto_sebelum_task(@Id,@PublicId,@Url);
-                        ";
+                insert into photo_before_task
+                (id_task,public_id,url_secret)
+                values
+                (@p_id,@p_public_id,@p_url)
+                RETURNING id_task;
+            ";
 
             var param = new
             {
-                Id = int.Parse(dto.IdTask),
-                PublicId = dto.PublicId,
-                Url = dto.Url,
+                p_id = long.Parse(dto.IdTask),
+                p_public_id = dto.PublicId,
+                p_url = dto.Url,
             };
 
-            var res = await _db.ExecuteScalarAsync<int>(query, param);
-            return res!= null;
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+            return result.HasValue && result.Value > 0;
         }
 
         public async Task<IEnumerable<dynamic>> CheckPhotoSebelumTask(string IdTask)
@@ -278,8 +318,6 @@ namespace mitraacd.Services
             return result > 0; // true jika ada baris yang dihapus
         }
 
-        
-
         public async Task<dynamic?> CheckQrCodeUnit(string decodedText)
         {
             string sql = @"
@@ -295,6 +333,149 @@ namespace mitraacd.Services
 
             dynamic obj = JsonConvert.DeserializeObject<dynamic>(result);
             return obj;
+        }
+
+        public async Task<bool> SimpanUrlFotoPengerjaanTask(ImageUploadResultDto dto)
+        {
+            var query = @"
+                insert into photo_pengerjaan
+                (id_task,public_id,url_secret)
+                values
+                (@p_id,@p_public_id,@p_url)
+                RETURNING id_task;
+            ";
+
+            var param = new
+            {
+                p_id = long.Parse(dto.IdTask),
+                p_public_id = dto.PublicId,
+                p_url = dto.Url,
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> DeletePengerjaanTask(string idtask)
+        {
+            var sql = @"
+                DELETE FROM photo_pengerjaan
+                WHERE id_task = @id
+            ";
+
+            var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});
+            return result > 0; // true jika ada baris yang dihapus
+        }
+
+        public async Task<IEnumerable<dynamic?>> CheckPhotoPengerjaanExistsTask(string id)
+        {
+            var sql = @"
+                select*from photo_pengerjaan pp 
+                where pp.id_task = @Id
+            ";
+            var param = new
+            {
+                Id = long.Parse(id)
+            };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+
+        public async Task<IEnumerable<dynamic?>> CheckPhoto_QA_Task(string id)
+        {
+            var sql = @"
+                select*from photo_qa pp 
+                where pp.id_task = @Id
+            ";
+            var param = new
+            {
+                Id = long.Parse(id)
+            };
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+            return JsonColumnParser.ParseJsonColumns(result);
+        }
+
+        public async Task<bool> DeletePhoto_QA(string idtask)
+        {
+            var sql = @"
+                DELETE FROM photo_qa
+                WHERE id_task = @id
+            ";
+
+            var result = await _db.ExecuteAsync(sql, new {id = int.Parse(idtask)});
+            return result > 0; // true jika ada baris yang dihapus
+        }
+
+        public async Task<bool> SimpanUrlFoto_QA(ImageUploadResultDto dto)
+        {
+            var query = @"
+                insert into photo_qa
+                (id_task,public_id,url_secret)
+                values
+                (@p_id,@p_public_id,@p_url)
+                RETURNING id_task;
+            ";
+
+            var param = new
+            {
+                p_id = long.Parse(dto.IdTask),
+                p_public_id = dto.PublicId,
+                p_url = dto.Url,
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> UpdateTask_QA(UpdateTask_QADTO dt)
+        {
+            var query = @"
+                update log_transaction 
+                set 
+                    status = 9,
+                    pengukuran_akhir = @Pengukuran_akhir::jsonb,
+                    pengukuran_akhir_datetime = now(),
+                    img_pengukuran_akhir = @img_pengukuran_akhir::jsonb
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(dt.IdTask),
+                Pengukuran_akhir = dt.pengukuran_akhir,
+                img_pengukuran_akhir = JsonConvert.SerializeObject(dt.imageResults)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<dynamic?> GetDataKonfirmasiPekerjaan(string Id)
+        {
+            var sql = @"
+                select
+                pengukuran_awal,
+                pengukuran_awal_datetime,
+                img_pengukuran_awal,
+                pengerjaan_datetime,
+                img_pengerjaan,
+                pengukuran_akhir,
+                pengukuran_akhir_datetime,
+                img_pengukuran_akhir
+                from log_transaction lt
+                where id=@Id
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(Id),
+            };
+
+            var result = await _db.QueryAsync<dynamic>(sql,param);
+            var parsed = JsonColumnParser.ParseJsonColumns(result);
+            return parsed.FirstOrDefault();
         }
 
     }

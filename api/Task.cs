@@ -92,5 +92,12 @@ namespace mitraacd.api
             return Ok(res);
         }
 
+        [HttpGet("GetDataKonfirmasiPekerjaan")]
+        public async Task<ActionResult<dynamic>> GetDataKonfirmasiPekerjaan(string Id)
+        {
+            var res = await _taskRepository.GetDataKonfirmasiPekerjaan(Id);
+            return Ok(res);
+        }
+
     }
 }

@@ -53,8 +53,9 @@
     border-radius: 50%;
     }
 </style>
-
-@await Html.PartialAsync("_ModalPengerjaan")
+@await Html.PartialAsync("_ModalVerifikasiPekerjaan")
+@await Html.PartialAsync("_ModalPengecekanAkhir")
+@await Html.PartialAsync("_ModalPengerjaanPhoto")
 @await Html.PartialAsync("_ModalDalamPerjalanan")
 @await Html.PartialAsync("_ModalShowCamera")
 
@@ -721,8 +722,16 @@
             $("#ShowCamera").modal("show");
         }
         else if(status == 7){
-            $("#ModalPengerjaan").attr("data-id", id);
-            $("#ModalPengerjaan").modal("show");
+            $("#ModalPengerjaanPhoto").attr("data-id", id);
+            $("#ModalPengerjaanPhoto").modal("show");
+        }
+        else if(status == 8){
+            $("#ModalPengecekanAkhir").attr("data-id", id);
+            $("#ModalPengecekanAkhir").modal("show");   
+        }
+        else if(status == 9){
+            $("#ModalVerifikasiPekerjaan").attr("data-id", id);
+            $("#ModalVerifikasiPekerjaan").modal("show");   
         }
     }
 

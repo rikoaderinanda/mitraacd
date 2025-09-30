@@ -102,6 +102,150 @@ namespace mitraacd.api
             }
         }
 
+        [HttpPost("PhotoPekerjaanUpload")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PhotoPekerjaanUpload([FromForm] PhotoPekerjaanUploadDto dto)
+        {
+            try
+            {
+                if (dto.ImageFiles  == null || !dto.ImageFiles .Any())
+                    return BadRequest(new { message = "Tidak ada file" });
+                if (dto.ImageFiles .Count > 3)
+                    return BadRequest(new { message = "Maksimal 3 gambar" });
+                
+                dynamic data = await _TaskService.CheckPhotoPengerjaanExistsTask(dto.IdTask);
+                if(data != null){
+                    foreach (var item in data)
+                    {
+                        var success = await _cloudinaryService.DeleteImageAsync(item.public_id.ToString());
+                    }
+                    await _TaskService.DeletePengerjaanTask(dto.IdTask);
+                }
+
+                var imageResults = new List<ImageUploadResultDto>();
+                foreach (var file in dto.ImageFiles )
+                {
+                    
+                    if (file.Length > 5 * 1024 * 1024)
+                        return BadRequest("File terlalu besar");
+
+                    if (!file.ContentType.StartsWith("image/"))
+                        return BadRequest("Hanya gambar yang diperbolehkan");
+
+                    var (url, publicId) = await _cloudinaryService.UploadImageAsync(file,"Doc_Pengerjaan");
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        var _dt = new ImageUploadResultDto{
+                            IdTask = dto.IdTask,
+                            Url = url,
+                            PublicId = publicId
+                        };
+
+                        var res = await _TaskService.SimpanUrlFotoPengerjaanTask(_dt);
+                        if(!res){
+                            var del = await _cloudinaryService.DeleteImageAsync(_dt.PublicId);
+                            return StatusCode(500, new { message = "Cloudinary upload failed" });    
+                        }
+                        imageResults.Add(_dt);
+                    }
+                    else
+                    {
+                        return StatusCode(500, new { message = "Cloudinary upload failed" });
+                    }
+                }
+                var up = new UpdateTask_PengerjaanDTO {
+                    IdTask = dto.IdTask,
+                    imageResults = imageResults
+                };
+                var resres = await _TaskService.UpdateTask_Pengerjaan(up);
+                return Ok(new { message = "Upload berhasil", data = up, success = resres });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan gambar, error:"+ex.Message});
+            }
+        }
+
+        [HttpPost("PhotoPengukuran_QA")]
+        [Consumes("multipart/form-data")]
+        public async Task<IActionResult> PhotoPengukuran_QA([FromForm] Photo_QA_UploadDto dto)
+        {
+            try
+            {
+                if (dto.ImageFiles  == null || !dto.ImageFiles .Any())
+                    return BadRequest(new { message = "Tidak ada file" });
+                if (dto.ImageFiles .Count > 3)
+                    return BadRequest(new { message = "Maksimal 3 gambar" });
+                
+                dynamic data = await _TaskService.CheckPhoto_QA_Task(dto.IdTask);
+                if(data != null){
+                    foreach (var item in data)
+                    {
+                        var success = await _cloudinaryService.DeleteImageAsync(item.public_id.ToString());
+                    }
+                    await _TaskService.DeletePhoto_QA(dto.IdTask);
+                }
+
+                var imageResults = new List<ImageUploadResultDto>();
+                int idx = 0;
+                foreach (var file in dto.ImageFiles )
+                {
+                    
+                    if (file.Length > 5 * 1024 * 1024)
+                        return BadRequest("File terlalu besar");
+
+                    if (!file.ContentType.StartsWith("image/"))
+                        return BadRequest("Hanya gambar yang diperbolehkan");
+
+                    var (url, publicId) = await _cloudinaryService.UploadImageAsync(file,"Photo_QA_Task");
+                    if (!string.IsNullOrEmpty(url))
+                    {
+                        string name_pic = "";
+                        if(idx == 0){
+                            name_pic ="Suhu";
+                        }
+                        else if(idx == 1){
+                            name_pic ="Tekanan";
+                        }
+                        else if(idx == 2){
+                            name_pic ="Ampere";
+                        }
+
+                        var _dt = new ImageUploadResultDto{
+                            IdTask = dto.IdTask,
+                            Url = url,
+                            PublicId = publicId,
+                            Name = name_pic
+                        };
+                        var res = await _TaskService.SimpanUrlFoto_QA(_dt);
+                        if(!res){
+                            var del = await _cloudinaryService.DeleteImageAsync(_dt.PublicId);
+                            return StatusCode(500, new { message = "Cloudinary upload failed" });    
+                        }
+                        imageResults.Add(_dt);
+                    }
+                    else
+                    {
+                        return StatusCode(500, new { message = "Cloudinary upload failed" });
+                    }
+                    idx++;
+                }
+                var up = new UpdateTask_QADTO {
+                    IdTask = dto.IdTask,
+                    pengukuran_akhir = dto.pengukuran_akhir,
+                    imageResults = imageResults
+                };
+
+                Console.WriteLine("Data UP: " + JsonConvert.SerializeObject(up));
+                var resres = await _TaskService.UpdateTask_QA(up);
+                return Ok(new { message = "Upload berhasil", data = up, success = resres });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Terjadi kesalahan saat menyimpan gambar, error:"+ex.Message});
+            }
+        }
+
         [HttpPost("deletePhotoBefore")]
         public async Task<IActionResult> deletePhotoBefore([FromForm] string publicId)
         {

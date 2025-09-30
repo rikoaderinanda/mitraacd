@@ -220,15 +220,32 @@ $('#ShowCamera').on('hidden.bs.modal', function () {
 });
 
 $('#ShowCamera').on('show.bs.modal', function () {
+    
+
     Id_SC = $(this).data("id");
     // Kalau mau ambil dari tombol pemicu modal:
     if (e.relatedTarget) {
         Id_SC = $(e.relatedTarget).data("id");
     }
-
+    
+    Swal.fire({
+        title: 'Mengaktifkan Kamera',
+        html: '<i class="fas fa-spinner fa-spin fa-2x" style="color:#3085d6;"></i><p>Mohon tunggu sebentar...</p>',
+        allowOutsideClick: false,
+        showConfirmButton: false,
+        didOpen: () => {
+            Swal.showLoading();
+        }
+    });
+    
     stopCamera(); // Hentikan kamera aktif
     currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user'; // toggle
-    startCamera(Id_SC);
+    //startCamera(Id_SC);
+    startCamera(Id_SC)
+    .then(() => Swal.close())
+    .catch(err => {
+        Swal.fire('Error', 'Gagal mengaktifkan kamera: ' + err.message, 'error');
+    });
 });
 
 const formInputs = document.querySelectorAll("#previewContainer input");
@@ -271,15 +288,17 @@ function switchCamera() {
 }
 
 function startCamera(Id) {
-  navigator.mediaDevices.getUserMedia({
+  return navigator.mediaDevices.getUserMedia({
     video: { facingMode: currentFacingMode }
   })
     .then(function (stream) {
       cameraStream = stream;
       video.srcObject = stream;
+      return stream; // return supaya .then di luar bisa dipanggil
     })
     .catch(function (err) {
       console.error("Gagal mengakses kamera:", err);
+      throw err; // biar bisa ditangkap di .catch luar
     });
 }
 
@@ -324,6 +343,7 @@ function InputHasilPengukuran(){
 }
 
 function ProsesLanjutan(){
+  stopCamera();
   let idxEmpety = 0;
   const formInputs_abc = document.querySelectorAll("#previewContainer input");
   formInputs_abc.forEach(input => {
@@ -438,7 +458,8 @@ function lanjutLayanan(hasil_ukur_awal){
           console.log(res);
           if(res.success){
               LoadListTask(0);
-              $("#ModalPengerjaan").modal("show");
+              $("#ModalPengerjaanPhoto").attr("data-id", Id_SC);
+              $("#ModalPengerjaanPhoto").modal("show");
               $('#ShowCamera').modal('hide');
               
           }
