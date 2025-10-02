@@ -41,6 +41,11 @@ builder.Services.AddSwaggerGen(c =>
         Title = "API Account",
         Version = "v1"
     });
+    c.SwaggerDoc("task", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "API TASK",
+        Version = "v1"
+    });
     c.SwaggerDoc("whatsapp", new Microsoft.OpenApi.Models.OpenApiInfo
     {
         Title = "API Whatsapp",
@@ -164,6 +169,7 @@ app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Mitra ACD API V1");
     c.SwaggerEndpoint("/swagger/account/swagger.json", "API account");
+    c.SwaggerEndpoint("/swagger/task/swagger.json", "API Task");
     c.SwaggerEndpoint("/swagger/whatsapp/swagger.json", "API Whatsapp");
     c.SwaggerEndpoint("/swagger/cloudinary/swagger.json", "API Cloudinary");
     

@@ -147,6 +147,7 @@
         Storage.set("CurrentPage","");
         loadHeader();
         checkStatusMitra().then(result => {
+            
             if (result.data.status_mitra == 5) 
             {
                 LoadListBid();

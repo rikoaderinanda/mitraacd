@@ -55,6 +55,7 @@ namespace mitraacd.Services
                 update log_transaction 
                 set 
                     status = 7,
+                    status_deskripsi=(select distinct title_sudah from list_status_order where id = 6),
                     pengukuran_awal = @Pengukuran_awal::jsonb,
                     pengukuran_awal_datetime = now(),
                     img_pengukuran_awal = @Img_pengukuran_awal::jsonb
@@ -101,7 +102,9 @@ namespace mitraacd.Services
         {
             var query = @"
                 update log_transaction 
-                    set status = 6,
+                    set 
+                    status = 6,
+                    status_deskripsi=(select distinct deskripsi from public.list_status_order where id = 6),
                     sampai_dilokasi_date = now()
                 where 
                 id = @id
@@ -126,7 +129,8 @@ namespace mitraacd.Services
                 update log_transaction
                 set 
                     berangkat_kelokasi_date = now(),
-                    status = 5
+                    status = 5,
+                    status_deskripsi=(select distinct deskripsi from public.list_status_order where id = 5)
                 where 
                 status = 4
                 and id = @Id
@@ -456,6 +460,13 @@ namespace mitraacd.Services
         {
             var sql = @"
                 select
+                id,
+                encode(encrypt(
+                    cast(id as text)::bytea, 
+                    'MySecretKey123', 
+                    'aes'
+                ), 'hex') AS encrypted_id,
+                kontak_pelanggan,
                 pengukuran_awal,
                 pengukuran_awal_datetime,
                 img_pengukuran_awal,

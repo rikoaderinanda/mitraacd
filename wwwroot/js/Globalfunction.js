@@ -1,6 +1,6 @@
 ﻿
 function toggleBottomSheet(Id) {
-    document.getElementById(Id).classList.toggle("show");
+    document.getElementById(Id).classList.toggle('show');
 }
 
 const Storage = {
@@ -40,18 +40,25 @@ function initCarousel(Element, Qty) {
 function lazyAnimateItems(Element) {
     var items = document.querySelectorAll('#' + Element + ' .fade-in');
     if ('IntersectionObserver' in window) {
-        var observer = new IntersectionObserver(function (entries, obs) {
-            entries.forEach(function (entry) {
-                if (entry.isIntersecting) {
-                    entry.target.classList.add('visible');
-                    obs.unobserve(entry.target);
-                }
-            });
-        }, { threshold: 0.1 });
-        items.forEach(function (item) { observer.observe(item); });
+        var observer = new IntersectionObserver(
+            function (entries, obs) {
+                entries.forEach(function (entry) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                        obs.unobserve(entry.target);
+                    }
+                });
+            },
+            { threshold: 0.1 }
+        );
+        items.forEach(function (item) {
+            observer.observe(item);
+        });
     } else {
         // fallback
-        items.forEach(function (item) { item.classList.add('visible'); });
+        items.forEach(function (item) {
+            item.classList.add('visible');
+        });
     }
 }
 
@@ -662,4 +669,27 @@ function parseDurationToMinutes(durationText) {
     }
 
     return totalMinutes;
+}
+
+function onGoogleScriptLoad() {
+    console.log('✅ Google Identity Services script berhasil dimuat');
+    // di sini kamu bisa inisialisasi tombol login Google
+    google.accounts.id.initialize({
+        client_id: 'YOUR_CLIENT_ID.apps.googleusercontent.com',
+        callback: handleCredentialResponse
+    });
+
+    google.accounts.id.renderButton(document.getElementById('googleLoginDiv'), {
+        theme: 'outline',
+        size: 'large'
+    });
+}
+
+function onGoogleScriptError() {
+    console.error('❌ Gagal memuat Google Identity Services script');
+}
+
+function handleCredentialResponse(response) {
+    console.log('ID Token:', response.credential);
+    // kirim token ke server untuk verifikasi
 }

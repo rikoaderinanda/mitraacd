@@ -13,7 +13,8 @@
                                     alt="Verification Illustration"
                                     class="img-fluid mb-3 animate__animated animate__fadeInDown"
                                     style="max-height:40px;">
-                            <h5 class="fs-2 fw-bold mb-2">Beritahu Ke Pelanggan bahwa pekerjaan telah selesai</h5>
+                            <h6 class="fs-6 fw-bold mb-2">Konfirmasi ke Pelanggan</h6>
+                            <p class="text-center text-white">Beritahu Ke Pelanggan bahwa pekerjaan telah selesai</p>
                         </div>
                     </div>
 
@@ -22,19 +23,7 @@
                             <div id="SebelumServices"></div>
                             <div id="SaatPengerjaan"></div>
                             <div id="SetelahServices"></div>
-
-                            <!-- Tombol aksi -->
-                            <div class="d-flex flex-nowrap overflow-auto py-1 justify-content-center" style="gap: 0.5rem;">
-                                <button onclick="callCustomer('${item.no_hp}');"
-                                    class="btn btn-sm btn-warning rounded-pill px-3 text-white">
-                                    <i class="bi bi-telephone-fill me-1"></i> Ajukan Perbaikan
-                                </button>
-                                <button onclick="showModaFotoUnit();" id="btnSudahSampai"
-                                    class="btn btn-sm btn-success rounded-pill px-3">
-                                    <i class="bi bi-check-circle-fill me-1"></i> Konfirmasi ke Pelanggan
-                                </button>
-                            </div>
-                        
+                            <div id="TombolAksi"></div>
                         </div>
                     </div>
                 </div>
@@ -42,6 +31,7 @@
         </div>
     </div>
 </div>
+
 
 <script>
 let Id_VP;
@@ -54,84 +44,139 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
     getDataKonfirmasiPekerjaan(Id_VP)
     .then((res)=>{
         console.log(res);
+        var satuanMap = {
+            suhu: "°C",
+            tekanan: "PSI",
+            ampere: "Amp"
+        };
+        var list_Sebelum = $.map(res.img_pengukuran_awal, function (item) {
+            // mapping Name → key JSON
+            let key = "";
+            switch (item.Name.toLowerCase()) {
+                case "suhu":
+                    key = "suhu";
+                    break;
+                case "tekanan":
+                case "tekanan freon":
+                    key = "tekanan";
+                    break;
+                case "ampere":
+                    key = "ampere";
+                    break;
+            }
+
+            // ambil value dari res.pengukuran_awal sesuai key
+            let value = key ? res.pengukuran_awal[key] : "";
+            let satuan = key ? satuanMap[key] : "";
+            var scr = `
+                <!-- Card Gambar 1 -->
+                <div style="background:#fafafa; padding:2px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="${item.Url}" 
+                        alt="Foto ${item.Name}" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        ${item.Name} <br>
+                        <span style="font-weight:600; color:#007bff;">${value} ${satuan}</span>
+                    </div>
+                </div>
+            `;
+            return scr;
+        }).join('');
+
+        var list_saat_pengerjaan = $.map(res.img_pengerjaan, function (item) {
+            var scr = `
+                <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="${item.Url}" 
+                        alt="Foto Pengerjaan" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                </div>
+            `;
+            return scr;
+        }).join('');
+
+        var list_setelah = $.map(res.img_pengukuran_akhir, function (item) {
+            let key = "";
+            switch (item.Name.toLowerCase()) {
+                case "suhu":
+                    key = "suhu";
+                    break;
+                case "tekanan":
+                case "tekanan freon":
+                    key = "tekanan";
+                    break;
+                case "ampere":
+                    key = "ampere";
+                    break;
+            }
+
+            // ambil value dari res.pengukuran_awal sesuai key
+            let value = key ? res.pengukuran_awal[key] : "";
+            let satuan = key ? satuanMap[key] : "";
+            
+            var scr = `
+                <!-- Card Gambar 1 -->
+                <div style="background:#fafafa; padding:2px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
+                    <img src="${item.Url}" 
+                        alt="Foto ${item.Name}" 
+                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
+                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
+                        ${item.Name} <br>
+                        <span style="font-weight:600; color:#007bff;">${value} ${satuan}</span>
+                    </div>
+                </div>
+            `;
+            return scr;
+        }).join('');
+
         $("#SebelumServices").html(
-        `    
-            <div style="
-                margin-bottom:20px; 
-                padding:20px; 
-                border-radius:12px; 
-                background:#fff; 
-                box-shadow:0 4px 12px rgba(0,0,0,0.08); 
-                font-family:Arial, sans-serif;
-            ">
-                <!-- Header -->
-                <h4 style="
-                    margin:0 0 20px 0; 
-                    font-size:18px; 
-                    font-weight:600; 
-                    color:#222; 
-                    text-align:center; 
-                    padding-bottom:10px; 
-                    border-bottom:1px solid #eee;
-                ">
-                    Pengukuran Sebelum Diservice
-                </h4>
-
-                <!-- Grid Gambar -->
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
-                    
-                    <!-- Card Gambar 1 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
-                        alt="Foto Suhu" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Suhu <br><span style="font-weight:600; color:#007bff;">16 °C</span>
-                    </div>
-                    </div>
-
-                    <!-- Card Gambar 2 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
-                        alt="Foto Tekanan Freon" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Tekanan Freon <br><span style="font-weight:600; color:#28a745;">100 PSI</span>
-                    </div>
-                    </div>
-
-                    <!-- Card Gambar 3 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
-                        alt="Foto Ampere" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Ampere <br><span style="font-weight:600; color:#dc3545;">2 Amp</span>
-                    </div>
-                    </div>
-                </div>
-
-                <!-- Hasil Pengecekan -->
+            `    
                 <div style="
-                    margin-top:20px; 
-                    padding:12px; 
-                    text-align:center; 
-                    border-radius:8px; 
-                    background:#e6f4ea; 
-                    color:#2e7d32; 
-                    font-size:15px; 
-                    font-weight:600;
+                    margin-bottom:20px; 
+                    padding:5px; 
+                    border-radius:12px; 
+                    background:#fff; 
+                    box-shadow:0 4px 12px rgba(0,0,0,0.08); 
+                    font-family:Arial, sans-serif;
                 ">
-                    Hasil Pengecekan : Normal
+                    <!-- Header -->
+                    <h4 style="
+                        margin: 10px 0 20px 0; 
+                        font-size:12px; 
+                        font-weight:600; 
+                        color:#222; 
+                        text-align:center; 
+                        padding-bottom:10px; 
+                        border-bottom:1px solid #eee;
+                    ">
+                        Pengukuran Sebelum Diservice
+                    </h4>
+
+                    <!-- Grid Gambar -->
+                    <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+                        ${list_Sebelum}
+                    </div>
+
+                    <!-- Hasil Pengecekan -->
+                    <div style="
+                        margin-top:20px; 
+                        padding:12px; 
+                        text-align:center; 
+                        border-radius:8px; 
+                        background:#e6f4ea; 
+                        color:#2e7d32; 
+                        font-size:12px; 
+                        font-weight:600;
+                    ">
+                        Hasil Pengecekan : Normal
+                    </div>
                 </div>
-            </div>
-        `
+            `
         );
 
         $("#SaatPengerjaan").html(`
             <div style="
                 margin-bottom:20px; 
-                padding:20px; 
+                padding:5px; 
                 border-radius:12px; 
                 background:#fff; 
                 box-shadow:0 4px 12px rgba(0,0,0,0.08); 
@@ -139,8 +184,8 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
             ">
                 <!-- Header -->
                 <h4 style="
-                    margin:0 0 20px 0; 
-                    font-size:18px; 
+                    margin: 10px 0 20px 0; 
+                    font-size:12px; 
                     font-weight:600; 
                     color:#222; 
                     text-align:center; 
@@ -151,28 +196,8 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
                 </h4>
 
                 <!-- Grid Gambar -->
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
-                    
-                    <!-- Card Gambar 1 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
-                            alt="Foto Suhu" 
-                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    </div>
-
-                    <!-- Card Gambar 2 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
-                            alt="Foto Tekanan Freon" 
-                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    </div>
-
-                    <!-- Card Gambar 3 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                        <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
-                            alt="Foto Ampere" 
-                            style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+                    ${list_saat_pengerjaan}
                 </div>
             </div>
         `);
@@ -181,7 +206,7 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
         `    
             <div style="
                 margin-bottom:20px; 
-                padding:20px; 
+                padding:5px; 
                 border-radius:12px; 
                 background:#fff; 
                 box-shadow:0 4px 12px rgba(0,0,0,0.08); 
@@ -189,8 +214,8 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
             ">
                 <!-- Header -->
                 <h4 style="
-                    margin:0 0 20px 0; 
-                    font-size:18px; 
+                    margin: 10px 0 20px 0; 
+                    font-size:12px; 
                     font-weight:600; 
                     color:#222; 
                     text-align:center; 
@@ -201,37 +226,8 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
                 </h4>
 
                 <!-- Grid Gambar -->
-                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:20px; text-align:center;">
-                    
-                    <!-- Card Gambar 1 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211203/UnitBeforeCheck/cx6g0ogj6orbybzsvyl4.png" 
-                        alt="Foto Suhu" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Suhu <br><span style="font-weight:600; color:#007bff;">16 °C</span>
-                    </div>
-                    </div>
-
-                    <!-- Card Gambar 2 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211205/UnitBeforeCheck/cu5u4yddqwyrxe9cqshf.png" 
-                        alt="Foto Tekanan Freon" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Tekanan Freon <br><span style="font-weight:600; color:#28a745;">100 PSI</span>
-                    </div>
-                    </div>
-
-                    <!-- Card Gambar 3 -->
-                    <div style="background:#fafafa; padding:12px; border-radius:10px; transition:0.3s; box-shadow:0 2px 6px rgba(0,0,0,0.05);">
-                    <img src="https://res.cloudinary.com/dfdjjuhr0/image/upload/v1759211206/UnitBeforeCheck/ut5rsgebjzcmjtk2zrom.png" 
-                        alt="Foto Ampere" 
-                        style="width:100%; max-width:130px; height:110px; object-fit:cover; border-radius:8px;">
-                    <div style="margin-top:10px; font-size:14px; font-weight:500; color:#333;">
-                        Ampere <br><span style="font-weight:600; color:#dc3545;">2 Amp</span>
-                    </div>
-                    </div>
+                <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:10px; text-align:center;">
+                    ${list_setelah}
                 </div>
 
                 <!-- Hasil Pengecekan -->
@@ -242,7 +238,7 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
                     border-radius:8px; 
                     background:#e6f4ea; 
                     color:#2e7d32; 
-                    font-size:15px; 
+                    font-size:12px; 
                     font-weight:600;
                 ">
                     Hasil Pengecekan : Normal
@@ -250,6 +246,25 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
             </div>
         `
         );
+        let no_wa = res.kontak_pelanggan.nomor.replace(/^\+/, '');
+        console.log(no_wa);
+        $("#TombolAksi").html(`
+            <!-- Tombol aksi -->
+            <div class="d-flex flex-column gap-2 py-2">
+                <!-- Button Perbaikan -->
+                <button onclick=""
+                    class="btn btn-warning w-100 rounded-pill text-white shadow-sm d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-tools"></i>
+                    <span>Ajukan Perbaikan</span>
+                </button>
+                <button onclick="kirimKonfirmasiWa('${no_wa}', '${res.encrypted_id}')" 
+                    id="btnKonfirmasiWa"
+                    class="btn btn-success w-100 rounded-pill shadow-sm d-flex align-items-center justify-content-center gap-2">
+                    <i class="bi bi-whatsapp"></i>
+                    <span>Kirim Konfirmasi</span>
+                </button>
+            </div>
+        `);
     })
     .catch((err) => {
         console.error(err);
@@ -274,7 +289,16 @@ function getDataKonfirmasiPekerjaan(id) {
             },
             onBeforeSend: function () {
                 // misal disable tombol simpan
-                //$("#btnSimpan").prop("disabled", true).text("Menyimpan...");
+                $("#SebelumServices").html(`
+                    <div class="p-3 mb-2 border rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                        <div class="skeleton-icon me-2"></div>
+                        <div class="skeleton-text w-50"></div>
+                        </div>
+                        <div class="skeleton-text w-75 mb-1"></div>
+                        <div class="skeleton-text w-25"></div>
+                    </div>
+                `);
             },
             onComplete: function () {
                 //$("#btnSimpan").prop("disabled", false).text("💾 Simpan");
@@ -282,4 +306,20 @@ function getDataKonfirmasiPekerjaan(id) {
         });
     });
 }
+
+function kirimKonfirmasiWa(no_hp, idTask) {
+    // pesan konfirmasi
+    const pesan = 
+    `Halo, ini konfirmasi pengerjaan untuk Task ID: #ACD-${formatToSixDigits(idTask)}.\n\n` +
+    `Silakan cek detail lebih lanjut di link berikut:\n` +
+    `https://customer.dikariapp/konfirmasi/${idTask}\n`+
+    `atau buka applikasi :\n`+
+    `https://play.google.com/store/apps/details?id=com.dikariapp.customer.twa`;
+
+    // encode pesan agar aman dipakai di URL
+    const encodedPesan = encodeURIComponent(pesan);
+
+    // arahkan ke WhatsApp
+    window.open(`https://wa.me/${no_hp}?text=${encodedPesan}`, '_blank');
+  }
 </script>

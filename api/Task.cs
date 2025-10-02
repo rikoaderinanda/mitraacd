@@ -8,6 +8,7 @@ namespace mitraacd.api
 {
     [ApiController]
     [Route("api/[controller]")]
+    [ApiExplorerSettings(GroupName = "Task")]
     public class TaskController : ControllerBase
     {
         private readonly ITaskRepository _taskRepository;
@@ -98,6 +99,7 @@ namespace mitraacd.api
             var res = await _taskRepository.GetDataKonfirmasiPekerjaan(Id);
             return Ok(res);
         }
+
 
     }
 }

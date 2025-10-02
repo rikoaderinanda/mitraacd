@@ -52,7 +52,126 @@
     height: 32px;
     border-radius: 50%;
     }
+
+    /* Minimalist Modern Tabs */
+    .modern-tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: none !important;
+    }
+
+    .modern-tabs .nav-item {
+    flex: 1;
+    text-align: center;
+    }
+
+    .modern-tabs .nav-link {
+    width: 100%;
+    border: none;
+    border-radius: 0;
+    padding: 12px 0 8px;
+    font-weight: 500;
+    font-size: 0.85rem;
+    color: #666;
+    background: transparent;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    }
+
+    .modern-tabs .nav-link i {
+    font-size: 1.3rem;
+    }
+
+    .modern-tabs .nav-link:hover {
+    color: #0d6efd;
+    background: rgba(13,110,253,0.05);
+    }
+
+    .modern-tabs .nav-link.active {
+    color: #0d6efd;
+    border-bottom: 3px solid #0d6efd;
+    background: transparent;
+    font-weight: 600;
+    }
+
+    /* Tab Content */
+    .tab-content {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    background: #fff;
+    border-radius: 12px;
+    @* box-shadow: 0 2px 8px rgba(0,0,0,0.08); *@
+    margin-top: 10px;
+    @* padding: 20px; *@
+
+    }
+
+    .card-service {
+    margin-bottom: 10px;
+    @* padding: 16px; *@
+    border-radius: 16px;
+    background: #fff;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+    font-family: "Segoe UI", Arial, sans-serif;
+    }
+
+    .card-service h4 {
+    margin: 0 0 16px 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: #333;
+    text-align: center;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #eee;
+    }
+
+    .card-service .grid-images {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    text-align: center;
+    }
+
+    .card-service .grid-images img {
+    width: 100%;
+    border-radius: 10px;
+    object-fit: cover;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    transition: transform 0.2s ease;
+    }
+
+    .card-service .grid-images img:hover {
+    transform: scale(1.05);
+    }
+
+    .card-service .result {
+    margin-top: 20px;
+    padding: 12px;
+    text-align: center;
+    border-radius: 10px;
+    background: #e8f5e9;
+    color: #2e7d32;
+    font-size: 13px;
+    font-weight: 600;
+    }
+     /* Style default tombol */
+    .jadwal-btn {
+        transition: all 0.3s ease;
+        border: none;
+    }
+
+    /* Style saat tombol dipilih (active) */
+    .jadwal-btn.active {
+        transform: scale(1.05);
+        font-weight: 600;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+        border: 2px solid rgba(255, 255, 255, 0.6);
+    }
 </style>
+
 @await Html.PartialAsync("_ModalVerifikasiPekerjaan")
 @await Html.PartialAsync("_ModalPengecekanAkhir")
 @await Html.PartialAsync("_ModalPengerjaanPhoto")
@@ -61,13 +180,12 @@
 
 <div class="app-body pb-30">    
     <div class="container" style="margin-top:10px;margin-bottom :10px;">
-        <p>List Perkerjaan <span id="txtFiltered"></span></p>
         <div class="owl-carousel" id="jadwalCarousel" style="margin-top:10px;margin-bottom:10px;">
             <!-- Hari Ini -->
             <div class="item">
                 <button id="btnHariIni" 
-                        class="btn btn-sm w-100 rounded-pill"
-                        onclick="LoadListTask(0);"
+                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        onclick="setActiveBtn(this); LoadListTask(0);"
                         style="background: #007bff; color:#fff;">
                     <i class="bi bi-calendar-day me-1"></i> Hari Ini
                 </button>
@@ -75,8 +193,8 @@
             <!-- Besok -->
             <div class="item">
                 <button id="btnHariBesok" 
-                        class="btn btn-sm w-100 rounded-pill"
-                        onclick="LoadListTask(1);"
+                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        onclick="setActiveBtn(this); LoadListTask(1);"
                         style="background: #ffc107; color:#000;">
                     <i class="bi bi-calendar-check me-1"></i> Besok
                 </button>
@@ -84,54 +202,86 @@
             <!-- Jauh Hari -->
             <div class="item">
                 <button id="btnHariJauh" 
-                        class="btn btn-sm w-100 rounded-pill"
-                        onclick="LoadListTask(2);"
+                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        onclick="setActiveBtn(this); LoadListTask(2);"
                         style="background: #28a745; color:#fff;">
                     <i class="bi bi-calendar-range me-1"></i> Jauh Hari
                 </button>
             </div>
         </div>
 
-        
-        <div id="ListTask">
-                        <!-- Item Skeleton -->
-            <div class="p-3 mb-2 border rounded shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                <div class="skeleton-icon me-2"></div>
-                <div class="skeleton-text w-50"></div>
-                </div>
-                <div class="skeleton-text w-75 mb-1"></div>
-                <div class="skeleton-text w-25"></div>
-            </div>
+        <ul class="nav nav-tabs modern-tabs" id="serviceTabs" role="tablist">
+            <li class="nav-item active" role="presentation">
+                <button class="nav-link" id="sebelum-tab" data-bs-toggle="tab" data-bs-target="#sebelum" type="button" role="tab">
+                <i class="bi bi-hourglass-split"></i>
+                <span>On Schedule</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="saat-tab" data-bs-toggle="tab" data-bs-target="#saat" type="button" role="tab">
+                <i class="bi bi-tools"></i>
+                <span>On Progress</span>
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" data-bs-target="#setelah" type="button" role="tab">
+                <i class="bi bi-check-circle"></i>
+                <span>Finished</span>
+                </button>
+            </li>
+            </ul>
 
-            <!-- Item Skeleton -->
-            <div class="p-3 mb-2 border rounded shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                <div class="skeleton-icon me-2"></div>
-                <div class="skeleton-text w-50"></div>
+            <!-- Tab Content -->
+            <div class="tab-content" id="serviceTabsContent">
+            <div class="tab-pane fade show active" id="sebelum" role="tabpanel">
+                <div id="ListTask">
+                        <!-- Item Skeleton -->
+                    <div class="p-3 mb-2 border rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                        <div class="skeleton-icon me-2"></div>
+                        <div class="skeleton-text w-50"></div>
+                        </div>
+                        <div class="skeleton-text w-75 mb-1"></div>
+                        <div class="skeleton-text w-25"></div>
+                    </div>
+
+                    <!-- Item Skeleton -->
+                    <div class="p-3 mb-2 border rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                        <div class="skeleton-icon me-2"></div>
+                        <div class="skeleton-text w-50"></div>
+                        </div>
+                        <div class="skeleton-text w-75 mb-1"></div>
+                        <div class="skeleton-text w-25"></div>
+                    </div>
+                    <!-- Item Skeleton -->
+                    <div class="p-3 mb-2 border rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                        <div class="skeleton-icon me-2"></div>
+                        <div class="skeleton-text w-50"></div>
+                        </div>
+                        <div class="skeleton-text w-75 mb-1"></div>
+                        <div class="skeleton-text w-25"></div>
+                    </div>
+                    <!-- Item Skeleton -->
+                    <div class="p-3 mb-2 border rounded shadow-sm">
+                        <div class="d-flex align-items-center mb-2">
+                        <div class="skeleton-icon me-2"></div>
+                        <div class="skeleton-text w-50"></div>
+                        </div>
+                        <div class="skeleton-text w-75 mb-1"></div>
+                        <div class="skeleton-text w-25"></div>
+                    </div>
                 </div>
-                <div class="skeleton-text w-75 mb-1"></div>
-                <div class="skeleton-text w-25"></div>
             </div>
-            <!-- Item Skeleton -->
-            <div class="p-3 mb-2 border rounded shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                <div class="skeleton-icon me-2"></div>
-                <div class="skeleton-text w-50"></div>
-                </div>
-                <div class="skeleton-text w-75 mb-1"></div>
-                <div class="skeleton-text w-25"></div>
+            <div class="tab-pane fade" id="saat" role="tabpanel">
+                <div id="SaatPengerjaan">🔧 Konten saat pengerjaan...</div>
             </div>
-            <!-- Item Skeleton -->
-            <div class="p-3 mb-2 border rounded shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                <div class="skeleton-icon me-2"></div>
-                <div class="skeleton-text w-50"></div>
-                </div>
-                <div class="skeleton-text w-75 mb-1"></div>
-                <div class="skeleton-text w-25"></div>
+            <div class="tab-pane fade" id="setelah" role="tabpanel">
+                <div id="SetelahServices">✅ Konten setelah services...</div>
             </div>
-        </div>
+            </div>
+        
     </div>
 </div>
 
@@ -152,6 +302,7 @@
             {
                 LoadListTask(0);
                 initFilter();
+                document.getElementById("btnHariIni").classList.add("active");
             }
             else{
                 Swal.fire({
@@ -168,6 +319,13 @@
             }
         });
     });
+
+    function setActiveBtn(btn) {
+        // Hapus active di semua tombol
+        document.querySelectorAll(".jadwal-btn").forEach(el => el.classList.remove("active"));
+        // Tambahkan active di tombol yang diklik
+        btn.classList.add("active");
+    }
 
     function initFilter() {
         $('#jadwalCarousel').owlCarousel({
@@ -237,11 +395,20 @@
                             `;
                         }
 
-                        if(item.status > 4 && hari == 0){
+                        if(item.status > 4 && item.status < 9 && hari == 0){
                             btnAction = btnAction + `
                                 <button onclick="showProcess(${item.id},${item.status});" id="btnProses${item.id}"
                                         class="btn btn-sm btn-success rounded-pill px-3">
                                         On Progres<i class="bi bi-arrow-right-short"></i>
+                                </button>
+                            `;
+                        }
+
+                        if(item.status == 9){
+                            btnAction = btnAction + `
+                                <button onclick="showProcess(${item.id},${item.status});" id="btnProses${item.id}"
+                                        class="btn btn-sm btn-success rounded-pill px-3">
+                                        Konfirmasi<i class="bi bi-arrow-right-short"></i>
                                 </button>
                             `;
                         }
@@ -694,8 +861,16 @@
             data: Data,
             success: function (res) {
                 console.log(res);
-                LoadListTask(0);
-                $("#ModalMulaiBerangkat").modal("show");
+                if(res){
+                    
+                    $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
+                    $("#ModalDalamPerjalanan").modal("show");
+                    LoadListTask(0);
+                }
+                else
+                {
+                    showToast(res.message);
+                }
             },
             error: function (err) {
                 //alert("Gagal: " + err);
