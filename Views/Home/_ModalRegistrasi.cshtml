@@ -755,8 +755,18 @@ function kirimKode() {
     });
 }
 
+function lanjutTanpaOTP(){
+  const noWa = $("#noWhatsapp").val();
+  if(noWa.trim() === "") {
+  showToast("Silakan masukkan nomor WhatsApp terlebih dahulu!");
+    return;
+  }
+  
+  nextStep(4);
+}
 
 function verifikasiKode() {
+  
   const kode = getOtpValue();
   const noWa = $("#noWhatsapp").val().replace("+", "");
   let _UserId = Storage.get('userId');

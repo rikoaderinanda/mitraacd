@@ -27,11 +27,13 @@
 <!-- Tombol navigasi -->
 <div class="d-flex justify-content-between" id="btnVerifikasiWrapper">
   <button class="btn btn-outline-secondary rounded-pill px-4" onclick="prevStep(2)" id="btnKembaliPrev2">Kembali</button>
-  <button class="btn btn-primary rounded-pill px-4" type="button" onclick="kirimKode()" id="btnKirimKodeAwal">Kirim Kode</button>
+  @* <button class="btn btn-primary rounded-pill px-4" type="button" onclick="kirimKode()" id="btnKirimKodeAwal">Kirim Kode</button> *@
+  <button class="btn btn-primary rounded-pill px-4" type="button" onclick="lanjutTanpaOTP()" id="btnKLanjutTanpaOTP">Lanjut</button>
 </div>
 
 <script>
 let countdown;
+
 function startOtpTimer(duration = 60) {
     const timerDisplay = document.getElementById("otpTimer");
     let timeLeft = duration;
