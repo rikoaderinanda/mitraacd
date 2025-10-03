@@ -20,7 +20,7 @@ namespace mitraacd.Services
 
         
         //versi 1.0
-        Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari);
+        Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari, string status);
         Task<bool> Berangkat(BerangkatKelokasiModel data);
         Task<bool> SampaiLokasi(SampaiDiLokasiModel idtask);
         Task<bool> UpdateTask_PengukuranAwal(UpdateTask_PengukuranAwalDTO dt);
@@ -149,7 +149,7 @@ namespace mitraacd.Services
             return result.HasValue && result.Value > 0;
         }
 
-        public async Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari)
+        public async Task<IEnumerable<dynamic>> GetTask(string Id, string FilterHari, string status)
         {
             var sql = @"
                 select a.* from
@@ -194,13 +194,20 @@ namespace mitraacd.Services
                     OR (@FilterHari = 1 AND date(waktu_kunjungan) = current_date + 1)
                     OR (@FilterHari = 2 AND date(waktu_kunjungan) > current_date + 1)
                 )
+                -- filter status
+                AND (
+                    (@FilterStatus = 4 AND status = 4)                         -- on schedule
+                    OR (@FilterStatus = 5 AND status BETWEEN 5 AND 9)          -- on progress
+                    OR (@FilterStatus = 10 AND status = 10)                    -- selesai
+                )
                 order by  waktu_kunjungan asc
             ";
 
             var param = new
             {
                 Id = long.Parse(Id),
-                FilterHari = long.Parse(FilterHari)
+                FilterHari = long.Parse(FilterHari),
+                FilterStatus = long.Parse(status)
             };
 
             var result = await _db.QueryAsync<dynamic>(sql,param);

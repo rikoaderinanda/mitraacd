@@ -7,8 +7,6 @@
   <label for="noWhatsapp">No WhatsApp</label>
 </div>
 
-<!-- Tombol kirim kode -->
-
 <!-- Input kode verifikasi (disembunyikan dulu) -->
 <div class="mb-3 d-none" id="kodeWrapper">
   <label for="kodeVerifikasi" class="form-label fw-bold">Kode Verifikasi</label>
@@ -32,6 +30,7 @@
 </div>
 
 <script>
+
 let countdown;
 
 function startOtpTimer(duration = 60) {
@@ -145,23 +144,23 @@ function UpdateOTPStatus(data){
 
 const inputs = document.querySelectorAll("#otpInputs input");
 
-  inputs.forEach((input, index) => {
-    input.addEventListener("input", () => {
-      // hanya angka
-      input.value = input.value.replace(/[^0-9]/g, "");
+inputs.forEach((input, index) => {
+  input.addEventListener("input", () => {
+    // hanya angka
+    input.value = input.value.replace(/[^0-9]/g, "");
 
-      // pindah ke input berikutnya kalau sudah isi
-      if (input.value && index < inputs.length - 1) {
-        inputs[index + 1].focus();
-      }
+    // pindah ke input berikutnya kalau sudah isi
+    if (input.value && index < inputs.length - 1) {
+      inputs[index + 1].focus();
+    }
 
-      // cek apakah semua sudah terisi
-      if (isAllFilled()) {
-        verifikasiKode();
-      }
-    });
+    // cek apakah semua sudah terisi
+    if (isAllFilled()) {
+      verifikasiKode();
+    }
+  });
 
-    input.addEventListener("keydown", (e) => {
+  input.addEventListener("keydown", (e) => {
       // kalau backspace di input kosong, pindah ke sebelumnya
       if (e.key === "Backspace" && !input.value && index > 0) {
         inputs[index - 1].focus();
@@ -169,14 +168,16 @@ const inputs = document.querySelectorAll("#otpInputs input");
     });
   });
 
-  function isAllFilled() {
-    return Array.from(inputs).every(input => input.value !== "");
-  }
 
-  function getOtpValue() {
-    return Array.from(inputs).map(input => input.value).join("");
-  }
 
+
+function isAllFilled() {
+  return Array.from(inputs).every(input => input.value !== "");
+}
+
+function getOtpValue() {
+  return Array.from(inputs).map(input => input.value).join("");
+}
 
 function clearOtpInputs() {
     const inputs = document.querySelectorAll("#otpInputs input");

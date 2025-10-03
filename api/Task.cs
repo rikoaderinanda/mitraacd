@@ -19,9 +19,9 @@ namespace mitraacd.api
         }
 
         [HttpGet("GetTask")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> GetTask(string Id,string hari)
+        public async Task<ActionResult<IEnumerable<dynamic>>> GetTask(string Id,string hari,string status)
         {
-            var res = await _taskRepository.GetTask(Id, hari);
+            var res = await _taskRepository.GetTask(Id, hari, status);
             return Ok(res);
         }
 

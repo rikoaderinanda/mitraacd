@@ -185,7 +185,7 @@
             <div class="item">
                 <button id="btnHariIni" 
                         class="btn btn-sm w-100 rounded-pill jadwal-btn"
-                        onclick="setActiveBtn(this); LoadListTask(0);"
+                        onclick="setActiveBtn(this); LoadListTask(0,status);"
                         style="background: #007bff; color:#fff;">
                     <i class="bi bi-calendar-day me-1"></i> Hari Ini
                 </button>
@@ -194,7 +194,7 @@
             <div class="item">
                 <button id="btnHariBesok" 
                         class="btn btn-sm w-100 rounded-pill jadwal-btn"
-                        onclick="setActiveBtn(this); LoadListTask(1);"
+                        onclick="setActiveBtn(this); LoadListTask(1,status);"
                         style="background: #ffc107; color:#000;">
                     <i class="bi bi-calendar-check me-1"></i> Besok
                 </button>
@@ -203,83 +203,38 @@
             <div class="item">
                 <button id="btnHariJauh" 
                         class="btn btn-sm w-100 rounded-pill jadwal-btn"
-                        onclick="setActiveBtn(this); LoadListTask(2);"
+                        onclick="setActiveBtn(this); LoadListTask(2,status);"
                         style="background: #28a745; color:#fff;">
                     <i class="bi bi-calendar-range me-1"></i> Jauh Hari
                 </button>
             </div>
         </div>
 
-        <ul class="nav nav-tabs modern-tabs" id="serviceTabs" role="tablist">
-            <li class="nav-item active" role="presentation">
-                <button class="nav-link" id="sebelum-tab" data-bs-toggle="tab" data-bs-target="#sebelum" type="button" role="tab">
-                <i class="bi bi-hourglass-split"></i>
-                <span>On Schedule</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="saat-tab" data-bs-toggle="tab" data-bs-target="#saat" type="button" role="tab">
-                <i class="bi bi-tools"></i>
-                <span>On Progress</span>
-                </button>
-            </li>
-            <li class="nav-item" role="presentation">
-                <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" data-bs-target="#setelah" type="button" role="tab">
-                <i class="bi bi-check-circle"></i>
-                <span>Finished</span>
-                </button>
-            </li>
+            <ul class="nav nav-tabs modern-tabs" id="serviceTabs" role="tablist">
+                <li class="nav-item active" role="presentation">
+                    <button class="nav-link" id="sebelum-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,4)">
+                    <i class="bi bi-hourglass-split"></i>
+                    <span>On Schedule</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="saat-tab" data-bs-toggle="tab" data-bs-target="#saat" type="button" role="tab" onclick="LoadListTask(hari,5)">
+                    <i class="bi bi-tools"></i>
+                    <span>On Progress</span>
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" data-bs-target="#setelah" type="button" role="tab" onclick="LoadListTask(hari,10)">
+                    <i class="bi bi-check-circle"></i>
+                    <span>Finished</span>
+                    </button>
+                </li>
             </ul>
 
             <!-- Tab Content -->
             <div class="tab-content" id="serviceTabsContent">
-            <div class="tab-pane fade show active" id="sebelum" role="tabpanel">
                 <div id="ListTask">
-                        <!-- Item Skeleton -->
-                    <div class="p-3 mb-2 border rounded shadow-sm">
-                        <div class="d-flex align-items-center mb-2">
-                        <div class="skeleton-icon me-2"></div>
-                        <div class="skeleton-text w-50"></div>
-                        </div>
-                        <div class="skeleton-text w-75 mb-1"></div>
-                        <div class="skeleton-text w-25"></div>
-                    </div>
-
-                    <!-- Item Skeleton -->
-                    <div class="p-3 mb-2 border rounded shadow-sm">
-                        <div class="d-flex align-items-center mb-2">
-                        <div class="skeleton-icon me-2"></div>
-                        <div class="skeleton-text w-50"></div>
-                        </div>
-                        <div class="skeleton-text w-75 mb-1"></div>
-                        <div class="skeleton-text w-25"></div>
-                    </div>
-                    <!-- Item Skeleton -->
-                    <div class="p-3 mb-2 border rounded shadow-sm">
-                        <div class="d-flex align-items-center mb-2">
-                        <div class="skeleton-icon me-2"></div>
-                        <div class="skeleton-text w-50"></div>
-                        </div>
-                        <div class="skeleton-text w-75 mb-1"></div>
-                        <div class="skeleton-text w-25"></div>
-                    </div>
-                    <!-- Item Skeleton -->
-                    <div class="p-3 mb-2 border rounded shadow-sm">
-                        <div class="d-flex align-items-center mb-2">
-                        <div class="skeleton-icon me-2"></div>
-                        <div class="skeleton-text w-50"></div>
-                        </div>
-                        <div class="skeleton-text w-75 mb-1"></div>
-                        <div class="skeleton-text w-25"></div>
-                    </div>
                 </div>
-            </div>
-            <div class="tab-pane fade" id="saat" role="tabpanel">
-                <div id="SaatPengerjaan">🔧 Konten saat pengerjaan...</div>
-            </div>
-            <div class="tab-pane fade" id="setelah" role="tabpanel">
-                <div id="SetelahServices">✅ Konten setelah services...</div>
-            </div>
             </div>
         
     </div>
@@ -287,6 +242,7 @@
 
 <script>
     let hari = 0;
+    let status = 4;
     var $;
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
@@ -300,7 +256,7 @@
         checkStatusMitra().then(result => {
             if (result.data.status_mitra == 5) 
             {
-                LoadListTask(0);
+                LoadListTask(hari,status);
                 initFilter();
                 document.getElementById("btnHariIni").classList.add("active");
             }
@@ -340,12 +296,14 @@
         });
     }
 
-    function LoadListTask(hari){
+    function LoadListTask(_hari,_status){
         let _UserId = Storage.get('userId');
         callApi({
-            url: '/api/Task/GetTask?Id='+_UserId+'&Hari='+hari,
+            url: '/api/Task/GetTask?Id='+_UserId+'&Hari='+_hari+'&status='+_status,
             method: 'GET',
             success: function (data) {
+                hari = _hari;
+                status = _status;
                 console.log(data);
                 var html = "";
                 if (!data || data.length === 0) {
@@ -523,168 +481,16 @@
                 $('#ListTask').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
             },
             onBeforeSend: function () {
+                $('#ListTask').html(`
+                <div class="p-3 mb-2 border rounded shadow-sm">
+                    <div class="d-flex align-items-center mb-2">
+                    <div class="skeleton-icon me-2"></div>
+                    <div class="skeleton-text w-50"></div>
+                    </div>
+                    <div class="skeleton-text w-75 mb-1"></div>
+                    <div class="skeleton-text w-25"></div>
+                </div>`);
 
-            },
-        });
-    }
-
-    function LoadListTaskV1(filterHari) {
-        var selectedHari = "";
-        if (filterHari == 0) { selectedHari = "Hari ini" }
-        else if (filterHari == 1) { selectedHari = "Besok" }
-        else if (filterHari == 2) { selectedHari = "Jauh Hari" }
-        $("#txtFiltered").text(selectedHari);
-        hari = filterHari;
-        var user = getUserInfo();
-        callApi({
-            url: '/api/Task/GetTask?Id=' + user.id + '&Hari=' + filterHari,
-            method: 'GET',
-            success: function (data) {
-                var html = "";
-
-                if (!data || data.length === 0) {
-                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
-                    $('#ListBid').html(html);
-                }
-                else {
-
-                    console.log(data);
-                    html = $.map(data, function (item) {
-                        var scr = "";
-                        var dtPesanan = '';
-                        item.Pesanan.forEach(p => {
-                            dtPesanan = dtPesanan +
-                                `
-                                    <li>
-                                        ${p.nama} &times; ${p.jumlah}
-                                        <span class="text-muted">(${formatRupiah(p.total)})</span>
-                                    </li>
-                                `
-                                ;
-                        });
-
-                        var btnAction = "";
-                        if (item.status_order == 4) {
-                            btnAction = `
-                                <button 
-                                id="btnBerangkat${item.id}"
-                                class="btn btn-sm btn-danger w-100" onclick="BerangkatKeLokasi(${item.id})">
-                                <i class="bi bi-check-circle me-1"></i> Berangkat Ke Lokasi
-                                </button>
-                            `;
-                        }
-                        else if (item.status_order == 5) {
-                            btnAction = `
-                            <button class="btn btn-sm btn-success w-100" onclick="SampaiDiLokasi(${item.id})">
-                                <i class="bi bi-check-circle me-1"></i> Sudah Sampai Lokasi
-                            </button>
-                            `;
-                        }
-                        else if (item.status_order == 6) {
-                            btnAction = `
-                            <button class="btn btn-sm btn-success w-100" onclick="InspeksiUnit(${item.id})">
-                            <i class="bi bi-check-circle me-1"></i> Inspeksi Unit
-                            </button>
-                            `;
-                        }
-                        else if (item.status_order == 7) {
-                            btnAction = `
-                            <button class="btn btn-sm btn-outline-danger w-100" onclick="MulaiPengerjaan(${item.id})">
-                            <i class="bi bi-check-circle me-1"></i> Mulai Pengerjaan
-                            </button>
-                            `;
-                        }
-
-
-
-                        scr = `
-                        <div class="card mb-3 position-relative shadow-sm border-0 hover-shadow">
-                            <div class="card-body">
-                                <div class="d-flex justify-content-between align-items-start position-relative">
-                                    <div>
-                                        <h5 class="card-title mb-1 fw-bold">
-                                            ID: 
-                                            <span class="text-primary">
-                                            ACD - ${formatToSixDigits(item.id)}
-                                            </span>
-                                        </h5>
-                                        
-
-                                        <div class="mt-3">
-                                            <h6 class="fw-bold mb-2">Layanan:</h6>
-                                            <ul class="mb-0 ps-0" style="list-style-type:disc;font-size:small;">
-                                                ${dtPesanan}
-                                            </ul>
-                                        </div>
-                                        <div class="mt-4">
-                                            <h6 class="fw-bold mb-2">Customer:</h6>
-                                            <ul class="list-unstyled small text-body-secondary">
-                                                <li class="mb-1">
-                                                <i class="bi bi-person-fill me-1 text-dark"></i>
-                                                <strong>${item.nama}</strong> 
-                                                <span class="text-muted">(${item.whatsapp})</span>
-                                                </li>
-                                                <li class="mb-1">
-                                                <i class="bi bi-geo-alt-fill me-1 text-dark"></i>
-                                                ${item.alamat}
-                                                </li>
-                                                <li>
-                                                <i class="bi bi-calendar-event me-1 text-dark"></i>
-                                                ${item.tanggal_kunjungan} 
-                                                <span class="ms-1">
-                                                    <i class="bi bi-clock me-1"></i>${item.jam_kunjungan}
-                                                </span>
-                                                </li>
-                                            </ul>
-                                        </div>
-                                        <p class="card-text mb-0 mt-3">
-                                            Total Pesanan: 
-                                            <span class="fw-semibold text-success">
-                                                ${formatRupiah(item.total)}
-                                            </span>
-                                        </p>
-                                    </div>
-                                    <!-- Tombol WhatsApp dan Maps dalam satu baris -->
-                                    <div class="d-flex flex-column align-items-end gap-2 ms-3">
-                                        <button 
-                                            id="btnWhatsapp${item.id}"
-                                            onclick="CallWhatapp(${item.id});"
-                                            class="btn btn-success btn-sm"
-                                            title="Hubungi via WhatsApp"
-                                            style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-whatsapp"></i>
-                                        </button>
-                                        <button 
-                                            id="btnMaps${item.id}"
-                                            onclick="ShowMaps(${item.id});"
-                                            class="btn btn-danger btn-sm"
-                                            title="Lihat Maps"
-                                            style="border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
-                                            <i class="bi bi-geo-alt"></i>
-                                        </button>
-                                    </div>
-                                </div>
-
-                            </div>
-                            <div class="card-footer bg-light border-top-0">
-                                <div class="d-flex flex-nowrap overflow-auto py-1" style="gap: 0.5rem;">
-                                ${btnAction}
-                                </div>
-                            </div>
-                        </div>
-                        `;
-                        return scr;
-                    }).join('');
-                    $('#ListBid').html(html);
-
-                }
-            },
-            error: function (err) {
-                $('#ListBid').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
-
-            },
-            onBeforeSend: function () {
-                $('#ListBid').html('<p class="text-center text-muted py-4">sedang memuat data.....</p>');
             },
         });
     }
@@ -740,7 +546,7 @@
                                 popup: 'animate__animated animate__fadeOutUp'
                             }
                         }).then(() => {
-                            LoadListTask(hari);
+                            LoadListTask(hari,status);
                         });
                     },
                     error: function (err) {
@@ -812,7 +618,7 @@
                                 popup: 'animate__animated animate__fadeOutUp'
                             }
                         }).then(() => {
-                            LoadListTask(hari);
+                            LoadListTask(hari,status);
                         });
                     },
                     error: function (err) {
@@ -853,7 +659,7 @@
             Id : id,
             MitraId : _UserId
         }
-        console.log(Data);
+        //console.log(Data);
 
         callApi({
             url: '/api/Task/Berangkat',
@@ -865,7 +671,7 @@
                     
                     $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
                     $("#ModalDalamPerjalanan").modal("show");
-                    LoadListTask(0);
+                    LoadListTask(hari,status);
                 }
                 else
                 {
