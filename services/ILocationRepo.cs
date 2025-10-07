@@ -11,6 +11,7 @@ namespace mitraacd.Services
     {
         Task<IEnumerable<dynamic?>> NearbyKecamatan(double lat, double lng, int radiusKm);
         Task<bool> simpanCoverageArea(ReqsimpanCoverageArea data);
+        Task<dynamic?> CheckRadiusExisting(string _Id);
     }
     public class LocationRepo : ILocationRepo
     {
@@ -59,7 +60,10 @@ namespace mitraacd.Services
                 update mitra_data
                     set 
                         coverage_area = @coverage_areas::jsonb,
-                        status_mitra = 3
+                        status_mitra = CASE 
+                            WHEN status_mitra < 3 THEN 3 
+                            ELSE status_mitra 
+                        END
                 where id = @user_id
                 returning id;
             ";
@@ -73,6 +77,24 @@ namespace mitraacd.Services
             var result = await _db.ExecuteScalarAsync<int?>(query, param);
 
             return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<dynamic?> CheckRadiusExisting(string _Id)
+        {
+            const string sql = @"
+                SELECT coverage_area
+                FROM mitra_data
+                WHERE id = @Id
+            ";
+
+            var param = new { Id = long.Parse(_Id) };
+
+            var result = await _db.QueryAsync<dynamic>(sql, param);
+
+            if (result == null || !result.Any())
+                return null;
+
+            return JsonColumnParser.ParseJsonColumns(result).FirstOrDefault();
         }
     }
 }

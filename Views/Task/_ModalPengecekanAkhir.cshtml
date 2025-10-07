@@ -455,7 +455,7 @@ function lanjutLayanan_QA(hasil_ukur_akhir_QA){
         success: function (res) {
           console.log(res);
           if(res.success){
-              LoadListTask(0);
+              LoadListTask(hari,status);
               $("#ModalVerifikasiPekerjaan").attr("data-id", Id_QA);
               $("#ModalVerifikasiPekerjaan").modal("show");
               $('#ModalPengecekanAkhir').modal('hide');

@@ -106,5 +106,12 @@ namespace mitraacd.api
                 data = req
             });
         }
+
+        [HttpGet("CheckRadiusExisting")]
+        public async Task<IActionResult> CheckRadiusExisting(string Id)
+        {
+            var res = await _repo.CheckRadiusExisting(Id);
+            return Ok(res);
+        }
     }
 }

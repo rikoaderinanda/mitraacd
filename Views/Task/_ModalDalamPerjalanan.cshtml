@@ -82,7 +82,7 @@ function showModaFotoUnit(){
     UpdateTeknisiSampaiLokasi(data)
     .then((res) => {
         if(res){
-            LoadListTask(0);
+            LoadListTask(hari,status);
             $("#ShowCamera").attr("data-id", IdTask_OTW); // simpan id ke attribute modal    
             $("#ShowCamera").modal("show");
             $("#ModalDalamPerjalanan").modal("hide");

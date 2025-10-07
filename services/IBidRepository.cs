@@ -75,7 +75,8 @@ namespace mitraacd.Services
                 set
                     mitra_bid_id =@MitraId,
                     bid_date = now(),
-                    status = 4
+                    status = 4,
+                    mitra_fee = (total_transaksi*70/100)
                 where lt.status = 3
                 and id = @Id
                 returning id;

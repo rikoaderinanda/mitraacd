@@ -211,20 +211,20 @@
         </div>
 
             <ul class="nav nav-tabs modern-tabs" id="serviceTabs" role="tablist">
-                <li class="nav-item active" role="presentation">
+                <li class="nav-item" role="presentation">
                     <button class="nav-link" id="sebelum-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,4)">
                     <i class="bi bi-hourglass-split"></i>
                     <span>On Schedule</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="saat-tab" data-bs-toggle="tab" data-bs-target="#saat" type="button" role="tab" onclick="LoadListTask(hari,5)">
+                    <button class="nav-link" id="saat-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,5)">
                     <i class="bi bi-tools"></i>
                     <span>On Progress</span>
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" data-bs-target="#setelah" type="button" role="tab" onclick="LoadListTask(hari,10)">
+                    <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,10)">
                     <i class="bi bi-check-circle"></i>
                     <span>Finished</span>
                     </button>
@@ -256,6 +256,11 @@
         checkStatusMitra().then(result => {
             if (result.data.status_mitra == 5) 
             {
+                const defaultTab = document.querySelector("#sebelum-tab");
+
+                // Tambahkan kelas active ke tab dan parent <li>
+                defaultTab.classList.add("active");
+                defaultTab.closest(".nav-item").classList.add("active");
                 LoadListTask(hari,status);
                 initFilter();
                 document.getElementById("btnHariIni").classList.add("active");
@@ -668,7 +673,6 @@
             success: function (res) {
                 console.log(res);
                 if(res){
-                    
                     $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
                     $("#ModalDalamPerjalanan").modal("show");
                     LoadListTask(hari,status);

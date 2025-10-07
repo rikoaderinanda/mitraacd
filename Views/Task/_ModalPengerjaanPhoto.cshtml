@@ -301,7 +301,7 @@ function lanjutPengerjaan(){
         success: function (res) {
           console.log(res);
           if(res.success){
-              LoadListTask(0);
+              LoadListTask(hari,status);
               $("#ModalPengecekanAkhir").attr("data-id", Id_PFT);
               $("#ModalPengecekanAkhir").modal("show");
               $('#ModalPengerjaanPhoto').modal('hide');

@@ -457,7 +457,7 @@ function lanjutLayanan(hasil_ukur_awal){
         success: function (res) {
           console.log(res);
           if(res.success){
-              LoadListTask(0);
+              LoadListTask(hari,status);
               $("#ModalPengerjaanPhoto").attr("data-id", Id_SC);
               $("#ModalPengerjaanPhoto").modal("show");
               $('#ShowCamera').modal('hide');

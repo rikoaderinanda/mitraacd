@@ -72,8 +72,7 @@
               <p class="form-text text-muted small mb-2">
                 Semakin besar radius, semakin luas peluang orderan yang bisa kamu dapatkan. 🚀
               </p>
-              <input type="range" class="form-range" id="radiusRange" min="1" max="10" value="1" 
-                    oninput="document.getElementById('radiusValue').textContent = this.value">
+              <input type="range" class="form-range" id="radiusRange" min="1" max="10" value="1" oninput="document.getElementById('radiusValue').textContent = this.value">
               <p class="small text-muted">Radius jangkauan: <span id="radiusValue">1</span> km dari tempat anda</p>
               <div id="KecamatanList">
               </div>
@@ -87,10 +86,13 @@
 </div>
 
 <script>
+let radiusKm = $("#radiusRange").val();
 
 document.addEventListener("DOMContentLoaded", function () {
     $('#ModalCoverageArea').on('show.bs.modal', function (event) {
+        let IdTask_OTW = $(this).data("id");
         let _UserId = Storage.get('userId');
+        
         getAddressLatLng(_UserId)
         .then((res)=>{
             if(res.alamat!=""){
@@ -121,8 +123,19 @@ document.addEventListener("DOMContentLoaded", function () {
                         </span>
                       </div>
                     `);
-                    let radiusKm = $("#radiusRange").val();
-                    getNearby(currentLat, currentLng, radiusKm);
+                    
+                    getRadiusExisting(_UserId)
+                    .then((res)=>{
+                        if (res && res.coverage_area.radius > 0) {
+                            radiusKm = res.coverage_area.radius;
+                            $("#radiusRange").val(radiusKm);
+                            document.getElementById('radiusValue').textContent = radiusKm;
+                            
+                        }
+
+                        getNearby(currentLat, currentLng, radiusKm);
+                    });
+                    
                 }
               });
             }
@@ -166,7 +179,7 @@ function getNearby(currentLat, currentLng, radiusKm){
                         type="checkbox" 
                         value="${d.provinsi}:${d.kabupaten}:${d.kecamatan}:${d.latitude}:${d.longitude}" 
                         id="check-${i}">
-                    <label class="custom-label mb-0 flex-grow-1 d-flex align-items-center" for="check-${i}">
+                    <label class="custom-label mb-0 flex-grow-1 d-flex align-items-center" for="check-${i}"> 
                         <i class="bi bi-geo-alt-fill text-primary me-1"></i>
                         <span class="fw-semibold">${d.kecamatan}</span> 
                         <small class="text-muted ms-1">(${d.kabupaten})</small>
@@ -182,11 +195,16 @@ function getNearby(currentLat, currentLng, radiusKm){
                     jadi bisa berbeda dengan jarak di Google Maps atau rute jalan.
                 </p>
                 <div class="d-grid gap-2 mt-3">
-                    <button class="btn btn-primary btn-lg rounded-3 shadow-sm" onclick="ambilTerpilih()">
+                    <button class="btn btn-primary btn-lg rounded-3 shadow-sm" onclick="ambilTerpilih()" id="SimpanAreaCover">
                         <i class="bi bi-check2-circle me-2"></i> Simpan Area
                     </button>
                 </div>
             `;
+
+            // ✅ Otomatis pilih semua checkbox
+            let checkboxes = document.querySelectorAll("#KecamatanList input[type=checkbox]");
+            checkboxes.forEach(cb => cb.checked = true);
+            document.getElementById("check-all").checked = true; // centang checkbox "Pilih Semua"
         } else {
             document.getElementById("KecamatanList").innerHTML =
                 `<p class="text-muted">Tidak ada kecamatan dalam radius ${radiusKm} km dari tempat anda</p>`;
@@ -197,6 +215,7 @@ function getNearby(currentLat, currentLng, radiusKm){
         showToast("Terjadi kesalahan saat ambil data lokasi. Coba lagi!");
     });
 }
+
 
 // ✅ Fungsi untuk toggle semua checkbox
 function toggleSelectAll(source) {
@@ -341,6 +360,29 @@ function simpanCoverageAreaApi(data){
             },
             error: function (err) {
                 console.error("Error simpan skill:", err);
+                reject(err);
+            },
+            onBeforeSend: function () {
+                $("#SimpanAreaCover").prop("disabled", true).html('<i class="bi bi-hourglass-split me-1"></i>Memproses...');
+            },
+            onComplete: function () {
+                $("#SimpanAreaCover").prop("disabled", false).html('Simpan Area');
+            }
+        });
+    });
+}
+
+function getRadiusExisting(_UserId){
+
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: `/api/Location/CheckRadiusExisting?Id=${_UserId}`,
+            method: 'GET',
+            //data: data, // ✅ pakai data dari parameter
+            success: function (res) {
+                resolve(res);
+            },
+            error: function (err) {
                 reject(err);
             },
             onBeforeSend: function () {

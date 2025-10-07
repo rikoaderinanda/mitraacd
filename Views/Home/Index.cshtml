@@ -53,69 +53,71 @@
     <div class="container mt-20 mb-30">
         @await Html.PartialAsync("_Greeting_Location")
         @await Html.PartialAsync("_StatusPendaftaranMitra")
-        <!-- Informasi Coverage Area -->
-        <!-- Coverage Area Info -->
-        <div class="d-flex justify-content-between align-items-center px-2 py-2 mb-2" 
-            style="background:#f9fbfd; border:1px solid #eaeaea; border-radius:8px; font-size: 13px;">
-        <span class="text-muted">
-            Orderan ditampilkan sesuai radius coverage anda
-        </span>
-        <button class="btn btn-link btn-sm text-primary p-0 m-0" style="font-size: 13px;">
-            <i class="bi bi-geo-alt me-1"></i> Ubah
-        </button>
-        </div>
-
-        <!-- Filter Multi Select -->
-        <div class="d-flex align-items-center justify-content-between px-1 py-2 bg-light">
-            <div class="dropdown">
-                <button class="btn btn-outline-primary btn-sm rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                🔍 Filter Layanan
-                </button>
-                <ul class="dropdown-menu p-2" id="filterLayananMenu" style="min-width: 200px;">
-                <li>
-                    <div class="form-check">
-                    <input class="form-check-input" type="checkbox" value="all" id="filterAll" onchange="toggleAllFilters(this)">
-                    <label class="form-check-label fw-semibold" for="filterAll">Pilih Semua</label>
-                    </div>
-                </li>
-                <li><hr class="dropdown-divider"></li>
-                <li>
-                    <div class="form-check">
-                    <input class="form-check-input filter-item" type="checkbox" value="cuci" id="filterCuci" onchange="filterOrders()">
-                    <label class="form-check-label" for="filterCuci">Cuci AC</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                    <input class="form-check-input filter-item" type="checkbox" value="perbaikan" id="filterPerbaikan" onchange="filterOrders()">
-                    <label class="form-check-label" for="filterPerbaikan">Perbaikan</label>
-                    </div>
-                </li>
-                <li>
-                    <div class="form-check">
-                    <input class="form-check-input filter-item" type="checkbox" value="instalasi" id="filterInstalasi" onchange="filterOrders()">
-                    <label class="form-check-label" for="filterInstalasi">Instalasi</label>
-                    </div>
-                </li>
-                </ul>
+        <div id="PanelBidOrder" class="d-none">
+            <!-- Informasi Coverage Area -->
+            <!-- Coverage Area Info -->
+            <div class="d-flex justify-content-between align-items-center px-2 py-2 mb-2" 
+                style="background:#f9fbfd; border:1px solid #eaeaea; border-radius:8px; font-size: 13px;">
+            <span class="text-muted">
+                Orderan ditampilkan sesuai radius coverage anda
+            </span>
+            <button class="btn btn-link btn-sm text-primary p-0 m-0" style="font-size: 13px;"
+                onclick="showCoverageArea()"
+            >
+                <i class="bi bi-geo-alt me-1"></i> Ubah
+            </button>
             </div>
-        </div>
 
-        <div class="py-2" id="ListBid">
-            <!-- Skeleton Loading -->
-            <div id="ListBid">
-            <!-- Item Skeleton -->
-            <div class="p-3 mb-2 border rounded shadow-sm">
-                <div class="d-flex align-items-center mb-2">
-                <div class="skeleton-icon me-2"></div>
-                <div class="skeleton-text w-50"></div>
+            <!-- Filter Multi Select -->
+            <div class="d-flex align-items-center justify-content-between px-1 py-2 bg-light">
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary btn-sm rounded-pill dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    🔍 Filter Layanan
+                    </button>
+                    <ul class="dropdown-menu p-2" id="filterLayananMenu" style="min-width: 200px;">
+                    <li>
+                        <div class="form-check">
+                        <input class="form-check-input" type="checkbox" value="all" id="filterAll" onchange="toggleAllFilters(this)">
+                        <label class="form-check-label fw-semibold" for="filterAll">Pilih Semua</label>
+                        </div>
+                    </li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li>
+                        <div class="form-check">
+                        <input class="form-check-input filter-item" type="checkbox" value="cuci" id="filterCuci" onchange="filterOrders()">
+                        <label class="form-check-label" for="filterCuci">Cuci AC</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                        <input class="form-check-input filter-item" type="checkbox" value="perbaikan" id="filterPerbaikan" onchange="filterOrders()">
+                        <label class="form-check-label" for="filterPerbaikan">Perbaikan</label>
+                        </div>
+                    </li>
+                    <li>
+                        <div class="form-check">
+                        <input class="form-check-input filter-item" type="checkbox" value="instalasi" id="filterInstalasi" onchange="filterOrders()">
+                        <label class="form-check-label" for="filterInstalasi">Instalasi</label>
+                        </div>
+                    </li>
+                    </ul>
                 </div>
-                <div class="skeleton-text w-75 mb-1"></div>
-                <div class="skeleton-text w-25"></div>
             </div>
-        </div>
 
-        
+            <div class="py-2" id="ListBid">
+                <!-- Skeleton Loading -->
+                <div id="ListBid">
+                <!-- Item Skeleton -->
+                <div class="p-3 mb-2 border rounded shadow-sm">
+                    <div class="d-flex align-items-center mb-2">
+                    <div class="skeleton-icon me-2"></div>
+                    <div class="skeleton-text w-50"></div>
+                    </div>
+                    <div class="skeleton-text w-75 mb-1"></div>
+                    <div class="skeleton-text w-25"></div>
+                </div>
+            </div>
+        <div>        
     </div>
 </div>
 
@@ -131,18 +133,27 @@
         Storage.set("CurrentPage","");
         loadHeader();
         checkStatusMitra().then(result => {
+            console.log(result);
             if (result.data.status_mitra == 5) 
             {
+                $("#statusAktifasiMitra").addClass("d-none");
+                $("#PanelBidOrder").removeClass("d-none");
+                
                 LoadListBid();
                 setInterval(() => {
                     LoadListBid();
                 }, 60000);
             }
             else{
-                LoadStatusDaftar();
+                $("#PanelBidOrder").addClass("d-none");
+                LoadStatusDaftar(result.data.status_mitra);
             }
         });
     });
+
+    function showCoverageArea(){
+        $("#ModalCoverageArea").modal("show");
+    }
     
     function LoadListBid(){
         let _UserId = Storage.get('userId');
@@ -513,8 +524,106 @@
 
     }
 
-    function LoadStatusDaftar(){
+
+    // Fungsi disable modal step yang sudah selesai
+    function disableStepModal(stepId) {
+        const item = document.getElementById(stepId).closest(".step-item");
+        item.removeAttribute("data-bs-toggle");
+        item.style.cursor = "not-allowed";
+        item.style.opacity = "0.6";
+    }
+
+    // Fungsi blokir klik step di atas step aktif
+    function blockStep(stepId) {
+        const item = document.getElementById(stepId).closest(".step-item");
+        item.removeAttribute("data-bs-toggle");
+        item.style.cursor = "not-allowed";
+        item.setAttribute("onclick", "showToast('Kamu harus menyelesaikan langkah yang sedang berjalan dulu sebelum bisa lanjut 🚀');");
+    }
+    
+    function LoadStatusDaftar(status){
         $("#statusAktifasiMitra").removeClass("d-none");
+        // 0 = Biodata, 1 = Skill, 2 = Coverage, 3 = Interview, 4 = Onboarding, 5 = Selesai
+        
+        const steps = ["stepBiodata", "stepSkill", "stepCoverage", "stepInterview", "stepOnboarding"];
+        const progressLine = document.getElementById("progressLine");
+
+        // Reset step
+        steps.forEach((id, index) => {
+            const el = document.getElementById(id);
+            el.classList.remove("active", "done");
+            el.textContent = index + 1; // reset angka
+            const item = el.closest(".step-item");
+            item.setAttribute("data-bs-toggle","modal"); // reset default
+            item.removeAttribute("onclick");
+            item.style.cursor = "pointer";
+            item.style.opacity = "1";
+        });
+
+        // Atur status
+        if(status == 0){
+            document.getElementById("stepBiodata").classList.add("active");
+            progressLine.style.height = "0";
+
+            // Step lain di atas aktif → blokir
+            steps.slice(1).forEach(id => blockStep(id));
+        }
+        else if(status == 1){
+            document.getElementById("stepBiodata").classList.add("done");
+            document.getElementById("stepBiodata").innerHTML = "✓";
+            disableStepModal("stepBiodata");
+
+            document.getElementById("stepSkill").classList.add("active");
+            progressLine.style.height = "20%";
+
+            steps.slice(2).forEach(id => blockStep(id));
+        }
+        else if(status == 2){
+            ["stepBiodata","stepSkill"].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add("done");
+                el.innerHTML = "✓";
+                disableStepModal(id);
+            });
+
+            document.getElementById("stepCoverage").classList.add("active");
+            progressLine.style.height = "40%";
+
+            steps.slice(3).forEach(id => blockStep(id));
+        }
+        else if(status == 3){
+            ["stepBiodata","stepSkill","stepCoverage"].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add("done");
+                el.innerHTML = "✓";
+                disableStepModal(id);
+            });
+
+            document.getElementById("stepInterview").classList.add("active");
+            progressLine.style.height = "60%";
+
+            steps.slice(4).forEach(id => blockStep(id));
+        }
+        else if(status == 4){
+            ["stepBiodata","stepSkill","stepCoverage","stepInterview"].forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add("done");
+                el.innerHTML = "✓";
+                disableStepModal(id);
+            });
+
+            document.getElementById("stepOnboarding").classList.add("active");
+            progressLine.style.height = "80%";
+            }
+            else {
+            steps.forEach(id => {
+                const el = document.getElementById(id);
+                el.classList.add("done");
+                el.innerHTML = "✓";
+                disableStepModal(id); // semua step disable
+            });
+            progressLine.style.height = "100%";
+        }
     }
 
     function filterOrders() {
