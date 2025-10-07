@@ -126,11 +126,10 @@ document.addEventListener("DOMContentLoaded", function () {
                     
                     getRadiusExisting(_UserId)
                     .then((res)=>{
-                        if (res && res.coverage_area.radius > 0) {
+                        if (res?.coverage_area?.radius > 0) {
                             radiusKm = res.coverage_area.radius;
                             $("#radiusRange").val(radiusKm);
                             document.getElementById('radiusValue').textContent = radiusKm;
-                            
                         }
 
                         getNearby(currentLat, currentLng, radiusKm);
