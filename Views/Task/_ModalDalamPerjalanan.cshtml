@@ -86,6 +86,7 @@ function showModaFotoUnit(){
             callUpdateStatusPadaPelanggan(id_pelanggan,"teknisi telah tiba di lokasi");
             LoadListTask(hari,status);
             $("#ShowCamera").attr("data-id", IdTask_OTW); // simpan id ke attribute modal    
+            $("#ShowCamera").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ShowCamera").modal("show");
             $("#ModalDalamPerjalanan").modal("hide");
         }

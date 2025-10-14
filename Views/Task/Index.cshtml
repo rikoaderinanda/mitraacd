@@ -9,6 +9,7 @@
     // Variabel global yang dapat diakses oleh semua skrip
     const BASE_API_URL = '@baseApiUrl';
 </script>
+
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
 
 <style>
@@ -31,8 +32,7 @@
         transform: translateY(-1px);
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
-</style>
-<style>
+
     /* Animasi shimmer */
     @@keyframes skeleton-loading {
     0% {
@@ -181,11 +181,11 @@
     }
 </style>
 
-@await Html.PartialAsync("_ModalVerifikasiPekerjaan")
-@await Html.PartialAsync("_ModalPengecekanAkhir")
-@await Html.PartialAsync("_ModalPengerjaanPhoto")
-@await Html.PartialAsync("_ModalDalamPerjalanan")
-@await Html.PartialAsync("_ModalShowCamera")
+@await Html.PartialAsync(partialViewName: "_ModalVerifikasiPekerjaan")
+@await Html.PartialAsync(partialViewName: "_ModalPengecekanAkhir")
+@await Html.PartialAsync(partialViewName: "_ModalPengerjaanPhoto")
+@await Html.PartialAsync(partialViewName: "_ModalDalamPerjalanan")
+@await Html.PartialAsync(partialViewName: "_ModalShowCamera")
 
 <div class="app-body pb-30">    
     <div class="container" style="margin-top:10px;margin-bottom :10px;">
@@ -325,8 +325,8 @@
                     $('#ListTask').html(html);
                 }
                 else {
-                    
                     html = $.map(data, function (item) {
+                        console.log(item);
                         var tglKunjung = "";
                         var jamKunjung = "";
                         if(item.jenis_layanan=="REG"){
@@ -636,8 +636,8 @@
 
     }
 
-    function showProcess(id,status,id_pelanggan){
-        //console.log(id);
+    function showProcess(id,status,id_pelanggan)
+    {
         if(status == 5){
             $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
             $("#ModalDalamPerjalanan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    

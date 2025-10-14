@@ -453,63 +453,24 @@ function lanjutLayanan_QA(hasil_ukur_akhir_QA){
     
     formData_QA.append('IdTask', Id_QA);
     formData_QA.append('pengukuran_akhir', JSON.stringify(hasil_ukur_akhir_QA));
-    console.log(formData_QA);
-    callApi({
-        url: '/api/Cloudinary/PhotoPengukuran_QA',
-        method: 'POST',
-        data: formData_QA,
-        success: function (res) {
-          console.log(res);
-          if(res.success){
-              showToast("teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");
-              console.log(id_pelanggan);
-              callUpdateStatusPadaPelanggan(id_pelanggan,"teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");
-              LoadListTask(hari,status);
-              $("#ModalVerifikasiPekerjaan").attr("data-id", Id_QA);
-              $("#ModalVerifikasiPekerjaan").modal("show");
-              $('#ModalPengecekanAkhir').modal('hide');
-              
-          }
-          else
-          {
-            showToast(res.message);
-          }
-          
-        },
-        error: function (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Gagal memperbarui task: ' + err
-            });
-        },
-        onBeforeSend: function () {
-            Swal.fire({
-              title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Foto Unit</div>',
-              html: `
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                  <div class="spinner" style="margin-bottom: 15px;">
-                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3085d6;"></i>
-                  </div>
-                  <p style="font-size: 14px; color: #555;">Mohon tunggu sebentar, sistem sedang memproses foto Anda...</p>
-                </div>
-              `,
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              showConfirmButton: false,
-              background: '#fff',
-              customClass: {
-                popup: 'swal2-border-radius',
-              },
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-        },
-        onComplete: function () {
-            Swal.close();
-        }
-    });
+    uploadWithProgress(
+      "/api/Cloudinary/PhotoPengukuran_QA",
+      formData_QA,
+      (res) => {
+        // ✅ sukses
+        showToast("teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");  
+        callUpdateStatusPadaPelanggan(id_pelanggan,"teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");
+        LoadListTask(hari,status);
+        $("#ModalVerifikasiPekerjaan").attr("data-id", Id_QA);
+        $("#ModalVerifikasiPekerjaan").modal("show");
+        $('#ModalPengecekanAkhir').modal('hide');
+      },
+      (errorMsg) => {
+        // ❌ gagal
+        showToast(errorMsg);
+      },
+      { title: "Mengunggah Foto Unit" }
+    );
 }
 
 

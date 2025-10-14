@@ -700,6 +700,7 @@ function callUpdateStatusPadaPelanggan(_id_pelanggan,_Pesan){
         method: 'POST',
         data: { userId : _id_pelanggan, pesan : _Pesan },
         success: function (res) {
+            showToast('Sukses: ' + res.message);
         },
         error: function (err) {
             showToast("Gagal: " + err);
@@ -711,4 +712,85 @@ function callUpdateStatusPadaPelanggan(_id_pelanggan,_Pesan){
             
         }
     });
+}
+
+function uploadWithProgress(url, formData, onSuccess, onError, options = {}) {
+    const { title = "Mengunggah File", showEta = true } = options;
+
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", url, true);
+
+    let startTime = 0;
+
+    // Saat mulai upload
+    xhr.upload.onloadstart = () => {
+        startTime = Date.now();
+
+        Swal.fire({
+            title: `<div style="font-size: 20px; font-weight: 600;">${title}</div>`,
+            html: `
+                <div style="width:100%;text-align:center;">
+                    <div id="progress-text" style="margin-bottom:5px;font-size:14px;">0%</div>
+                    <div style="width:100%;background:#eee;border-radius:10px;height:20px;">
+                        <div id="progress-bar" style="width:0%;height:100%;background:#3085d6;border-radius:10px;transition:width 0.2s;"></div>
+                    </div>
+                    ${showEta ? `<div id="eta" style="margin-top:8px;font-size:12px;color:#666;">Estimasi: menghitung...</div>` : ""}
+                </div>
+            `,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: '#fff'
+        });
+    };
+
+    // Saat ada progress
+    xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const etaText = document.getElementById('eta');
+
+            if (progressBar && progressText) {
+                progressBar.style.width = `${percent}%`;
+                progressText.textContent = `${percent}%`;
+            }
+
+            if (showEta && etaText) {
+                const elapsed = (Date.now() - startTime) / 1000;
+                const speed = event.loaded / elapsed;
+                const remaining = event.total - event.loaded;
+                const eta = Math.ceil(remaining / speed);
+                etaText.textContent = `Estimasi selesai dalam ${eta}s`;
+            }
+        }
+    };
+
+    // Jika upload selesai
+    xhr.onload = () => {
+        Swal.close();
+        try {
+            const res = JSON.parse(xhr.responseText);
+            if (xhr.status === 200 && res.success) {
+                onSuccess?.(res);
+            } else {
+                const msg = res?.message || `Upload gagal (status: ${xhr.status})`;
+                onError?.(msg);
+                Swal.fire('Error', msg, 'error');
+            }
+        } catch (e) {
+            onError?.('Response tidak valid dari server.');
+            Swal.fire('Error', 'Response tidak valid dari server.', 'error');
+        }
+    };
+
+    // Jika error jaringan
+    xhr.onerror = () => {
+        Swal.close();
+        const msg = 'Terjadi kesalahan jaringan saat upload.';
+        onError?.(msg);
+        Swal.fire('Error', msg, 'error');
+    };
+
+    xhr.send(formData);
 }

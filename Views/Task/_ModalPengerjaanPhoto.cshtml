@@ -122,7 +122,6 @@
 
 <script>
 let Id_PFT;
-
 let currentFacingMode_PFT = 'environment';
 let cameraStream_PFT = null;
 let video_PFT = document.getElementById('videoPreview_PFT');
@@ -130,7 +129,6 @@ let canvas_PFT = document.getElementById('canvasPhoto_PFT');
 let currentPhotoIndex_PFT = 1;
 const maxPhotos_PFT = 3;
 let photoTaken_PFT = [false, false, false];
-
 
 $('#ModalPengerjaanPhoto').on('hidden.bs.modal', function () {
     $("#panelCamera_PFT").removeClass("d-none");
@@ -295,61 +293,24 @@ function lanjutPengerjaan(){
     }
     
     formData.append('IdTask', Id_PFT);
-
-    callApi({
-        url: '/api/Cloudinary/PhotoPekerjaanUpload',
-        method: 'POST',
-        data: formData,
-        success: function (res) {
-          //console.log(res);
-          if(res.success){
-              LoadListTask(hari,status);
-              $("#ModalPengecekanAkhir").attr("data-id", Id_PFT);
-              $("#ModalPengecekanAkhir").attr("data-id_pelanggan", id_pelanggan);
-              $("#ModalPengecekanAkhir").modal("show");
-              $('#ModalPengerjaanPhoto').modal('hide');
-              
-          }
-          else
-          {
-            showToast(res.message);
-          }
-          
-        },
-        error: function (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Gagal memperbarui task: ' + err
-            });
-        },
-        onBeforeSend: function () {
-            Swal.fire({
-              title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Dokumentasi Pekerjaan</div>',
-              html: `
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                  <div class="spinner" style="margin-bottom: 15px;">
-                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3085d6;"></i>
-                  </div>
-                  <p style="font-size: 14px; color: #555;">Mohon tunggu sebentar, sistem sedang memproses foto Anda...</p>
-                </div>
-              `,
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              showConfirmButton: false,
-              background: '#fff',
-              customClass: {
-                popup: 'swal2-border-radius',
-              },
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-        },
-        onComplete: function () {
-            Swal.close();
-        }
-    });
+    uploadWithProgress(
+      "/api/Cloudinary/PhotoPekerjaanUpload",
+      formData,
+      (res) => {
+        // ✅ sukses
+          LoadListTask(hari,status);
+          callUpdateStatusPadaPelanggan(id_pelanggan, "teknisi sedang bekerja");
+          $("#ModalPengecekanAkhir").attr("data-id", Id_PFT);
+          $("#ModalPengecekanAkhir").attr("data-id_pelanggan", id_pelanggan);
+          $("#ModalPengecekanAkhir").modal("show");
+          $('#ModalPengerjaanPhoto').modal('hide');
+      },
+      (errorMsg) => {
+        // ❌ gagal
+        showToast(errorMsg);
+      },
+      { title: "Mengunggah Foto Unit" }
+    );
 }
 
 

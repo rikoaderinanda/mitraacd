@@ -276,7 +276,8 @@ namespace mitraacd.Services
 
             var param = new { Id = id };
             var result = await _db.QueryFirstOrDefaultAsync<dynamic>(sql, param);
-
+            if (result == null)
+                return null;
             return JsonColumnParser.ParseJsonColumns(new[] { result }).FirstOrDefault();
         }
 

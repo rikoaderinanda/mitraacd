@@ -142,7 +142,7 @@
         loadHeader();
         checkStatusMitra().then(result => {
             console.log(result);
-            if (result.data.status_mitra == 5) 
+            if (result?.data?.status_mitra == 5) 
             {
                 $("#statusAktifasiMitra").addClass("d-none");
                 $("#PanelBidOrder").removeClass("d-none");
@@ -154,7 +154,7 @@
             }
             else{
                 $("#PanelBidOrder").addClass("d-none");
-                LoadStatusDaftar(result.data.status_mitra);
+                LoadStatusDaftar(result?.data?.status_mitra??0);
             }
         });
     });
