@@ -122,9 +122,7 @@ namespace mitraacd.Services
             }
             catch (Exception ex)
             {
-                // Log exception jika kamu pakai logger
-                // _logger.LogError(ex, "Error updating invoice status for ID: {Id}", id);
-                return false; // bisa juga throw lagi kalau ingin controller yang menangani
+                return false;
             }
         }
 

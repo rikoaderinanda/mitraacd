@@ -1,7 +1,16 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
 @{
     ViewData["Title"] = "Home Page";
+    var baseApiUrl = Configuration["AppConfig:BaseApiUrl"];
 }
+<script>
+    // Variabel global yang dapat diakses oleh semua skrip
+    const BASE_API_URL = '@baseApiUrl';
+</script>
 <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+
 <style>
     .hover-shadow:hover {
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
@@ -309,7 +318,7 @@
             success: function (data) {
                 hari = _hari;
                 status = _status;
-                console.log(data);
+                //console.log(data);
                 var html = "";
                 if (!data || data.length === 0) {
                     html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
@@ -350,7 +359,7 @@
 
                         if(item.status == 4 && hari == 0){
                             btnAction = btnAction + `
-                                <button onclick="TaskStart(${item.id});" id="btnStart${item.id}"
+                                <button onclick="TaskStart(${item.id},${item.id_pelanggan});" id="btnStart${item.id}"
                                         class="btn btn-sm btn-success rounded-pill px-3">
                                         Mulai <i class="bi bi-arrow-right-short"></i>
                                 </button>
@@ -360,7 +369,7 @@
 
                         if(item.status > 4 && item.status < 9 && hari == 0){
                             btnAction = btnAction + `
-                                <button onclick="showProcess(${item.id},${item.status});" id="btnProses${item.id}"
+                                <button onclick="showProcess(${item.id},${item.status},${item.id_pelanggan});" id="btnProses${item.id}"
                                         class="btn btn-sm btn-success rounded-pill px-3">
                                         On Progres<i class="bi bi-arrow-right-short"></i>
                                 </button>
@@ -369,7 +378,7 @@
 
                         if(item.status == 9){
                             btnAction = btnAction + `
-                                <button onclick="showProcess(${item.id},${item.status});" id="btnProses${item.id}"
+                                <button onclick="showProcess(${item.id},${item.status},${item.id_pelanggan});" id="btnProses${item.id}"
                                         class="btn btn-sm btn-success rounded-pill px-3">
                                         Konfirmasi<i class="bi bi-arrow-right-short"></i>
                                 </button>
@@ -500,77 +509,6 @@
         });
     }
 
-    function BerangkatKeLokasi(id) {
-        Swal.fire({
-            title: '🎯 Yakin ingin berangkat sekarang?',
-            text: "Tindakan ini tidak bisa dibatalkan.",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: '🚗 Ya, berangkat!',
-            cancelButtonText: 'Batal',
-            customClass: {
-                popup: 'rounded-4 shadow-lg',
-                title: 'fw-bold text-warning',
-                confirmButton: 'btn btn-success rounded-pill px-4 py-2',
-                cancelButton: 'btn btn-secondary rounded-pill px-4 py-2 ms-2'
-            },
-            buttonsStyling: false,
-            showClass: {
-                popup: 'animate__animated animate__fadeInDown'
-            },
-            hideClass: {
-                popup: 'animate__animated animate__fadeOutUp'
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
-                var user = getUserInfo();
-                var Data = {
-                    Id: id,
-                    MitraId: user.id
-                };
-
-                callApi({
-                    url: '/api/Task/BerangkatKeLokasi',
-                    method: 'POST',
-                    data: Data,
-                    success: function (res) {
-                        Swal.fire({
-                            title: '✅ Task diperbarui!',
-                            text: 'Kamu berhasil berangkat ke lokasi.',
-                            icon: 'success',
-                            confirmButtonText: 'Oke, lanjutkan',
-                            customClass: {
-                                popup: 'rounded-4 shadow-lg',
-                                title: 'fw-bold text-success',
-                                confirmButton: 'btn btn-primary px-4 py-2 rounded-pill'
-                            },
-                            showClass: {
-                                popup: 'animate__animated animate__fadeInDown'
-                            },
-                            hideClass: {
-                                popup: 'animate__animated animate__fadeOutUp'
-                            }
-                        }).then(() => {
-                            LoadListTask(hari,status);
-                        });
-                    },
-                    error: function (err) {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Oops...',
-                            text: 'Gagal memperbarui task: ' + err
-                        });
-                    },
-                    onBeforeSend: function () {
-                        $("#btnBerangkat" + id).prop("disabled", true).html('<i class="bi bi-hourglass-split me-1"></i>Memproses...');
-                    },
-                    onComplete: function () {
-                        $("#btnBerangkat" + id).prop("disabled", false).html('Berangkat');
-                    }
-                });
-            }
-        });
-    }
 
     function SampaiDiLokasi(id) {
         Swal.fire({
@@ -657,7 +595,7 @@
         $("#ShowBarcodeUnitBaru").modal("show");
     }
 
-    function TaskStart(id){
+    function TaskStart(id,id_pelanggan){
         let _UserId = Storage.get('userId');
         
         var Data = {
@@ -671,9 +609,11 @@
             method: 'POST',
             data: Data,
             success: function (res) {
-                console.log(res);
+                //console.log(res);
                 if(res){
+                    callUpdateStatusPadaPelanggan(id_pelanggan,"teknisi sedang dalam perjalanan");
                     $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
+                    $("#ModalDalamPerjalanan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
                     $("#ModalDalamPerjalanan").modal("show");
                     LoadListTask(hari,status);
                 }
@@ -696,26 +636,31 @@
 
     }
 
-    function showProcess(id,status){
-        console.log(id);
+    function showProcess(id,status,id_pelanggan){
+        //console.log(id);
         if(status == 5){
             $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
+            $("#ModalDalamPerjalanan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ModalDalamPerjalanan").modal("show");
         }
         else if(status == 6){
             $("#ShowCamera").attr("data-id", id); // simpan id ke attribute modal    
+            $("#ShowCamera").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ShowCamera").modal("show");
         }
         else if(status == 7){
             $("#ModalPengerjaanPhoto").attr("data-id", id);
+            $("#ModalPengerjaanPhoto").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ModalPengerjaanPhoto").modal("show");
         }
         else if(status == 8){
             $("#ModalPengecekanAkhir").attr("data-id", id);
+            $("#ModalPengecekanAkhir").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ModalPengecekanAkhir").modal("show");   
         }
         else if(status == 9){
             $("#ModalVerifikasiPekerjaan").attr("data-id", id);
+            $("#ModalVerifikasiPekerjaan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
             $("#ModalVerifikasiPekerjaan").modal("show");   
         }
     }

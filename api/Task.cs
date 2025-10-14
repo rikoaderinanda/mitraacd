@@ -79,13 +79,6 @@ namespace mitraacd.api
             });
         }
 
-        [HttpGet("CheckPhotoSebelumTask")]
-        public async Task<ActionResult<IEnumerable<dynamic>>> CheckPhotoSebelumTask(string Id)
-        {
-            var res = await _taskRepository.CheckPhotoSebelumTask(Id);
-            return Ok(res);
-        }
-
         [HttpGet("CheckQrCodeUnit")]
         public async Task<ActionResult<IEnumerable<dynamic>>> CheckQrCodeUnit(string decodedText)
         {
@@ -100,6 +93,11 @@ namespace mitraacd.api
             return Ok(res);
         }
 
-
+        [HttpGet("CheckPhotoSebelumTask")]
+        public async Task<ActionResult<IEnumerable<dynamic>>> CheckPhotoSebelumTask(string Id)
+        {
+            var res = await _taskRepository.CheckPhotoSebelumTask(Id);
+            return Ok(res);
+        }
     }
 }

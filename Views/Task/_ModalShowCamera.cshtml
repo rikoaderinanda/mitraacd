@@ -70,11 +70,11 @@
                         <div class="p-2">
                             <input 
                             type="number" step="0.1" required
-                            min="15" max="30"
+                            @* min="15" max="30" *@
                             class="form-control form-control-sm" 
                             id="inputSuhu" placeholder="(°C)"
                             >
-                            <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div>
+                            @* <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div> *@
                         </div>
                     </div>
                 </div>
@@ -89,9 +89,11 @@
                         </button>
                         <!-- Input hasil pengukuran tekanan freon -->
                         <div class="p-2">
-                            <input type="number" step="0.1" min="60" max="120" required
+                            <input type="number" step="0.1" 
+                            @* min="60" max="120"  *@
+                            required
                             class="form-control form-control-sm" id="inputTekanan" placeholder="(PSI)">
-                            <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div>
+                            @* <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div> *@
                         </div>
                     </div>
                 </div>
@@ -107,9 +109,10 @@
                         <!-- Input hasil pengukuran ampere -->
                         <div class="p-2">
                             <input type="number" step="0.1" 
-                            min="1" max="10" required 
+                            @* min="1" max="10"  *@
+                            required 
                             class="form-control form-control-sm" id="inputAmpere" placeholder="(Amp)">
-                            <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div>
+                            @* <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div> *@
                         </div>
                     </div>
                 </div>
@@ -182,6 +185,7 @@
 
 <script>
 let Id_SC;
+
 let currentFacingMode = 'environment';
 let cameraStream = null;
 let video = document.getElementById('videoPreview');
@@ -190,10 +194,17 @@ let currentPhotoIndex = 1;
 const maxPhotos = 3;
 let photoTaken = [false, false, false];
 
+
+
+
 // Indoor
 const indoorNormal = document.getElementById("indoorNormal");
 const indoorAbnormal = document.getElementById("indoorAbnormal");
 const indoorAbnormalForm = document.getElementById("indoorAbnormalForm");
+// Outdoor
+const outdoorNormal = document.getElementById("outdoorNormal");
+const outdoorAbnormal = document.getElementById("outdoorAbnormal");
+const outdoorAbnormalForm = document.getElementById("outdoorAbnormalForm");
 
 indoorNormal.addEventListener("change", () => {
   indoorAbnormalForm.style.display = "none";
@@ -201,11 +212,6 @@ indoorNormal.addEventListener("change", () => {
 indoorAbnormal.addEventListener("change", () => {
   indoorAbnormalForm.style.display = "block";
 });
-
-// Outdoor
-const outdoorNormal = document.getElementById("outdoorNormal");
-const outdoorAbnormal = document.getElementById("outdoorAbnormal");
-const outdoorAbnormalForm = document.getElementById("outdoorAbnormalForm");
 
 outdoorNormal.addEventListener("change", () => {
   outdoorAbnormalForm.style.display = "none";
@@ -220,9 +226,10 @@ $('#ShowCamera').on('hidden.bs.modal', function () {
 });
 
 $('#ShowCamera').on('show.bs.modal', function () {
-    
-
+    clearAllInputs();
+    // Id_SC ambil dari atribut data di elemen modal
     Id_SC = $(this).data("id");
+    id_pelanggan = $(this).data("id_pelanggan");
     // Kalau mau ambil dari tombol pemicu modal:
     if (e.relatedTarget) {
         Id_SC = $(e.relatedTarget).data("id");
@@ -248,20 +255,6 @@ $('#ShowCamera').on('show.bs.modal', function () {
     });
 });
 
-const formInputs = document.querySelectorAll("#previewContainer input");
-
-formInputs.forEach(input => {
-    input.addEventListener("input", () => {
-        if (input.checkValidity()) {
-            input.classList.remove("is-invalid");
-            input.classList.add("is-valid");
-        } else {
-            input.classList.remove("is-valid");
-            input.classList.add("is-invalid");
-        }
-    });
-});
-
 $('.preview-photo').on('click', function () {
     var index = $(this).data('index');
     // Sembunyikan semua tombol dulu
@@ -280,6 +273,45 @@ $('[id^=can]').on('click', function (e) {
     e.stopPropagation();
 });
 
+const formInputs = document.querySelectorAll("#previewContainer input");
+
+formInputs.forEach(input => {
+    input.addEventListener("input", () => {
+        if (input.checkValidity()) {
+            input.classList.remove("is-invalid");
+            input.classList.add("is-valid");
+        } else {
+            input.classList.remove("is-valid");
+            input.classList.add("is-invalid");
+        }
+    });
+});
+
+function clearAllInputs() {
+  // Reset semua input angka (suhu, tekanan, ampere)
+  $('#inputSuhu').val('').removeClass('is-valid is-invalid');
+  $('#inputTekanan').val('').removeClass('is-valid is-invalid');
+  $('#inputAmpere').val('').removeClass('is-valid is-invalid');
+
+  // Reset radio kondisi indoor & outdoor
+  $('#indoorNormal').prop('checked', true);
+  $('#outdoorNormal').prop('checked', true);
+
+  // Sembunyikan form abnormal
+  $('#indoorAbnormalForm').hide();
+  $('#outdoorAbnormalForm').hide();
+
+  // Hapus isi textarea catatan
+  $('#catatanIndoor').val('');
+  $('#catatanOutdoor').val('');
+
+  // Reset foto dan urutan pengambilan
+  resetPhotos();
+
+  // Kembalikan tampilan ke panel kamera (bukan input pengukuran)
+  $("#panelCamera").removeClass("d-none");
+  $("#panelInputHasilPengukuran").addClass("d-none");
+}
 
 function switchCamera() {
   stopCamera(); // Hentikan kamera aktif
@@ -337,6 +369,7 @@ function capturePhoto() {
     InputHasilPengukuran();
   }
 }
+
 function InputHasilPengukuran(){
     $("#panelCamera").addClass("d-none");
     $("#panelInputHasilPengukuran").removeClass("d-none");
@@ -359,10 +392,10 @@ function ProsesLanjutan(){
   });
   console.log(idxEmpety);
 
-  
   const Suhu = document.getElementById('inputSuhu').value.trim();
   const Tekanan = document.getElementById('inputTekanan').value.trim();
   const Ampere = document.getElementById('inputAmpere').value.trim();
+  
 
   const kondisiIndoor = document.querySelector('input[name="kondisiIndoor"]:checked').value;
   const catatanIndoor = document.getElementById('catatanIndoor').value.trim();
@@ -429,9 +462,10 @@ function ProsesLanjutan(){
   }
 }
 
-function lanjutLayanan(hasil_ukur_awal){
+function lanjutLayanan(hasil_ukur_awal) {
     console.log(Id_SC);
     console.log(hasil_ukur_awal);
+
     const formData = new FormData();
     for (let i = 1; i <= 3; i++) {
         const img = document.getElementById(`photo${i}`);
@@ -445,65 +479,92 @@ function lanjutLayanan(hasil_ukur_awal){
         Swal.fire('Gagal', 'Tidak ada gambar yang dipilih.', 'warning');
         return;
     }
-    
+
     formData.append('IdTask', Id_SC);
-    //formData.append('Pengukuran_awal',hasil_ukur_awal);
     formData.append('pengukuran_awal', JSON.stringify(hasil_ukur_awal));
-    console.log(formData);
-    callApi({
-        url: '/api/Cloudinary/PhotoBeforeUpload',
-        method: 'POST',
-        data: formData,
-        success: function (res) {
-          console.log(res);
-          if(res.success){
-              LoadListTask(hari,status);
-              $("#ModalPengerjaanPhoto").attr("data-id", Id_SC);
-              $("#ModalPengerjaanPhoto").modal("show");
-              $('#ShowCamera').modal('hide');
-              
-          }
-          else
-          {
-            showToast(res.message);
-          }
-          
-        },
-        error: function (err) {
-            Swal.fire({
-                icon: 'error',
-                title: 'Oops...',
-                text: 'Gagal memperbarui task: ' + err
-            });
-        },
-        onBeforeSend: function () {
-            Swal.fire({
-              title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Foto Unit</div>',
-              html: `
-                <div style="display: flex; flex-direction: column; align-items: center;">
-                  <div class="spinner" style="margin-bottom: 15px;">
-                    <i class="fas fa-spinner fa-spin fa-3x" style="color: #3085d6;"></i>
-                  </div>
-                  <p style="font-size: 14px; color: #555;">Mohon tunggu sebentar, sistem sedang memproses foto Anda...</p>
+
+    // 🟦 Buat instance XMLHttpRequest manual agar bisa monitor progress
+    const xhr = new XMLHttpRequest();
+    xhr.open("POST", "/api/Cloudinary/PhotoBeforeUpload", true);
+
+    // 🧠 Hitung progress upload
+    let startTime = 0;
+    xhr.upload.onloadstart = () => {
+        startTime = Date.now();
+
+        Swal.fire({
+            title: '<div style="font-size: 20px; font-weight: 600;">Mengunggah Foto Unit</div>',
+            html: `
+                <div style="width:100%;text-align:center;">
+                    <div id="progress-text" style="margin-bottom:5px;font-size:14px;">0%</div>
+                    <div style="width:100%;background:#eee;border-radius:10px;height:20px;">
+                        <div id="progress-bar" style="width:0%;height:100%;background:#3085d6;border-radius:10px;transition:width 0.2s;"></div>
+                    </div>
+                    <div id="eta" style="margin-top:8px;font-size:12px;color:#666;">Estimasi: menghitung...</div>
                 </div>
-              `,
-              allowOutsideClick: false,
-              allowEscapeKey: false,
-              showConfirmButton: false,
-              background: '#fff',
-              customClass: {
-                popup: 'swal2-border-radius',
-              },
-              didOpen: () => {
-                Swal.showLoading();
-              }
-            });
-        },
-        onComplete: function () {
-            Swal.close();
+            `,
+            allowOutsideClick: false,
+            showConfirmButton: false,
+            background: '#fff'
+        });
+    };
+
+    xhr.upload.onprogress = (event) => {
+        if (event.lengthComputable) {
+            const percent = Math.round((event.loaded / event.total) * 100);
+            const progressBar = document.getElementById('progress-bar');
+            const progressText = document.getElementById('progress-text');
+            const etaText = document.getElementById('eta');
+
+            if (progressBar && progressText) {
+                progressBar.style.width = `${percent}%`;
+                progressText.textContent = `${percent}%`;
+            }
+
+            // Hitung estimasi waktu
+            const elapsed = (Date.now() - startTime) / 1000; // detik
+            const speed = event.loaded / elapsed; // byte per detik
+            const remainingBytes = event.total - event.loaded;
+            const remainingTime = remainingBytes / speed;
+            const eta = Math.ceil(remainingTime);
+
+            if (etaText) {
+                etaText.textContent = `Estimasi selesai dalam ${eta}s`;
+            }
         }
-    });
+    };
+
+    xhr.onload = () => {
+        Swal.close();
+
+        if (xhr.status === 200) {
+            const res = JSON.parse(xhr.responseText);
+            console.log(res);
+            if (res.success) {
+                LoadListTask(hari, status);
+                callUpdateStatusPadaPelanggan(id_pelanggan, "teknisi mulai bekerja");
+                $("#ModalPengerjaanPhoto").attr("data-id", Id_SC);
+                $("#ModalPengerjaanPhoto").attr("data-id_pelanggan", id_pelanggan);
+                $("#ModalPengerjaanPhoto").modal("show");
+                $('#ShowCamera').modal('hide');
+            } else {
+                showToast(res.message);
+            }
+        } else {
+            Swal.fire('Error', 'Gagal upload foto (status: ' + xhr.status + ')', 'error');
+        }
+    };
+
+    
+    xhr.onerror = () => {
+        Swal.close();
+        Swal.fire('Error', 'Terjadi kesalahan jaringan saat upload.', 'error');
+    };
+
+    // Kirim form
+    xhr.send(formData);
 }
+
 
 
 function redoPhoto(index) {

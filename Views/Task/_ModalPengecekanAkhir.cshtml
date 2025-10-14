@@ -70,11 +70,11 @@
                         <div class="p-2">
                             <input 
                             type="number" step="0.1" required
-                            min="15" max="30"
+                            @* min="15" max="30" *@
                             class="form-control form-control-sm" 
                             id="inputSuhu_QA" placeholder="(°C)"
                             >
-                            <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div>
+                            @* <div class="invalid-feedback small">Suhu harus antara 15–30 °C.</div> *@
                         </div>
                     </div>
                 </div>
@@ -89,9 +89,11 @@
                         </button>
                         <!-- Input hasil pengukuran tekanan freon -->
                         <div class="p-2">
-                            <input type="number" step="0.1" min="60" max="120" required
+                            <input type="number" step="0.1" 
+                            @* min="60" max="120"  *@
+                            required
                             class="form-control form-control-sm" id="inputTekanan_QA" placeholder="(PSI)">
-                            <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div>
+                            @* <div class="invalid-feedback small">Tekanan harus antara 60–120 PSI.</div> *@
                         </div>
                     </div>
                 </div>
@@ -107,9 +109,10 @@
                         <!-- Input hasil pengukuran ampere -->
                         <div class="p-2">
                             <input type="number" step="0.1" 
-                            min="1" max="10" required 
+                            @* min="1" max="10"  *@
+                            required 
                             class="form-control form-control-sm" id="inputAmpere_QA" placeholder="(Amp)">
-                            <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div>
+                            @* <div class="invalid-feedback small">Tekanan harus antara 1-10 Ampere.</div> *@
                         </div>
                     </div>
                 </div>
@@ -182,6 +185,7 @@
 
 <script>
 let Id_QA;
+
 let currentFacingMode_QA = 'environment';
 let cameraStream_QA = null;
 let video_QA = document.getElementById('videoPreview_QA');
@@ -221,6 +225,7 @@ $('#ModalPengecekanAkhir').on('hidden.bs.modal', function () {
 
 $('#ModalPengecekanAkhir').on('show.bs.modal', function () {
     Id_QA = $(this).data("id");
+    id_pelanggan = $(this).data("id_pelanggan");
     // Kalau mau ambil dari tombol pemicu modal:
     if (e.relatedTarget) {
         Id_QA = $(e.relatedTarget).data("id");
@@ -238,6 +243,7 @@ $('#ModalPengecekanAkhir').on('show.bs.modal', function () {
 
     stopCamera_QA(); // Hentikan kamera aktif
     currentFacingMode_QA = currentFacingMode_QA === 'user' ? 'environment' : 'user'; // toggle
+    resetPhotos_QA();
     startCamera_QA(Id_QA);
 
     startCamera_QA(Id_QA)
@@ -429,8 +435,8 @@ function ProsesLanjutan_QA(){
 }
 
 function lanjutLayanan_QA(hasil_ukur_akhir_QA){
-    console.log(Id_QA);
-    console.log(hasil_ukur_akhir_QA);
+    //console.log(Id_QA);
+    //console.log(hasil_ukur_akhir_QA);
     const formData_QA = new FormData();
     for (let i = 1; i <= 3; i++) {
         const img_QA = document.getElementById(`photo_QA${i}`);
@@ -455,6 +461,9 @@ function lanjutLayanan_QA(hasil_ukur_akhir_QA){
         success: function (res) {
           console.log(res);
           if(res.success){
+              showToast("teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");
+              console.log(id_pelanggan);
+              callUpdateStatusPadaPelanggan(id_pelanggan,"teknisi telah selesai mengerjakan, menunggu konfirmasi pelanggan");
               LoadListTask(hari,status);
               $("#ModalVerifikasiPekerjaan").attr("data-id", Id_QA);
               $("#ModalVerifikasiPekerjaan").modal("show");

@@ -85,6 +85,7 @@ builder.Services.AddScoped<IPerangkatPelangganRepository, PerangkatPelangganRepo
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IWhatsappRepo, WhatsappRepo>();
 builder.Services.AddScoped<ILocationRepo, LocationRepo>();
+builder.Services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
 
 
 builder.Services.AddHttpClient();

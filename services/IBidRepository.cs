@@ -30,6 +30,7 @@ namespace mitraacd.Services
                 (
                     select
                         id,
+                        create_by_id_user as id_pelanggan,
                         kategori_layanan ,jenis_layanan , 
                         (total_transaksi*70/100) fee_teknisi,
                         kunjungan,kontak_pelanggan,alamat_pelanggan,

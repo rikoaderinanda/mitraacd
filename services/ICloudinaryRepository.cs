@@ -44,7 +44,8 @@ namespace mitraacd.Services
             var uploadParams = new ImageUploadParams
             {
                 File = new FileDescription(file.FileName, stream),
-                Folder = folder// optional: folder di cloudinary
+                Folder = folder,// optional: folder di cloudinary
+                Transformation = new Transformation().Width(1280).Height(720).Quality(50).Crop("limit")
             };
 
             var result = await _cloudinary.UploadAsync(uploadParams);

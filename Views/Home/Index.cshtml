@@ -1,7 +1,15 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
 
+@{
+    
+    ViewData["Title"] = "Home Page";
+    var baseApiUrl = Configuration["AppConfig:BaseApiUrl"];
+}
+<script>
+    // Variabel global yang dapat diakses oleh semua skrip
+    const BASE_API_URL = '@baseApiUrl';
+</script>
 <style>
     body {
         background-color: #f9fafb;
@@ -283,7 +291,7 @@
                                             Detail <i class="bi bi-arrow-right-short"></i>
                                     </button>
 
-                                    <button onclick="BidOrder(${item.id});" id="btnBid${item.id}"
+                                    <button onclick="BidOrder(${item.id},${item.id_pelanggan});" id="btnBid${item.id}"
                                             class="btn btn-sm btn-success rounded-pill px-3">
                                             Ambil <i class="bi bi-arrow-right-short"></i>
                                     </button>
@@ -456,7 +464,7 @@
                                 <!-- Tombol Detail (pojok kanan bawah) -->
                                 <button onclick="DetailPesanan(${item.id},'btnDetail${item.id}');" 
                                     class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2"
-                                    id="BidOrder${item.id}"
+                                    id="BidOrder${item.id},${item.id_pelanggan}"
                                     style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
                                     <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
                                 </button>
@@ -480,27 +488,29 @@
         });
     }
 
-    function BidOrder(id){
+    function BidOrder(id,id_pelanggan){
         let _UserId = Storage.get('userId');
         if (refreshTimer) {
             clearInterval(refreshTimer);
             refreshTimer = null;
-            console.log("Auto-refresh dihentikan.");
+            //console.log("Auto-refresh dihentikan.");
         }
 
         var Data = {
             Id : id,
             MitraId : _UserId
         }
-        console.log(Data);
+        //console.log(Data);
 
         callApi({
             url: '/api/Biding/Takeit',
             method: 'POST',
             data: Data,
             success: function (res) {
-                console.log(res);
+                //console.log(res);
                 if(res){
+                    showToast("Berhasil mengambil orderan, silakan cek di menu 'Task' untuk melihat detailnya.");
+                    callUpdateStatusPadaPelanggan(id_pelanggan,"Mitra telah mengambil orderan Anda. Mitra akan segera menghubungi Anda via WhatsApp untuk konfirmasi lebih lanjut.");
                     LoadListBid();
                     setInterval(() => {
                         LoadListBid();

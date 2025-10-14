@@ -30,10 +30,11 @@ namespace mitraacd.Models
 
     public class ImageUploadResultDto
     {
-        public string IdTask {get;set;}
+        public string IdTask { get; set; }
         public string Url { get; set; }
         public string PublicId { get; set; }
         public string Name { get; set; }
+        public int idx { get; set; }
     }
 
     public class PhotoBeforeUploadDto

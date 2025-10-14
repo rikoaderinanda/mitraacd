@@ -42,10 +42,12 @@ namespace mitraacd.Services
     {
         private readonly IDbConnection _db;
         private readonly ICloudinaryRepository _cloudinaryService;
+        private readonly IDbConnectionFactory _connectionFactory;
 
-        public TaskRepository(IDbConnection db, ICloudinaryRepository cloudinaryService)
+        public TaskRepository(IDbConnection db, ICloudinaryRepository cloudinaryService, IDbConnectionFactory connectionFactory)
         {
             _db = db;
+            _connectionFactory = connectionFactory;
             _cloudinaryService = cloudinaryService;
         }
 
@@ -55,7 +57,7 @@ namespace mitraacd.Services
                 update log_transaction 
                 set 
                     status = 7,
-                    status_deskripsi=(select distinct title_sudah from list_status_order where id = 6),
+                    status_deskripsi='Pengukuran Awal',
                     pengukuran_awal = @Pengukuran_awal::jsonb,
                     pengukuran_awal_datetime = now(),
                     img_pengukuran_awal = @Img_pengukuran_awal::jsonb
@@ -156,6 +158,7 @@ namespace mitraacd.Services
                 (
                     select
                         id,
+                        create_by_id_user as id_pelanggan,    
                         kategori_layanan ,jenis_layanan , 
                         (total_transaksi*70/100) fee_teknisi,
                         kunjungan,kontak_pelanggan,alamat_pelanggan,
@@ -276,6 +279,7 @@ namespace mitraacd.Services
 
         public async Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto)
         {
+            using var conn = _connectionFactory.CreateConnection();
             var query = @"
                 insert into photo_before_task
                 (id_task,public_id,url_secret)
@@ -291,7 +295,7 @@ namespace mitraacd.Services
                 p_url = dto.Url,
             };
 
-            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+            var result = await conn.ExecuteScalarAsync<int?>(query, param);
             return result.HasValue && result.Value > 0;
         }
 
@@ -350,9 +354,9 @@ namespace mitraacd.Services
         {
             var query = @"
                 insert into photo_pengerjaan
-                (id_task,public_id,url_secret)
+                (id_task,public_id,url_secret,idx)
                 values
-                (@p_id,@p_public_id,@p_url)
+                (@p_id,@p_public_id,@p_url,@p_idx)
                 RETURNING id_task;
             ";
 
@@ -361,6 +365,7 @@ namespace mitraacd.Services
                 p_id = long.Parse(dto.IdTask),
                 p_public_id = dto.PublicId,
                 p_url = dto.Url,
+                p_idx = dto.idx
             };
 
             var result = await _db.ExecuteScalarAsync<int?>(query, param);
@@ -444,6 +449,7 @@ namespace mitraacd.Services
                 update log_transaction 
                 set 
                     status = 9,
+                    status_deskripsi=(select distinct deskripsi from public.list_status_order where id = 9),
                     pengukuran_akhir = @Pengukuran_akhir::jsonb,
                     pengukuran_akhir_datetime = now(),
                     img_pengukuran_akhir = @img_pengukuran_akhir::jsonb

@@ -128,6 +128,13 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
             return scr;
         }).join('');
 
+        var analisis_awal = "";
+        if (res?.pengukuran_awal?.indoor?.kondisi =="Normal" && res?.pengukuran_awal?.outdoor?.kondisi =="Normal")  
+        {
+            analisis_awal = "Normal";
+        }
+        
+
         $("#SebelumServices").html(
             `    
                 <div style="
@@ -167,7 +174,7 @@ $('#ModalVerifikasiPekerjaan').on('show.bs.modal', function () {
                         font-size:12px; 
                         font-weight:600;
                     ">
-                        Hasil Pengecekan : Normal
+                        Hasil Pengecekan : ${analisis_awal}
                     </div>
                 </div>
             `

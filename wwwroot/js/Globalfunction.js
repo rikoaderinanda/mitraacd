@@ -693,3 +693,22 @@ function handleCredentialResponse(response) {
     console.log('ID Token:', response.credential);
     // kirim token ke server untuk verifikasi
 }
+
+function callUpdateStatusPadaPelanggan(_id_pelanggan,_Pesan){
+    callApi({
+        url: BASE_API_URL+'/api/Notifikasi/StatusTrackingOrder',
+        method: 'POST',
+        data: { userId : _id_pelanggan, pesan : _Pesan },
+        success: function (res) {
+        },
+        error: function (err) {
+            showToast("Gagal: " + err);
+        },
+        onBeforeSend: function () {
+            
+        },
+        onComplete: function () {
+            
+        }
+    });
+}
