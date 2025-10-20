@@ -12,7 +12,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Microsoft.AspNetCore.SignalR;
 using System.Text;
 using Swashbuckle.AspNetCore.Annotations;
-
+using Westwind.AspNetCore.LiveReload;
 
 var builder = WebApplication.CreateBuilder(args);
 var env = builder.Environment;
@@ -26,7 +26,12 @@ builder.Services
         options.SerializerSettings.Formatting = Newtonsoft.Json.Formatting.Indented;
         options.SerializerSettings.ContractResolver = new Newtonsoft.Json.Serialization.CamelCasePropertyNamesContractResolver();
     });
-
+// ✅ Tambahkan LiveReload service di sini
+builder.Services.AddLiveReload(config =>
+{
+    config.FolderToMonitor = "wwwroot"; // Pantau folder wwwroot
+    config.ServerRefreshTimeout = 500;  // Delay 0.5 detik sebelum reload
+});
 builder.Services.AddEndpointsApiExplorer();
 // Tambahkan Swagger
 builder.Services.AddSwaggerGen(c =>
@@ -85,6 +90,7 @@ builder.Services.AddScoped<IPerangkatPelangganRepository, PerangkatPelangganRepo
 builder.Services.AddScoped<IAccountRepository, AccountRepository>();
 builder.Services.AddScoped<IWhatsappRepo, WhatsappRepo>();
 builder.Services.AddScoped<ILocationRepo, LocationRepo>();
+builder.Services.AddScoped<ITransaksiRepo, TransaksiRepo>();
 builder.Services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
 
 
@@ -158,6 +164,7 @@ builder.Services.AddHttpLogging(logging =>
 });
 
 var app = builder.Build();
+app.UseLiveReload();
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {

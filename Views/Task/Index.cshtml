@@ -2,7 +2,7 @@
 @inject IConfiguration Configuration
 
 @{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Task Mitra ACD";
     var baseApiUrl = Configuration["AppConfig:BaseApiUrl"];
 }
 <script>
@@ -62,48 +62,23 @@
     border-radius: 50%;
     }
 
-    /* Minimalist Modern Tabs */
-    .modern-tabs {
-    display: flex;
-    width: 100%;
-    border-bottom: none !important;
+    /* Minimalis modern tabs */
+    .nav-tabs.modern-tabs .nav-link {
+        font-size: 0.9rem;
+        color: #495057;
+        border: none;
+        border-bottom: 2px solid transparent;
+        transition: all 0.2s;
     }
 
-    .modern-tabs .nav-item {
-    flex: 1;
-    text-align: center;
+    .nav-tabs.modern-tabs .nav-link.active {
+        color: #0d6efd;
+        border-bottom-color: #0d6efd;
+        font-weight: 500;
     }
 
-    .modern-tabs .nav-link {
-    width: 100%;
-    border: none;
-    border-radius: 0;
-    padding: 12px 0 8px;
-    font-weight: 500;
-    font-size: 0.85rem;
-    color: #666;
-    background: transparent;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 4px;
-    }
-
-    .modern-tabs .nav-link i {
-    font-size: 1.3rem;
-    }
-
-    .modern-tabs .nav-link:hover {
-    color: #0d6efd;
-    background: rgba(13,110,253,0.05);
-    }
-
-    .modern-tabs .nav-link.active {
-    color: #0d6efd;
-    border-bottom: 3px solid #0d6efd;
-    background: transparent;
-    font-weight: 600;
+    .nav-tabs.modern-tabs .nav-link:hover {
+        color: #0d6efd;
     }
 
     /* Tab Content */
@@ -187,13 +162,26 @@
 @await Html.PartialAsync(partialViewName: "_ModalDalamPerjalanan")
 @await Html.PartialAsync(partialViewName: "_ModalShowCamera")
 
+
+@await Html.PartialAsync(partialViewName: "_ModalPerbaikan_step_1")
+@await Html.PartialAsync(partialViewName: "_ModalPerbaikan_step_2")  
+
+
 <div class="app-body pb-30">    
-    <div class="container" style="margin-top:10px;margin-bottom :10px;">
-        <div class="owl-carousel" id="jadwalCarousel" style="margin-top:10px;margin-bottom:10px;">
+    <div class="container" style="margin-top:10px;margin-bottom :0px;">
+        <div class="owl-carousel" id="jadwalCarousel" style="margin-top:10px;margin-bottom:0px;">
             <!-- Hari Ini -->
             <div class="item">
+                <button id="btnExpired" 
+                        class="btn btn-sm w-100 jadwal-btn"
+                        onclick="setActiveBtn(this); LoadListTask(-1,status);"
+                        style="background:grey; color:#fff;">
+                    <i class="bi bi-calendar-day me-1"></i> Berlalu
+                </button>
+            </div>
+            <div class="item">
                 <button id="btnHariIni" 
-                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        class="btn btn-sm w-100 jadwal-btn"
                         onclick="setActiveBtn(this); LoadListTask(0,status);"
                         style="background: #007bff; color:#fff;">
                     <i class="bi bi-calendar-day me-1"></i> Hari Ini
@@ -202,7 +190,7 @@
             <!-- Besok -->
             <div class="item">
                 <button id="btnHariBesok" 
-                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        class="btn btn-sm w-100 jadwal-btn"
                         onclick="setActiveBtn(this); LoadListTask(1,status);"
                         style="background: #ffc107; color:#000;">
                     <i class="bi bi-calendar-check me-1"></i> Besok
@@ -211,7 +199,7 @@
             <!-- Jauh Hari -->
             <div class="item">
                 <button id="btnHariJauh" 
-                        class="btn btn-sm w-100 rounded-pill jadwal-btn"
+                        class="btn btn-sm w-100 jadwal-btn"
                         onclick="setActiveBtn(this); LoadListTask(2,status);"
                         style="background: #28a745; color:#fff;">
                     <i class="bi bi-calendar-range me-1"></i> Jauh Hari
@@ -219,33 +207,30 @@
             </div>
         </div>
 
-            <ul class="nav nav-tabs modern-tabs" id="serviceTabs" role="tablist">
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="sebelum-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,4)">
-                    <i class="bi bi-hourglass-split"></i>
-                    <span>On Schedule</span>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="saat-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,5)">
-                    <i class="bi bi-tools"></i>
-                    <span>On Progress</span>
-                    </button>
-                </li>
-                <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="setelah-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,10)">
-                    <i class="bi bi-check-circle"></i>
-                    <span>Finished</span>
-                    </button>
-                </li>
-            </ul>
+        <ul class="nav nav-tabs modern-tabs justify-content-start" 
+            id="serviceTabs" role="tablist" style="border-bottom:1px solid #dee2e6;">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-3" id="sebelum-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,4)">
+                    <i class="bi bi-hourglass-split me-1"></i> On Schedule
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-3" id="saat-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,5)">
+                    <i class="bi bi-tools me-1"></i> On Progress
+                </button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link px-3" id="setelah-tab" data-bs-toggle="tab" type="button" role="tab" onclick="LoadListTask(hari,10)">
+                    <i class="bi bi-check-circle me-1"></i> Finished
+                </button>
+            </li>
+        </ul>
 
-            <!-- Tab Content -->
-            <div class="tab-content" id="serviceTabsContent">
-                <div id="ListTask">
-                </div>
+        <!-- Tab Content -->
+        <div class="tab-content" id="serviceTabsContent">
+            <div id="ListTask">
             </div>
-        
+        </div>
     </div>
 </div>
 
@@ -253,6 +238,7 @@
     let hari = 0;
     let status = 4;
     var $;
+
     document.addEventListener('DOMContentLoaded', function () {
         if (typeof window.jQuery === 'undefined') {
             console.error('jQuery is not loaded.');
@@ -303,9 +289,9 @@
             margin: 2,
             nav: false,
             responsive: {
-                0: { items: 3 },
-                600: { items: 3 },
-                1000: { items: 3 }
+                0: { items: 3.5 },
+                600: { items: 3.5 },
+                1000: { items: 3.5 }
             }
         });
     }
@@ -339,9 +325,8 @@
                         
                         btnAction = btnAction + `
                             <!-- Tombol Aksi -->
-                            <button onclick="DetailPesanan(289,'btnDetail289');"
-                                    class="btn btn-sm btn-primary rounded-pill px-3">
-                                    Detail <i class="bi bi-arrow-right-short"></i>
+                            <button class="btn btn-sm btn-primary rounded-pill px-3 d-flex align-items-center" onclick="toggleDetail(${item.id})">
+                                Detail <i class="bi bi-arrow-down-short ms-1"></i>
                             </button>
                         `;
 
@@ -367,9 +352,10 @@
                             `;
                         }
 
-                        if(item.status > 4 && item.status < 9 && hari == 0){
+                        if(item.status > 4 && item.status < 9 && hari <= 0){
+                            console.log("Koordinat:",item.origin);
                             btnAction = btnAction + `
-                                <button onclick="showProcess(${item.id},${item.status},${item.id_pelanggan});" id="btnProses${item.id}"
+                                <button onclick="showProcess(${item.id},${item.status},${item.id_pelanggan},'${item.origin}','${item.kontak_pelanggan.nomor}','${item.kategori_layanan}');" id="btnProses${item.id}"
                                         class="btn btn-sm btn-success rounded-pill px-3">
                                         On Progres<i class="bi bi-arrow-right-short"></i>
                                 </button>
@@ -461,6 +447,19 @@
                                     <div class="d-flex justify-content-end gap-2 mt-3">
                                         ${btnAction}
                                     </div>
+
+                                    <!-- Accordion Detail -->
+                                    <div class="accordion-detail mt-2" id="accordion_${item.id}" style="display:none; border-top:1px dashed #ddd; padding-top:10px;">
+                                        
+                                        <div>
+                                            <p>Detail Transaksi:</p>
+                                            ${renderCartItem(item)}
+                                        </div>
+                                        <div class="mt-2">
+                                            <p>Keluhan Perbaikan:</p>
+                                            ${renderKeluhanPerbaikan(item)}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -509,8 +508,81 @@
         });
     }
 
+    // Toggle accordion
+    function toggleDetail(orderId) {
+        const $accordion = $(`#accordion_${orderId}`);
+        if ($accordion.is(":visible")) {
+            $accordion.slideUp();
+        } else {
+            // jika mau satu-satu terbuka
+            $(".accordion-detail").slideUp();
+            $accordion.slideDown();
+        }
+    }
+    
+    function renderCartItem(item) 
+    {
+        const jenis = item.jenis_layanan;
+        let html = "";
 
-    function SampaiDiLokasi(id) {
+        if (jenis === "REG") {
+            const cart = item.cart_item || {};
+            const regulers = Array.isArray(cart.reguler) ? cart.reguler : [];
+            const members = Array.isArray(cart.member) ? cart.member : [];
+            const allItems = [...regulers, ...members];
+
+            if (allItems.length === 0) return `<span class="text-muted">-</span>`;
+
+            html += `<div style="display:flex; flex-direction:column; gap:6px;">`;
+            allItems.forEach(i => {
+                const harga = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(i.harga || 0);
+                const subTotal = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(i.sub_total || 0);
+                html += `
+                    <div style="font-size:0.875rem; color:#333;">
+                        <span style="font-weight:600;">${i.nama}</span><br>
+                        Qty: ${i.qty || 0}
+                    </div>
+                `;
+            });
+            html += `</div>`;
+
+        } else if (jenis === "MEMBER") {
+            const paket = item.paket_member;
+            if (!paket) return `<span class="text-muted">-</span>`;
+            const total = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(paket.total || 0);
+
+            html += `
+                <div style="display:flex; flex-direction:column; gap:4px; font-size:0.875rem; color:#333;">
+                    <div style="font-weight:600;">${paket.nama_paket}</div>
+                    <div>Layanan: ${paket.nama_layanan || "-"}</div>
+                    <div>Qty: ${paket.qty || 0}, Total: ${total}, Diskon: ${paket.diskon || 0}%</div>
+                    <div>Periode: ${paket.periode || "-"}</div>
+                    <div>Deskripsi: ${paket.deskripsi || "-"}</div>
+                </div>
+            `;
+        } else {
+            html = `<span class="text-muted">-</span>`;
+        }
+
+        return html;
+    }
+    
+    function renderKeluhanPerbaikan(item) 
+    {
+        const keluhan = item.keluhan_perbaikan || [];
+        if (keluhan.length === 0) return `<span class="text-muted">-</span>`;
+
+        let html = `<div style="display:flex; flex-direction:column; gap:2px; font-size:0.85rem; color:#d9534f;">`;
+        keluhan.forEach(k => {
+            html += `<div>- ${k.jeniskeluhan}</div>`;
+        });
+        html += `</div>`;
+
+        return html;
+    }
+    
+    function SampaiDiLokasi(id) 
+    {
         Swal.fire({
             title: '📍 Sudah sampai di lokasi?',
             text: "Pastikan kamu benar-benar sudah tiba sebelum melanjutkan.",
@@ -587,15 +659,18 @@
         });
     }
 
-    function MulaiPengerjaan(id){
+    function MulaiPengerjaan(id)
+    {
         startCamera(id);
     }
 
-    function InspeksiUnit(id){
+    function InspeksiUnit(id)
+    {
         $("#ShowBarcodeUnitBaru").modal("show");
     }
 
-    function TaskStart(id,id_pelanggan){
+    function TaskStart(id,id_pelanggan)
+    {
         let _UserId = Storage.get('userId');
         
         var Data = {
@@ -635,23 +710,44 @@
         });
 
     }
+    
+    
 
-    function showProcess(id,status,id_pelanggan)
+    async function showProcess(id,status,id_pelanggan)
     {
+        var  res = await getTransaksiDetail(id);
+        console.log("Detail Transaksi:", res);
         if(status == 5){
             $("#ModalDalamPerjalanan").attr("data-id", id); // simpan id ke attribute modal    
-            $("#ModalDalamPerjalanan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
+            $("#ModalDalamPerjalanan").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal
+            $("#ModalDalamPerjalanan").attr("data-origin",res.origin);
+            $("#ModalDalamPerjalanan").attr("data-nohp",res.kontak_pelanggan.nomor);
             $("#ModalDalamPerjalanan").modal("show");
         }
         else if(status == 6){
-            $("#ShowCamera").attr("data-id", id); // simpan id ke attribute modal    
-            $("#ShowCamera").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
-            $("#ShowCamera").modal("show");
+
+            console.log(res.kategori_layanan);
+            if(res.kategori_layanan == "CUCI AC"){
+                $("#ShowCamera").attr("data-id", id); // simpan id ke attribute modal    
+                $("#ShowCamera").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
+                $("#ShowCamera").modal("show");
+            }
+            else if(res.kategori_layanan == "PERBAIKAN AC"){
+                //window.location.href = '/Task/Perbaikan?id='+id;    
+                $("#ModalPerbaikan_step_1").attr("data-id", id);
+                $("#ModalPerbaikan_step_1").modal("show"); 
+            }
         }
         else if(status == 7){
-            $("#ModalPengerjaanPhoto").attr("data-id", id);
-            $("#ModalPengerjaanPhoto").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
-            $("#ModalPengerjaanPhoto").modal("show");
+            if(res.kategori_layanan == "CUCI AC"){
+                $("#ModalPengerjaanPhoto").attr("data-id", id);
+                $("#ModalPengerjaanPhoto").attr("data-id_pelanggan", id_pelanggan); // simpan id ke attribute modal    
+                $("#ModalPengerjaanPhoto").modal("show");
+            }
+            else if(res.kategori_layanan == "PERBAIKAN AC"){
+                $("#ModalPerbaikan_step_2").attr("data-id", id);
+                $("#ModalPerbaikan_step_2").modal("show"); 
+            }
         }
         else if(status == 8){
             $("#ModalPengecekanAkhir").attr("data-id", id);
@@ -664,5 +760,6 @@
             $("#ModalVerifikasiPekerjaan").modal("show");   
         }
     }
+
 
 </script>

@@ -9,7 +9,6 @@ namespace mitraacd.Services
 {
     public interface ITaskRepository
     {
-        Task<IEnumerable<dynamic>> GetTaskAsync(int Id, int hari);
         Task<int> BerangkatKelokasiAsync(BerangkatKelokasiModel Id);
         Task<int> SampaiDiLokasiAsync(SampaiDiLokasiModel Id);
         Task<bool> SimpanUrlFotoSebelumTask(ImageUploadResultDto dto);
@@ -36,6 +35,10 @@ namespace mitraacd.Services
         Task<IEnumerable<dynamic?>> CheckPhoto_QA_Task(string id);
 
         Task<dynamic?> GetDataKonfirmasiPekerjaan(string Id);
+
+        Task<bool> UpdateTask_PengukuranAwal_Perbaikan(string Id, string payloadJson);
+
+        Task<bool> UpdateTask_PengecekanLanjutan(string id, object payload);
     }
 
     public class TaskRepository : ITaskRepository
@@ -159,8 +162,11 @@ namespace mitraacd.Services
                     select
                         id,
                         create_by_id_user as id_pelanggan,    
-                        kategori_layanan ,jenis_layanan , 
-                        (total_transaksi*70/100) fee_teknisi,
+                        kategori_layanan,
+                        jenis_layanan, 
+                        (
+                            total_transaksi*(select distinct value_number from app_settings t where key_name = 'teknisi_fee_percentage') /100
+                        ) fee_teknisi,
                         kunjungan,kontak_pelanggan,alamat_pelanggan,
                         alamat_pelanggan->>'koordinat' as tujuan,
                         (select alamat->>'koordinat'  from mitra_data where id = @Id) as origin,
@@ -176,6 +182,8 @@ namespace mitraacd.Services
                         ) as jarak_meter,
                         bid_date,
                         jenis_properti,
+                        cart_item,
+                        keluhan_perbaikan,
                         kunjungan->> 'Member' as mbr,
                         kunjungan->> 'Reguler' as reg,
                         to_timestamp(
@@ -196,6 +204,7 @@ namespace mitraacd.Services
                     (@FilterHari = 0 AND date(waktu_kunjungan) = current_date)
                     OR (@FilterHari = 1 AND date(waktu_kunjungan) = current_date + 1)
                     OR (@FilterHari = 2 AND date(waktu_kunjungan) > current_date + 1)
+                    OR (@FilterHari = -1 AND date(waktu_kunjungan) < current_date)
                 )
                 -- filter status
                 AND (
@@ -218,30 +227,6 @@ namespace mitraacd.Services
             return JsonColumnParser.ParseJsonColumns(result);
         }
 
-        public async Task<IEnumerable<dynamic>> GetTaskAsync(int Id, int hari)
-        {
-            var finalResult = new List<dynamic>();
-            string sql = "select order_json::text from get_task(" + Id + "," + hari + ")";
-            var result = await _db.QueryAsync<string>(sql);
-            
-            foreach (var jsonString in result)
-            {
-                // Console.WriteLine("Raw JSON: " + jsonString);
-                try
-                {
-                    dynamic? obj = JsonConvert.DeserializeObject<dynamic>(jsonString);
-                    if (obj is not null)
-                    {
-                        finalResult.Add(obj);
-                    }
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine("Gagal parsing JSON: " + ex.Message);
-                }
-            }
-            return finalResult;
-        }
 
         public async Task<int> BerangkatKelokasiAsync(BerangkatKelokasiModel dto)
         {
@@ -497,10 +482,59 @@ namespace mitraacd.Services
                 Id = long.Parse(Id),
             };
 
-            var result = await _db.QueryAsync<dynamic>(sql,param);
+            var result = await _db.QueryAsync<dynamic>(sql, param);
             var parsed = JsonColumnParser.ParseJsonColumns(result);
             return parsed.FirstOrDefault();
         }
+
+        public async Task<bool> UpdateTask_PengukuranAwal_Perbaikan(string Id, string payloadJson)
+        {
+            var query = @"
+                update log_transaction 
+                set 
+                    status = 7,
+                    status_deskripsi = 'Pengecekan Awal untuk Perbaikan',
+                    pengukuran_awal = @Pengukuran_awal::jsonb,
+                    pengukuran_awal_datetime = now()
+                where id = @Id
+                returning id;
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(Id),
+                Pengukuran_awal = payloadJson
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+
+            return result.HasValue && result.Value > 0;
+        }
+
+        public async Task<bool> UpdateTask_PengecekanLanjutan(string id, object payload)
+        {
+            const string query = @"
+                UPDATE log_transaction
+                SET 
+                    status = 8,
+                    status_deskripsi = 'Pengecekan Kerusakan',
+                    pengecekan_kerusakan = @Payload::jsonb,
+                    pengecekan_kerusakan_datetime = NOW()
+                WHERE id = @Id
+                RETURNING id;
+            ";
+
+            var param = new
+            {
+                Id = long.Parse(id),
+                Payload = JsonConvert.SerializeObject(payload)
+            };
+
+            var result = await _db.ExecuteScalarAsync<int?>(query, param);
+            return result.HasValue && result.Value > 0;
+        }
+
+
 
     }
 }

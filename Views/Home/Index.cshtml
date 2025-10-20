@@ -19,8 +19,7 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08) !important;
         transition: box-shadow 0.3s ease-in-out;
     }
-</style>
-<style>
+
     /* Animasi shimmer */
     @@keyframes skeleton-loading {
     0% {
@@ -163,6 +162,75 @@
         $("#ModalCoverageArea").modal("show");
     }
     
+    // Toggle accordion
+    function toggleDetail(orderId) {
+        const $accordion = $(`#accordion_${orderId}`);
+        if ($accordion.is(":visible")) {
+            $accordion.slideUp();
+        } else {
+            // jika mau satu-satu terbuka
+            $(".accordion-detail").slideUp();
+            $accordion.slideDown();
+        }
+    }
+    // Render cart_item ke HTML
+    function renderCartItem(item) {
+        const jenis = item.jenis_layanan;
+        let html = "";
+
+        if (jenis === "REG") {
+            const cart = item.cart_item || {};
+            const regulers = Array.isArray(cart.reguler) ? cart.reguler : [];
+            const members = Array.isArray(cart.member) ? cart.member : [];
+            const allItems = [...regulers, ...members];
+
+            if (allItems.length === 0) return `<span class="text-muted" style="font-size:0.75rem;">-</span>`;
+
+            html += `<div style="display:flex; flex-direction:column; gap:3px; font-size:0.75rem;">`;
+            allItems.forEach(i => {
+                const harga = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(i.harga || 0);
+                html += `
+                    <div style="display:flex; justify-content:space-between; color:#333;">
+                        <span style="font-weight:600;">${i.nama.replace(/^Biaya\s+/, '')}</span>
+                        <span>Qty: ${i.qty || 0}</span>
+                    </div>
+                `;
+            });
+            html += `</div>`;
+
+        } else if (jenis === "MEMBER") {
+            const paket = item.paket_member;
+            if (!paket) return `<span class="text-muted" style="font-size:0.75rem;">-</span>`;
+            const total = new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", minimumFractionDigits: 0 }).format(paket.total || 0);
+
+            html += `
+                <div style="display:flex; flex-direction:column; gap:2px; font-size:0.75rem; color:#333;">
+                    <div style="font-weight:600;">${paket.nama_paket}</div>
+                    <div>Layanan: ${paket.nama_layanan || "-"}</div>
+                    <div>Qty: ${paket.qty || 0}, Total: ${total}, Diskon: ${paket.diskon || 0}%</div>
+                    <div>Periode: ${paket.periode || "-"}</div>
+                </div>
+            `;
+        } else {
+            html = `<span class="text-muted" style="font-size:0.75rem;">-</span>`;
+        }
+
+        return html;
+    }
+
+    function renderKeluhanPerbaikan(item) {
+        const keluhan = item.keluhan_perbaikan || [];
+        if (keluhan.length === 0) return `<span class="text-muted">-</span>`;
+
+        let html = `<div style="display:flex; flex-direction:column; gap:2px; font-size:0.85rem; color:#d9534f;">`;
+        keluhan.forEach(k => {
+            html += `<div>- ${k.jeniskeluhan}</div>`;
+        });
+        html += `</div>`;
+
+        return html;
+    }
+
     function LoadListBid(){
         let _UserId = Storage.get('userId');
         callApi({
@@ -284,18 +352,33 @@
                                     </div>
                                 </div>
 
-                                <!-- Tombol Aksi -->
-                                <div class="d-flex justify-content-end gap-2 mt-3">
-                                    <button onclick="DetailPesanan(289,'btnDetail289');"
-                                            class="btn btn-sm btn-primary rounded-pill px-3">
-                                            Detail <i class="bi bi-arrow-right-short"></i>
-                                    </button>
+                                    <!-- Tombol Aksi -->
+                                    <div class="d-flex justify-content-end gap-2 mt-3">
+                                        <!-- Tombol Detail -->
+                                        <button class="btn btn-sm btn-primary rounded-pill px-3 d-flex align-items-center" onclick="toggleDetail(${item.id})">
+                                            Detail <i class="bi bi-arrow-down-short ms-1"></i>
+                                        </button>
 
-                                    <button onclick="BidOrder(${item.id},${item.id_pelanggan});" id="btnBid${item.id}"
-                                            class="btn btn-sm btn-success rounded-pill px-3">
-                                            Ambil <i class="bi bi-arrow-right-short"></i>
-                                    </button>
-                                </div>
+                                        <!-- Tombol Ambil -->
+                                        <button onclick="BidOrder(${item.id},${item.id_pelanggan});" id="btnBid${item.id}"
+                                                class="btn btn-sm btn-success rounded-pill px-3 d-flex align-items-center">
+                                            Ambil <i class="bi bi-arrow-right-short ms-1"></i>
+                                        </button>
+                                    </div>
+
+                                    <!-- Accordion Detail -->
+                                    <div class="accordion-detail mt-2" 
+                                        id="accordion_${item.id}" style="display:none; border-top:1px dashed #ddd; padding-top:8px;"
+                                        >
+                                        <div>
+                                            <p>Detail Transaksi:</p>
+                                            ${renderCartItem(item)}
+                                        </div>
+                                        <div class="mt-2">
+                                            <p>Keluhan Perbaikan:</p>
+                                            ${renderKeluhanPerbaikan(item)}
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         `;
@@ -320,170 +403,6 @@
                     <div class="skeleton-text w-25"></div>
                 </div>`);
 
-            },
-        });
-    }
-
-    function LoadListBidV2() {
-        callApi({
-            url: '/api/Biding/GetBid',
-            method: 'GET',
-            success: function (data) {
-                var html = "";
-
-                if (!data || data.length === 0) {
-                    html = '<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>';
-                    $('#ListBid').html(html);
-                }
-                else {
-                    console.log(data);
-                    html = $.map(data, function (item) {
-                        var scr = "";
-                        var dtPesanan = '';
-                        let TotalReg = 0;
-                        item.cart_items.forEach(p => {
-                            dtPesanan = dtPesanan +
-                                `<li class="d-flex justify-content-between border-bottom">
-                                    <span>${p.nama} &times; ${p.qty}</span>
-                                    <span class="text-muted">${formatRupiah(p.sub_total)}</span>
-                                </li>
-                                `
-                                ;
-                            TotalReg = TotalReg+p.sub_total;
-                        });
-
-                        var paket = '';
-                        if(Object.keys(item.paket).length > 0){
-                            paket = `
-
-                                <li class="d-flex justify-content-between border-bottom">
-                                    <span>${item.paket.deskripsi}</span>
-                                    <span>${formatRupiah(TotalReg*item.paket.qty)}</span>
-                                </li>
-                                <li class="d-flex justify-content-between border-bottom">
-                                    <span>Diskon berlangganan</span>
-                                    <span>- ${formatRupiah(((TotalReg*item.paket.qty)*item.paket.diskon)/100)}</span>
-                                </li>
-                                <strong class="d-flex justify-content-between">
-                                    <span>Sub Total </span>
-                                    <span class="">${formatRupiah(item.paket.total)}</span>
-                                </strong>
-
-                            `;
-                        }
-                        
-                        let regmember ="";
-                        if(item.jenis_layanan == "MEMBER")
-                        {
-                            regmember = `<span class="text-danger">Berlangganan</span>`;
-                        }
-                        else{
-                            regmember = `<span class="text-dark">Reguler</span>`;
-                        }
-                        
-                        paket = paket +
-                        `
-                            <p class="d-flex justify-content-between">
-                                <span>Biaya Properti ${item.properti.nama_jenis}</span>
-                                <span>${formatRupiah(item.properti.harga)}</span>
-                            </p>
-                            
-                            <strong class="d-flex justify-content-between pt-20">
-                                <span>Total Transaksi</span>
-                                <span class="">${formatRupiah(item.total_transaksi)}</span>
-                            </strong>
-                        `
-                        ;
-                        var scr = "";
-                        scr =`
-                            <div class="card mb-3 position-relative shadow-sm border-1 p-3">
-                                <!-- Header Pesanan -->
-                                <div>
-                                    <h5 class="card-title mb-1 fw-bold">
-                                        <span class="text-primary">ACD - ${formatToSixDigits(item.id)}</span>
-                                    </h5>
-                                    
-                                    <p class="card-text mb-0">
-                                        <span class="text-dark">Layanan ${item.kategori_layanan}</span> - ${regmember}<br>
-                                        Total Pesanan:
-                                        <span class="fw-semibold text-success">${formatRupiah(item.total_transaksi)}</span>
-                                    </p>
-                                </div>
-
-                                <!-- Accordion Detail Order -->
-                                <div class="mt-1 w-100">
-                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
-                                        aria-expanded="true" aria-controls="collapseOrder">
-                                        <span class="me-2 accordion-icon">▶</span>
-                                        <strong class="text-muted">Detail Order</strong>
-                                    </button>
-
-                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
-                                        <ul class="list-unstyled mb-0" style="font-size: small;">
-                                            ${dtPesanan}
-                                            ${paket}
-                                        </ul>
-                                        
-                                    </div>
-                                </div>
-                                <!-- Accordion Detail Order -->
-                                <div class="mt-1 w-100">
-                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
-                                        aria-expanded="true" aria-controls="collapseOrder">
-                                        <span class="me-2 accordion-icon">▶</span>
-                                        <strong class="text-muted">Customer</strong>
-                                    </button>
-
-                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
-                                        <ul class="list-unstyled mb-0" style="font-size: small;">
-                                            ${dtPesanan}
-                                            ${paket}
-                                        </ul>
-                                        
-                                    </div>
-                                </div>
-                                <div class="mt-1 w-100">
-                                    <button class="accordion-minimal accordion-button collapsed p-0 border-0 bg-transparent"
-                                        type="button" data-bs-toggle="collapse" data-bs-target="#collapseOrder${item.id}"
-                                        aria-expanded="true" aria-controls="collapseOrder">
-                                        <span class="me-2 accordion-icon">▶</span>
-                                        <strong class="text-muted">Jadwal</strong>
-                                    </button>
-
-                                    <div id="collapseOrder${item.id}" class="accordion-collapse collapse mt-2 w-100 mb-30">
-                                        <ul class="list-unstyled mb-0" style="font-size: small;">
-                                            ${dtPesanan}
-                                            ${paket}
-                                        </ul>
-                                        
-                                    </div>
-                                </div>
-
-                                <!-- Tombol Detail (pojok kanan bawah) -->
-                                <button onclick="DetailPesanan(${item.id},'btnDetail${item.id}');" 
-                                    class="btn btn-success btn-sm position-absolute bottom-0 end-0 m-2"
-                                    id="BidOrder${item.id},${item.id_pelanggan}"
-                                    style="border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-arrow-right" style="font-size: 1rem;"></i>
-                                </button>
-                            </div>
-                        `;
-                        
-                        return scr;
-                    }).join('');
-                        
-                    $('#ListBid').html(html);
-                }
-            },
-            error: function (err) {
-                $('#ListBid').html('<p class="text-center text-muted py-4">Belum ada pesanan yang disimpan.</p>');
-            },
-            onBeforeSend: function () {
-                $('#ListBid').html(`
-                    <p class="text-center text-muted py-4">sedang memuat data.....</p>
-                `);
             },
         });
     }

@@ -32,7 +32,9 @@ namespace mitraacd.Services
                         id,
                         create_by_id_user as id_pelanggan,
                         kategori_layanan ,jenis_layanan , 
-                        (total_transaksi*70/100) fee_teknisi,
+                        (
+                            total_transaksi*(select distinct value_number from app_settings t where key_name = 'teknisi_fee_percentage') /100
+                        ) fee_teknisi,
                         kunjungan,kontak_pelanggan,alamat_pelanggan,
                         alamat_pelanggan->>'koordinat' as tujuan,
                         (select alamat->>'koordinat'  from mitra_data where id = @Id) as origin,
@@ -47,7 +49,9 @@ namespace mitraacd.Services
                             )
                         ) as jarak_meter,
                         checkout_date,
-                        jenis_properti
+                        jenis_properti,
+                        cart_item,
+                        keluhan_perbaikan
                     from log_transaction
                     where status = 3
                 ) a
@@ -56,6 +60,7 @@ namespace mitraacd.Services
                     FROM mitra_data 
                     WHERE id = @Id
                 )
+                and jenis_layanan = 'REG'
                 order by checkout_date asc
             ";
 

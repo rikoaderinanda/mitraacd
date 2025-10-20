@@ -62,7 +62,9 @@
     onerror="onGoogleScriptError()">
 </script>
 
-<div class="modal fade" id="ModalLogin" tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true">
+<div class="modal fade" id="ModalLogin" 
+    tabindex="-1" aria-labelledby="LoginModalLabel" aria-hidden="true"
+    data-bs-backdrop="static" data-bs-keyboard="false">
     <div class="modal-dialog modal-fullscreen-sm-down">
         <div class="modal-content">
             <div class="home-cart mt-0">
@@ -75,9 +77,9 @@
                                     Masuk ke akun Anda untuk menerima dan mengelola pekerjaan.
                                 </p>
                             </div>
-                            <a class="back-btn text-white" data-bs-dismiss="modal" onclick="CloseModalLogin()">
+                            @* <a class="back-btn text-white" data-bs-dismiss="modal" onclick="CloseModalLogin()">
                                 <i class="bi bi-x"></i>
-                            </a>
+                            </a> *@
                         </div>
                     </div>
                     <div class="col-12">

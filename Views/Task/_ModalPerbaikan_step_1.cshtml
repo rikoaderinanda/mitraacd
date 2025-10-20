@@ -1,0 +1,411 @@
+<style>
+  /* === ANIMASI MODAL === */
+  .modal.fade .modal-dialog {
+    transition: all 0.4s ease-in-out;
+    transform: translateY(40px);
+    opacity: 0;
+  }
+  .modal.fade.show .modal-dialog {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  /* === SECTION CARD === */
+  .section_fix {
+    background: #ffffff;
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 25px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    transition: all 0.3s ease;
+  }
+  .section_fix:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+  }
+
+  .section_fix h5 {
+    font-weight: 600;
+    color: #2d3436;
+  }
+
+  /* === FOTO & VIDEO === */
+  .photo-preview_fix {
+    width: 100%;
+    border-radius: 12px;
+    margin-top: 10px;
+    display: none;
+    object-fit: cover;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.15);
+  }
+
+  .video-box_fix {
+    display: none;
+    position: relative;
+    overflow: hidden;
+    border-radius: 12px;
+  }
+
+  .video-box_fix video {
+    width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.15);
+  }
+
+  .capture-btn_fix {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.9);
+    border: none;
+    color: #d63031;
+    border-radius: 50%;
+    width: 60px;
+    height: 60px;
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+  }
+  .capture-btn_fix:hover {
+    background: #d63031;
+    color: #fff;
+    transform: translateX(-50%) scale(1.1);
+  }
+
+  /* === INPUTS === */
+  .form-label {
+    font-weight: 500;
+    color: #495057;
+  }
+
+  .form-control {
+    border-radius: 10px;
+    border: 1px solid #ced4da;
+    transition: all 0.3s;
+  }
+  .form-control:focus {
+    border-color: #ff7675;
+    box-shadow: 0 0 0 0.25rem rgba(255, 118, 117, 0.25);
+  }
+
+  /* === BUTTONS === */
+  .btn-outline-danger {
+    border-radius: 10px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+  }
+  .btn-outline-danger:hover {
+    background-color: #d63031;
+    color: #fff;
+  }
+
+  .btn-switch_fix {
+    border-radius: 10px;
+    background: #f1f2f6;
+    color: #2d3436;
+    font-size: 0.85rem;
+    padding: 4px 10px;
+    border: none;
+    transition: background 0.3s ease;
+  }
+  .btn-switch_fix:hover {
+    background: #dfe6e9;
+  }
+
+  /* === HEADER === */
+  .modal-header {
+    background: linear-gradient(135deg, #d63031, #e17055);
+    border-bottom: none;
+  }
+
+  /* === SUBMIT BUTTON === */
+  .btn-submit_fix {
+    background: linear-gradient(135deg, #00b894, #00cec9);
+    border: none;
+    border-radius: 50px;
+    color: white;
+    font-weight: 600;
+    padding: 12px 30px;
+    transition: all 0.3s ease;
+  }
+  .btn-submit_fix:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 206, 201, 0.4);
+  }
+</style>
+
+<div class="modal fade" id="ModalPerbaikan_step_1" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-fullscreen-sm-down">
+    <div class="modal-content shadow-lg border-0 rounded-4">
+      
+      <!-- Header -->
+      <div class="modal-header text-white rounded-top-4">
+        <h5 class="modal-title"><i class="bi bi-thermometer-half me-2"></i>Pengecekan Unit Awal</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <!-- Body -->
+      <div class="modal-body p-4 bg-light">
+        <h4 class="fw-bold text-center text-danger mb-4">🧰 Pemeriksaan Awal Unit</h4>
+
+        <!-- === SUHU === -->
+        <div class="section_fix">
+          <h5>1️⃣ Suhu</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button class="btn btn-outline-danger" onclick="openCamera_fix('suhu')">
+                  <i class="bi bi-camera"></i> Ambil Foto
+                </button>
+                <button class="btn-switch_fix" onclick="switchCamera_fix('suhu')">
+                  🔁 Ganti Kamera
+                </button>
+              </div>
+              <div class="video-box_fix" id="videoBox_suhu_fix">
+                <video id="video_suhu_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('suhu')">
+                  <i class="bi bi-camera-fill"></i>
+                </button>
+              </div>
+              <img id="photo_suhu_fix" class="photo-preview_fix" alt="Foto Suhu" />
+            </div>
+            <div class="col-md-6">
+              <label for="inputSuhu_fix" class="form-label">Nilai Suhu (°C)</label>
+              <input type="number" step="0.1" id="inputSuhu_fix" class="form-control" placeholder="Contoh: 22.5">
+            </div>
+          </div>
+        </div>
+
+        <!-- === TEKANAN === -->
+        <div class="section_fix">
+          <h5>2️⃣ Tekanan</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button class="btn btn-outline-danger" onclick="openCamera_fix('tekanan')">
+                  <i class="bi bi-camera"></i> Ambil Foto
+                </button>
+                <button class="btn-switch_fix" onclick="switchCamera_fix('tekanan')">
+                  🔁 Ganti Kamera
+                </button>
+              </div>
+              <div class="video-box_fix" id="videoBox_tekanan_fix">
+                <video id="video_tekanan_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('tekanan')">
+                  <i class="bi bi-camera-fill"></i>
+                </button>
+              </div>
+              <img id="photo_tekanan_fix" class="photo-preview_fix" alt="Foto Tekanan" />
+            </div>
+            <div class="col-md-6">
+              <label for="inputTekanan_fix" class="form-label">Nilai Tekanan (PSI)</label>
+              <input type="number" step="0.1" id="inputTekanan_fix" class="form-control" placeholder="Contoh: 75.5">
+            </div>
+          </div>
+        </div>
+
+        <!-- === NAME PLATE === -->
+        <div class="section_fix">
+          <h5>3️⃣ Name Plate</h5>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <button class="btn btn-outline-danger" onclick="openCamera_fix('nameplate')">
+                  <i class="bi bi-camera"></i> Ambil Foto
+                </button>
+                <button class="btn-switch_fix" onclick="switchCamera_fix('nameplate')">
+                  🔁 Ganti Kamera
+                </button>
+              </div>
+              <div class="video-box_fix" id="videoBox_nameplate_fix">
+                <video id="video_nameplate_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('nameplate')">
+                  <i class="bi bi-camera-fill"></i>
+                </button>
+              </div>
+              <img id="photo_nameplate_fix" class="photo-preview_fix" alt="Foto Name Plate" />
+            </div>
+            <div class="col-md-6">
+              <label for="inputBrand_fix" class="form-label">Brand</label>
+              <input type="text" id="inputBrand_fix" class="form-control mb-2" placeholder="Contoh: Daikin, LG">
+              <label for="inputTipe_fix" class="form-label">Tipe</label>
+              <input type="text" id="inputTipe_fix" class="form-control" placeholder="Contoh: FTKC25UVM4">
+            </div>
+          </div>
+        </div>
+
+        <div class="text-center mt-4">
+          <button class="btn btn-submit_fix" onclick="submitPengecekan_fix()">
+            <i class="bi bi-send"></i> Simpan Data
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<script>
+let facingMode_fix = 'environment'; // default kamera belakang
+const streams_fix = {};
+const photos_fix = {};
+let Id_Perbaikan = null;
+
+$('#ModalPerbaikan_step_1').on('show.bs.modal', function (e) {
+    Id_Perbaikan = $(this).data("id");
+    // Kalau mau ambil dari tombol pemicu modal:
+    if (e.relatedTarget) {
+        Id_Perbaikan = $(e.relatedTarget).data("id");
+    }
+}); 
+
+async function openCamera_fix(type) {
+  closeAllCamera_fix();
+  const videoBox = document.getElementById(`videoBox_${type}_fix`);
+  const video = document.getElementById(`video_${type}_fix`);
+  videoBox.style.display = 'block';
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: facingMode_fix } });
+    streams_fix[type] = stream;
+    video.srcObject = stream;
+  } catch (err) {
+    alert("Tidak dapat membuka kamera: " + err.message);
+  }
+}
+
+function switchCamera_fix(type) {
+  facingMode_fix = facingMode_fix === 'environment' ? 'user' : 'environment';
+  openCamera_fix(type);
+}
+
+function capturePhoto_fix(type) {
+  const video = document.getElementById(`video_${type}_fix`);
+  const canvas = document.createElement('canvas');
+  canvas.width = video.videoWidth;
+  canvas.height = video.videoHeight;
+  const ctx = canvas.getContext('2d');
+  ctx.drawImage(video, 0, 0);
+
+  const photo = document.getElementById(`photo_${type}_fix`);
+  const imageData = canvas.toDataURL('image/png');
+  photo.src = imageData;
+  photo.style.display = 'block';
+  photos_fix[type] = imageData;
+
+  stopCamera_fix(type);
+}
+
+function stopCamera_fix(type) {
+  if (streams_fix[type]) {
+    streams_fix[type].getTracks().forEach(track => track.stop());
+    delete streams_fix[type];
+  }
+  document.getElementById(`videoBox_${type}_fix`).style.display = 'none';
+}
+
+function closeAllCamera_fix() {
+  for (let type in streams_fix) stopCamera_fix(type);
+}
+
+async function submitPengecekan_fix() {
+  const suhu_fix = document.getElementById('inputSuhu_fix').value.trim();
+  const tekanan_fix = document.getElementById('inputTekanan_fix').value.trim();
+  const brand_fix = document.getElementById('inputBrand_fix').value.trim();
+  const tipe_fix = document.getElementById('inputTipe_fix').value.trim();
+
+  // Validasi dasar
+  if (!photos_fix.suhu || !photos_fix.tekanan || !photos_fix.nameplate) {
+    Swal.fire('📸 Foto Belum Lengkap', 'Pastikan semua foto sudah diambil.', 'warning');
+    return;
+  }
+
+  if (!suhu_fix || !tekanan_fix || !brand_fix || !tipe_fix) {
+    Swal.fire('⚠️ Data Belum Lengkap', 'Lengkapi semua input terlebih dahulu.', 'warning');
+    return;
+  }
+
+  // Bentuk payload
+  const payload_fix = {
+    id_task: Id_Perbaikan,
+    suhu: { foto: photos_fix.suhu, nilai: suhu_fix },
+    tekanan: { foto: photos_fix.tekanan, nilai: tekanan_fix },
+    namePlate: { foto: photos_fix.nameplate, brand: brand_fix, tipe: tipe_fix },
+    waktu_submit: new Date().toISOString()
+  };
+
+  console.log("📤 Data dikirim:", payload_fix);
+
+  // Nonaktifkan seluruh input form
+  document.querySelectorAll('#ModalPerbaikan_step_1 input, #ModalPerbaikan_step_1 button')
+    .forEach(el => el.disabled = true);
+
+  // Tampilkan Swal progress bar
+  Swal.fire({
+    title: '⏳ Mengirim Data...',
+    html: `
+      <div style="margin-top:10px;">
+        <div class="progress" style="height: 20px;">
+          <div id="uploadProgressBar_fix"
+               class="progress-bar progress-bar-striped progress-bar-animated bg-success"
+               style="width: 0%">0%</div>
+        </div>
+        <p id="uploadStatusText_fix" class="mt-2 text-muted">Mengunggah ke server...</p>
+      </div>
+    `,
+    allowOutsideClick: false,
+    allowEscapeKey: false,
+    showConfirmButton: false,
+    didOpen: () => {
+      const progressBar = document.getElementById('uploadProgressBar_fix');
+      const statusText = document.getElementById('uploadStatusText_fix');
+
+      const xhr = new XMLHttpRequest();
+      xhr.open("POST", "/api/Task/SubmitPengecekanAwal_Perbaikan", true);
+      xhr.setRequestHeader("Content-Type", "application/json");
+
+      xhr.upload.onprogress = function (event) {
+        if (event.lengthComputable) {
+          const percent = Math.round((event.loaded / event.total) * 100);
+          progressBar.style.width = percent + '%';
+          progressBar.textContent = percent + '%';
+          statusText.textContent = `Mengupload... ${percent}%`;
+        }
+      };
+
+      xhr.onload = function () {
+        if (xhr.status >= 200 && xhr.status < 300) {
+          const res = JSON.parse(xhr.responseText);
+          console.log("✅ Respon server:", res);
+          Swal.fire({
+            icon: 'success',
+            title: '✅ Berhasil!',
+            text: 'Data pengecekan awal berhasil disimpan.',
+            confirmButtonColor: '#28a745'
+          }).then(() => {
+            $('#ModalPerbaikan_step_1').modal('hide');
+          });
+        } else {
+          console.error("❌ Error:", xhr.responseText);
+          Swal.fire('❌ Gagal!', 'Terjadi kesalahan saat menyimpan data.', 'error');
+        }
+      };
+
+      xhr.onerror = function () {
+        Swal.fire('❌ Gagal!', 'Koneksi ke server gagal.', 'error');
+      };
+
+      xhr.onloadend = function () {
+        // Aktifkan kembali form setelah selesai
+        document.querySelectorAll('#ModalPerbaikan_step_1 input, #ModalPerbaikan_step_1 button')
+          .forEach(el => el.disabled = false);
+      };
+
+      xhr.send(JSON.stringify(payload_fix));
+    }
+  });
+}
+
+
+</script>

@@ -119,10 +119,12 @@
         else {
             scr = `
                 <a href="javascript:void(0);" class="header-action" onclick="backHeader();">
-                    <i class="bi bi-arrow-left-circle"></i>
+                    <i class="bi bi-arrow-left-circle text-white"></i>
                 </a>
                 <h6 class="header-title ms-3">
-                    <span class="b-color local-area fw-5 fs-6" id="titleHeader"></span>
+                    <span class="b-color local-area fw-5 fs-6 text-white" id="titleHeader">
+                    ${page}
+                    </span>
                 </h6>
             `;
         }

@@ -1,0 +1,211 @@
+@using Microsoft.Extensions.Configuration
+@inject IConfiguration Configuration
+
+@{
+    ViewData["Title"] = "Perbaikan Task";
+    var baseApiUrl = Configuration["AppConfig:BaseApiUrl"];
+}
+<style>
+    .section_fix {
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 20px;
+      background: #fff;
+    }
+    .photo-preview_fix {
+      width: 100%;
+      border-radius: 10px;
+      margin-top: 10px;
+      display: none;
+    }
+    .video-box_fix {
+      display: none;
+      position: relative;
+    }
+    .video-box_fix video {
+      width: 100%;
+      border-radius: 10px;
+    }
+    .capture-btn_fix {
+      position: absolute;
+      bottom: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255,255,255,0.8);
+      border: 2px solid #dc3545;
+      color: #dc3545;
+      border-radius: 50%;
+      width: 60px;
+      height: 60px;
+      font-size: 1.5rem;
+    }
+</style>
+<div class="app-body pb-30">    
+    <div class="container" style="margin-top:10px;margin-bottom :0px;">
+        <h3 class="fw-bold text-center text-danger mb-4">🧰 Pengecekan Unit Awal</h3>
+
+        <!-- === Bagian 1: Suhu === -->
+        <div class="section_fix">
+            <h5 class="fw-semibold text-primary mb-3">1️⃣ Suhu</h5>
+            <div class="row align-items-start">
+            <div class="col-md-6">
+                <button class="btn btn-outline-danger mb-2" onclick="openCamera_fix('suhu')">
+                <i class="bi bi-camera"></i> Ambil Foto Suhu
+                </button>
+                <div class="video-box_fix" id="videoBox_suhu_fix">
+                <video id="video_suhu_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('suhu')">
+                    <i class="bi bi-camera-fill"></i>
+                </button>
+                </div>
+                <img id="photo_suhu_fix" class="photo-preview_fix" alt="Foto Suhu" />
+            </div>
+            <div class="col-md-6">
+                <label for="inputSuhu_fix" class="form-label">Nilai Suhu (°C)</label>
+                <input type="number" step="0.1" id="inputSuhu_fix" class="form-control" placeholder="Contoh: 22.5">
+            </div>
+            </div>
+        </div>
+
+        <!-- === Bagian 2: Tekanan === -->
+        <div class="section_fix">
+            <h5 class="fw-semibold text-primary mb-3">2️⃣ Tekanan</h5>
+            <div class="row align-items-start">
+            <div class="col-md-6">
+                <button class="btn btn-outline-danger mb-2" onclick="openCamera_fix('tekanan')">
+                <i class="bi bi-camera"></i> Ambil Foto Tekanan
+                </button>
+                <div class="video-box_fix" id="videoBox_tekanan_fix">
+                <video id="video_tekanan_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('tekanan')">
+                    <i class="bi bi-camera-fill"></i>
+                </button>
+                </div>
+                <img id="photo_tekanan_fix" class="photo-preview_fix" alt="Foto Tekanan" />
+            </div>
+            <div class="col-md-6">
+                <label for="inputTekanan_fix" class="form-label">Nilai Tekanan (PSI)</label>
+                <input type="number" step="0.1" id="inputTekanan_fix" class="form-control" placeholder="Contoh: 75.5">
+            </div>
+            </div>
+        </div>
+
+        <!-- === Bagian 3: Name Plate === -->
+        <div class="section_fix">
+            <h5 class="fw-semibold text-primary mb-3">3️⃣ Name Plate</h5>
+            <div class="row align-items-start">
+            <div class="col-md-6">
+                <button class="btn btn-outline-danger mb-2" onclick="openCamera_fix('nameplate')">
+                <i class="bi bi-camera"></i> Ambil Foto Name Plate
+                </button>
+                <div class="video-box_fix" id="videoBox_nameplate_fix">
+                <video id="video_nameplate_fix" autoplay playsinline></video>
+                <button class="capture-btn_fix" onclick="capturePhoto_fix('nameplate')">
+                    <i class="bi bi-camera-fill"></i>
+                </button>
+                </div>
+                <img id="photo_nameplate_fix" class="photo-preview_fix" alt="Foto Name Plate" />
+            </div>
+            <div class="col-md-6">
+                <label for="inputBrand_fix" class="form-label">Brand</label>
+                <input type="text" id="inputBrand_fix" class="form-control mb-2" placeholder="Contoh: Daikin, LG">
+                <label for="inputTipe_fix" class="form-label">Tipe</label>
+                <input type="text" id="inputTipe_fix" class="form-control" placeholder="Contoh: FTKC25UVM4">
+            </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <button class="btn btn-success px-4 rounded-pill" onclick="submitPengecekan_fix()">
+            <i class="bi bi-send"></i> Submit Data
+            </button>
+        </div>
+    </div>
+</div>
+<script>
+  const streams_fix = {};
+  const photos_fix = {};
+
+document.addEventListener('DOMContentLoaded', function () {
+if (typeof window.jQuery === 'undefined') {
+    console.error('jQuery is not loaded.');
+    return;
+}
+    $ = window.jQuery;
+    Storage.set("CurrentPage","Task Perbaikan");
+    
+    loadHeader();
+});
+
+  async function openCamera_fix(type) {
+    closeAllCamera_fix();
+
+    const videoBox = document.getElementById(`videoBox_${type}_fix`);
+    const video = document.getElementById(`video_${type}_fix`);
+    videoBox.style.display = 'block';
+
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'environment' } });
+      streams_fix[type] = stream;
+      video.srcObject = stream;
+    } catch (err) {
+      alert("Tidak dapat membuka kamera: " + err.message);
+    }
+  }
+
+  function capturePhoto_fix(type) {
+    const video = document.getElementById(`video_${type}_fix`);
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0);
+
+    const photo = document.getElementById(`photo_${type}_fix`);
+    const imageData = canvas.toDataURL('image/png');
+    photo.src = imageData;
+    photo.style.display = 'block';
+    photos_fix[type] = imageData;
+
+    stopCamera_fix(type);
+  }
+
+  function stopCamera_fix(type) {
+    if (streams_fix[type]) {
+      streams_fix[type].getTracks().forEach(track => track.stop());
+      delete streams_fix[type];
+    }
+    document.getElementById(`videoBox_${type}_fix`).style.display = 'none';
+  }
+
+  function closeAllCamera_fix() {
+    for (let type in streams_fix) stopCamera_fix(type);
+  }
+
+  function submitPengecekan_fix() {
+    const suhu_fix = document.getElementById('inputSuhu_fix').value.trim();
+    const tekanan_fix = document.getElementById('inputTekanan_fix').value.trim();
+    const brand_fix = document.getElementById('inputBrand_fix').value.trim();
+    const tipe_fix = document.getElementById('inputTipe_fix').value.trim();
+
+    if (!photos_fix.suhu || !photos_fix.tekanan || !photos_fix.nameplate) {
+      alert('Pastikan semua foto sudah diambil.');
+      return;
+    }
+
+    if (!suhu_fix || !tekanan_fix || !brand_fix || !tipe_fix) {
+      alert('Lengkapi semua input terlebih dahulu.');
+      return;
+    }
+
+    const hasil_fix = {
+      suhu: { foto: photos_fix.suhu, nilai: suhu_fix },
+      tekanan: { foto: photos_fix.tekanan, nilai: tekanan_fix },
+      namePlate: { foto: photos_fix.nameplate, brand: brand_fix, tipe: tipe_fix }
+    };
+
+    console.log("Data Pengecekan Awal:", hasil_fix);
+    alert("✅ Data berhasil disimpan. Lihat console untuk detail.");
+  }
+</script>

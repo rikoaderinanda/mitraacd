@@ -26,6 +26,13 @@ public class TaskController : Controller
         return View();
     }
 
+
+    public IActionResult Perbaikan(long id)
+    {
+        ViewData["TaskId"] = id;
+        return View();
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

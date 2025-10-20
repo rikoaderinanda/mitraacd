@@ -794,3 +794,24 @@ function uploadWithProgress(url, formData, onSuccess, onError, options = {}) {
 
     xhr.send(formData);
 }
+
+function getTransaksiDetail(id) {
+    return new Promise((resolve, reject) => {
+        callApi({
+            url: '/api/Transaksi/GetTransaksiDetail?Id=' + id,
+            method: 'GET',
+            success: function (res) {
+                resolve(res);
+            },
+            error: function (err) {
+                reject(err);
+            },
+            onBeforeSend: function () {
+                
+            },
+            onComplete: function () {
+                
+            }
+        });
+    });
+}
