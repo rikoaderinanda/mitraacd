@@ -412,7 +412,6 @@
         if (refreshTimer) {
             clearInterval(refreshTimer);
             refreshTimer = null;
-            //console.log("Auto-refresh dihentikan.");
         }
 
         var Data = {
@@ -426,7 +425,7 @@
             method: 'POST',
             data: Data,
             success: function (res) {
-                //console.log(res);
+                console.log(res);
                 if(res){
                     showToast("Berhasil mengambil orderan, silakan cek di menu 'Task' untuk melihat detailnya.");
                     callUpdateStatusPadaPelanggan(id_pelanggan,"Mitra telah mengambil orderan Anda. Mitra akan segera menghubungi Anda via WhatsApp untuk konfirmasi lebih lanjut.");

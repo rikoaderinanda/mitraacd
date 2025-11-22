@@ -75,6 +75,7 @@ let dataStep2 = {};
 let dataStep3 = {};
 let dataStep4 = {};
 let dataStep5 = {};
+let currentFacingMode = "user"; // default kamera belakang
 
 let video = document.getElementById("cameraSelfie");
 let previewImg = document.getElementById("previewSelfie");
@@ -88,6 +89,7 @@ let nikInput = document.getElementById("nikInput");
 
 let btnTakeKTP = document.getElementById("btnTakePhotoKTP");
 let btnRetakeKTP = document.getElementById("btnRetakePhotoKTP");
+let btnSwitchCameraKTP = document.getElementById("btnSwitchCameraKTP");
 
 let namaLengkap = document.getElementById("namaLengkap");
 let namaPanggilan = document.getElementById("namaPanggilan");
@@ -100,8 +102,6 @@ window.AlamatPosisiSaatIni = AlamatPosisiSaatIni;
 const btnMyLocation = document.getElementById("btnMyLocation");
 const spinner = document.getElementById("spinnerLocation");
 const btnText = document.getElementById("btnText");
-
-
 
 document.addEventListener("DOMContentLoaded", function () {
     // Default tanggal lahir = 15 tahun sebelumnya, 1 Jan
@@ -157,6 +157,12 @@ document.addEventListener("DOMContentLoaded", function () {
       openCameraKTP();
     });
 
+    btnSwitchCameraKTP.addEventListener("click", async () => {
+      currentFacingMode = currentFacingMode === "environment" ? "user" : "environment";
+      openCameraKTP();
+    });
+    
+    
     // Format otomatis untuk nomor WhatsApp
     document.getElementById("noWhatsapp").addEventListener("input", function() {
         let val = this.value.replace(/\D/g, ""); // hapus non-digit
@@ -228,7 +234,8 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   
     $('#ModalRegistrasi').on('show.bs.modal', function () {
-        nextStep(1, true);
+        console.log("Modal Registrasi ditampilkan");
+        nextStep(5, true);
     });
 });
 
@@ -381,7 +388,7 @@ async function openCamera() {
       }
     });
 
-    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } });
 
     // Jika berhasil, tutup loading
     Swal.close();
@@ -428,7 +435,8 @@ async function openCameraKTP() {
       }
     });
 
-    let stream = await navigator.mediaDevices.getUserMedia({ video: true });
+    let stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: currentFacingMode } 
+    });
 
     // ✅ Tutup loading kalau sukses
     Swal.close();
